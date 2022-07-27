@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="ru">
+	<head>
+		<meta charset="UTF-8" />
+		<link rel="shortcut icon" href={% static "pic/logo.png" %}>
+		<link rel='stylesheet' href={% static "css/main.css" %} />
+		<script src={% static "js/main.js" %}></script>
+		<title>
+			Солнышко
+		</title>		
+	</head>
+	<body>
+		<div id="main">
+			<div id="top">
+				<img id="logo" src={% static "pic/logo.png" %} />
+				<div>
+					Академия "Солнышко"
+				</div>
+				<img id="logo" src={% static "pic/logo.png" %} />
+			</div>
+			<div id="caption">
+				{% block caption %}
+				{% endblock caption %}
+			</div>
+			<div id="center">		
+				{% block main %}
+				{% endblock main %}
+			</div>
+			<div id="bottom">
+			Обновлено {% now "d.m.Y" %} в {% now "H:i:s" %}
+			</div>
+		</div>
+	</body>
+</html>

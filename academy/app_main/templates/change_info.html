@@ -1,0 +1,29 @@
+{% extends "main.html" %}
+{% block caption %}
+	{{caption}}
+{% endblock caption %}
+{% block main %}
+	<div class="start_main">
+		{% csrf_token %}
+		<b class="row_div">{{fio}}</b>
+		{% if info %}	
+			<input id="reg_phone" type="text" class="my_input" value="{{phoneJS}}" 
+						placeholder="ТЕЛЕФОН" onkeydown="kd_validationText(event, '^[0-9\-\+]$')" />
+			<input id="reg_e_mail" type="text" class="my_input" value="{{e_mail}}"
+						placeholder="ЭЛ. ПОЧТА"" />
+		{% endif %}
+		{% if password %}
+			<input id="reg_login" type="text" class="my_input" 
+						placeholder="ЛОГИН" onkeydown="kd_validationText(event, '^[A-Za-z0-9]$')" />	
+			<input id="reg_password" type="password" class="my_input" 
+						placeholder="НОВЫЙ ПАРОЛЬ" onkeydown="kd_validationText(event, '^[A-Za-z0-9]$')" />
+			<input id="reg_password_2" type="password" class="my_input" 
+					placeholder="ПОВТОР ПАРОЛЯ" onkeydown="kd_validationText(event, '^[A-Za-z0-9]$')" />	
+		{% endif %}	
+		<div class="row_div">			
+			<input type="button" class="my_a two_in_row" value="OK" onclick="click_change_info(event)" />	
+			<a class="my_a two_in_row" href={{back.0}}> {{back.1}} </a>
+		</div>
+	</div>
+{% endblock main %}
+

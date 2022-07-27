@@ -1,0 +1,33 @@
+{% extends "main.html" %}
+{% load static %}
+{% block caption %}
+	Структура Академии
+{% endblock caption %}
+{% block main %}
+	<div class="start_main">
+		{% csrf_token %}
+		<div class="list">			
+			{% for key, el in data.items %}
+				<ul>
+					<li><b>{{key}}</b></li>
+						<ul class="list_name">
+							{% for k, e in el.items %}
+								<li><i>{{k}}</i></li>
+								<ul>
+									{% for k1, e1 in e.items %}
+										<div class="li_name">
+										<li> 
+											<a class="li_name" href={{"/info/employees/"|add:k1}}>{{e1}}</a>
+										</li>
+										</div>
+									{% endfor %}
+								</ul>
+							{% endfor %}
+						</ul
+					</ul>
+				</ul>			
+			{% endfor%}
+		</div>	
+		<a class="my_a" href={% url "main"%}> На главную страницу </a>
+	</div>
+{% endblock main %}

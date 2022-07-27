@@ -1,0 +1,53 @@
+{% extends "main.html" %}
+{% load static %}
+{% block caption %}
+	{{department}}
+{% endblock caption %}
+{% block main %}
+	<div class="start_main">
+		{% csrf_token %}
+		<div class="row_div">
+				<div class="div_center">
+				{% if picture %}
+					<img id="photo" src="{{picture}}" />
+				{% else %}
+					<img id="photo" src='{% static "pic/pic_"|add:gender|add:".png" %}' />	
+				{% endif %}
+			</div>			
+			<div>
+				<b>{{status}}</b><br/><br/>
+					{{lastname}}<br/>
+					{{firstname}}<br/>
+					{{patronymic}}<br/>
+					
+			</div>
+		</div>
+		<table>
+			{% if full %}
+				<tr>
+					<td><b>День рождения:</b></td> 
+					<td>{{birthday}}</td>
+				</tr>
+			{% endif %}
+			<tr>
+				<td><b>Телефон:</b></td>
+				<td>{{phone}}</td>
+			</tr>
+			<tr>
+				<td><b>Эл. почта:</b></td>
+				<td>{{e_mail}}</td>
+			</tr>
+		</table>
+		{% if full %}
+			<div class="row_div">
+				<label for="file" class="my_a small three_in_row"> Фото </label>
+				<a class="my_a small three_in_row" href={{'/changepassword/'|add:persons|add:'/'|add:id}}> Идентификация </a>
+				<a class="my_a small three_in_row" href={{'/changeinfo/'|add:persons|add:'/'|add:id}}> Личное </a>
+				<input id="file" type="file" onchange="click_image(this)" accept=".jpg,.jpeg,.png" />
+			</div>			
+		{% endif %}
+		<a class="my_a small" href={{back.0}}> {{back.1}} </a>
+	</div>
+{% endblock main %}
+
+

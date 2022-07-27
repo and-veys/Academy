@@ -1,0 +1,10 @@
+{% extends "main.html" %}
+{% block caption %}
+	Страница не доступна
+{% endblock caption %}
+{% block main %}
+	<div class="start_main">
+		У Вас отсутствует доступ для просмотра этой страницы
+		<a class="my_a" href={% url back.0 %}> {{back.1}} </a>		
+	</div>
+{% endblock main %}
