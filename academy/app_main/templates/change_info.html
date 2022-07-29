@@ -8,17 +8,17 @@
 		<b class="row_div">{{fio}}</b>
 		{% if info %}	
 			<input id="reg_phone" type="text" class="my_input" value="{{phoneJS}}" 
-						placeholder="ТЕЛЕФОН" onkeydown="kd_validationText(event, '^[0-9\-\+]$')" />
+						placeholder="ТЕЛЕФОН" onkeydown="key_down_text(event)" />
 			<input id="reg_e_mail" type="text" class="my_input" value="{{e_mail}}"
-						placeholder="ЭЛ. ПОЧТА"" />
+						placeholder="ЭЛ. ПОЧТА" />
 		{% endif %}
 		{% if password %}
 			<input id="reg_login" type="text" class="my_input" 
-						placeholder="ЛОГИН" onkeydown="kd_validationText(event, '^[A-Za-z0-9]$')" />	
+						placeholder="ЛОГИН" onkeydown="key_down_text(event)" />	
 			<input id="reg_password" type="password" class="my_input" 
-						placeholder="НОВЫЙ ПАРОЛЬ" onkeydown="kd_validationText(event, '^[A-Za-z0-9]$')" />
+						placeholder="НОВЫЙ ПАРОЛЬ" onkeydown="key_down_text(event)" />
 			<input id="reg_password_2" type="password" class="my_input" 
-					placeholder="ПОВТОР ПАРОЛЯ" onkeydown="kd_validationText(event, '^[A-Za-z0-9]$')" />	
+					placeholder="ПОВТОР ПАРОЛЯ" onkeydown="key_down_text(event)" />	
 		{% endif %}	
 		<div class="row_div">			
 			<input type="button" class="my_a two_in_row" value="OK" onclick="click_change_info(event)" />	

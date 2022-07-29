@@ -64,9 +64,9 @@ class Extra:
                 mask[i] = temp[0]
                 temp = temp[1:]
         return ph[:ind] + "".join(mask)
-        
-    def paint(self, *arg):
-        print("*"*88)
-        for i in arg:
-            print(i)
-        print("*"*88)
+    
+    def getRestDay(self):
+        dtN = datetime.now()
+        dtT = datetime(dtN.year, dtN.month, dtN.day)   
+        return (24*60*60 - (dtN - dtT).seconds)  
+

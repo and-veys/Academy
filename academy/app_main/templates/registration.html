@@ -6,10 +6,10 @@
 	<div class="start_main">
 		{% csrf_token %}
 		<input id="reg_login" type="text" class="my_input" 
-					placeholder="ЛОГИН" onkeydown="kd_validationText(event, '^[A-Za-z0-9]$')" />	
+					placeholder="ЛОГИН" onkeydown="key_down_text(event)" />	
 		<input id="reg_password" type="password" class="my_input" 
-					placeholder="ПАРОЛЬ" onkeydown="kd_validationText(event, '^[A-Za-z0-9]$')" />
-		<input type="button" class="my_a" value="OK" onclick="click_registration(event)" />	
+					placeholder="ПАРОЛЬ" onkeydown="key_down_text(event)" />
+		<input type="button" class="my_a" value="Войти" onclick="click_registration(event)" />	
 		{% if login %}
 			<input id="login" type="button" class="my_a" value="Войти как ..." onclick="click_registration(event)" />	
 		{% endif %}		

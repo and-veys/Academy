@@ -29,13 +29,13 @@ def departments(request):
 
 
 def infoPersonsShot(request, person, id):
-    """Страница с информацией (краткой) о работниках (доступна для всех)"""     #TODO delete true
-    return personalInformation(request, person, id, True, ["/departments", "К структуре Академии"])
+    """Страница с информацией (краткой) о работниках (доступна для всех)"""     
+    return personalInformation(request, person, id, False, ["/departments", "К структуре Академии"])
     
 
 def infoPersons(request, person, id):
     """Страница с информацией (полной) о работниках и студентах"""
-    return personalInformation(request, person, id, True, ["/registration", "Приступить к работе"]) #TODO
+    return personalInformation(request, person, id, True, ["/work/{}/{}".format(person, id), "Приступить к работе"]) #TODO
 
 def personalInformation(request, person, id, full, back): 
     if(request.method.upper() == "POST"): 
@@ -76,7 +76,17 @@ def changeInfo (request, person, id, add):
 
 
 
-
+def registration(request):          #TODO  
+    """Страница регистрации (доступна для всех)"""
+    if(request.method.upper() == "POST"):
+        data = json.load(request)
+        data = Persons().getRegistration(data)
+        res = HttpResponse(data["path"])
+        if(data["OK"]):
+            request.session[data["login"]] = data["session"]
+            res.set_cookie("login", data["login"], max_age = data["age"])  
+        return res
+    return render(request, "registration.html", {"login": Persons().isRegistration(request) })
 
 
 
@@ -97,18 +107,7 @@ def courses(request):               #TODO
     """Страница курсов обучения (доступна для всех)"""
     return render(request, "registration.html")    
     
-def registration(request):          #TODO  
-    """Страница регистрации (доступна для всех)""" 
-    if(request.method.upper() == "POST"):
-        session = Registration().getSession(request)
-        if(session):
-            request.session[session["login"]] = session["access"]
-            res = HttpResponse(session["href"])
-            res.set_cookie("login", session["login"], max_age = session["age"])
-        else:
-            res = HttpResponse("")        
-        return res        
-    return render(request, "registration.html")
+
 
 
 def generatePersons(request):               #TODO ограничение доступа

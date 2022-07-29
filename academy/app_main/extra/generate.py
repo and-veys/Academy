@@ -142,8 +142,8 @@ class Generate():
                 pass 
         
         dp = list(Departments.objects.all())
-        stL = Status_Employees.objects.get(index="leader")
-        stE = Status_Employees.objects.get(index="employee")
+        #stL = Status_Employees.objects.get(index="leader")             #TODO TEST
+        #stE = Status_Employees.objects.get(index="employee")
         for i in dp:
             self.__createEmployee(i, "leader")
             for e in range(random.randint(3, 5)):

@@ -149,7 +149,14 @@ class Students(Person):
         db_table = "amv_students"
     def __str__(self):
         return "{} (группа {})".format(self.getShotName(), str(self.group))
-        
+    
+    def getPersonalInfo(self):
+        res = self.getInfo()
+        res["group"] = self.group.name
+        res["course"] = self.group.course.name
+        res["persons"]= "students"
+        return res
+    
 class Employees(Person):
     """Таблица работников"""
     department = models.ForeignKey(Departments, on_delete=models.CASCADE, verbose_name="Отдел")
@@ -179,15 +186,13 @@ class Employees(Person):
         res["department"] = self.department.name
         res["status"] = self.getStatusAlias()
         res["persons"]= "employees"
-
         return res
-
         
 class SunBot(models.Model):
     """Таблица зарегистрированных чатов"""
     bot_id = models.IntegerField('ID чата', unique=True)
-    employee = models.ForeignKey(Employees, null=True, on_delete=models.CASCADE, verbose_name="Сотрудник")
-    student = models.ForeignKey(Students, null=True, on_delete=models.CASCADE, verbose_name="Студент")     
+    employees = models.ForeignKey(Employees, null=True, on_delete=models.CASCADE, verbose_name="Сотрудник")
+    students = models.ForeignKey(Students, null=True, on_delete=models.CASCADE, verbose_name="Студент")     
     class Meta: 
         ordering = ['bot_id']  
         verbose_name = "Идентификатор чата"                     
@@ -196,4 +201,4 @@ class SunBot(models.Model):
         db_table = "amv_sunbot"      
         
     def getPerson(self):
-        return (self.employee if self.student == None else self.student)        #TODO test bot as student
+        return (self.employees if self.students == None else self.students)        #TODO test bot as student

@@ -40,22 +40,20 @@ function click_change_info(event) {			//реакция на изменение �
 		});
 }
 function get_click_change_info() {
-	console.log("OK");
 	login = document.getElementById("reg_login");
 	pass = document.getElementById("reg_password");
 	pass2 = document.getElementById("reg_password_2");
 	phone = document.getElementById("reg_phone");
 	e_mail = document.getElementById("reg_e_mail");
-	res = {}
-	if(login) {
+	if(login) {		
 		login = login.value;
 		pass = pass.value;
-		pass2 = pass2.value;
 		if(login.length < 8 || pass.length < 8 || login.length > 64 || pass.length > 64)
 			return {"error": "Логин и пароль должны быть от 8-и до 64 символов."};
-		if(pass != pass2)
-			return {"error": "Новые варианты паролей не совпадают."};
-		res["login"] = encodeInfo(login, pass);
+		if(pass2 && pass != pass2.value)
+			return {"error": "Новые варианты паролей не совпадают."};	
+		if(validation("reg_login", login) && validation("reg_password", pass))		
+			return {"login": encodeInfo(login, pass)};
 	}
 	if(phone) {
 		phone = phone.value.split("-").join("");
@@ -66,48 +64,48 @@ function get_click_change_info() {
 		temp = e_mail.split('@')
 		if(e_mail.split(' ').length != 1 || temp.length != 2 || temp[1].split('.').length == 1)
 			return {"error": "Явно ошибочная электронная почта."};
-		res["phone"] = phone;
-		res["e_mail"] = e_mail;
+		if(validation("reg_phone", phone))	
+			return {"phone": phone, "e_mail": e_mail};
 	}
-	return res
+	return {"error": "Ошибка валидации введенного текста."}
 
 }
 function isNavigationKey(k) {
 	return (k == 8 || k == 46 || k == 37 || k == 39) 
 }
-function kd_validationText(event, temp) {
+
+function validation(id, str){
+	mask = {
+		"reg_login": "[A-Za-z0-9]",
+		"reg_password": "[A-Za-z0-9]",
+		"reg_password_2": "[A-Za-z0-9]",
+		"reg_phone": "[0-9\-\+]",
+	}
+	mask = mask[id];
+	if(mask) {
+		temp = "^" + mask + "{" + str.length + "}$"
+		try {
+			return str.match(new RegExp(temp));
+		}
+		catch(err) {}
+	}
+	return true;	
+}	
+function key_down_text(event) {
 	if(isNavigationKey(event.keyCode)) 
 		return; 
-	try{
-		event.returnValue = event.key.match(new RegExp(temp));
-	}
-	catch(err) {}	
+	event.returnValue = validation(event.target.id, event.key)	
 }
 function encodeInfo(lg, pw) {
 	a = [lg.substring(0, 5), lg.substring(5), pw.substring(0, 3), pw.substring(3)];	
 	return a[0]+a[3]+a[2]+a[1];
 }
 //-------------------------------------------------------------------------
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//-------------------------------------------------------------------------
-function click_registration(event) {	//реакция на ОК-регистрации
+function click_registration(event) {	//реакция на регистрацию
 	if (event.target.id == "login")
 		data = {"login": getCookie("login")};			
 	else
-		data = getLoginPassword();
+		data = get_click_change_info(); 	
 	if(isErrorData(data))
 		return;	
 	click_disabled();	
@@ -115,11 +113,8 @@ function click_registration(event) {	//реакция на ОК-регистра
 	.then(response => response.text())		
 	.then(temp => {
 		click_enabled();
-		if(temp == "") 
-			errorMessage("Ошибочные логин и пароль. Повторите.");			
-		else
-			window.location.href = temp;
-	});			
+		response_go(temp);		
+	}); 			
 }
 
 
@@ -146,7 +141,7 @@ function createPOST(data, accept='text/html') {	//структура пост з
 	return res;
 }
 function response_go(mes) {			//обработка ответа пост запроса
-	temp = mes.split("/n")
+	temp = mes.split("\n")
 	if(temp.length == 1)
 		window.location.href = mes;
 	else

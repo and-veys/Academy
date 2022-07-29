@@ -1,5 +1,6 @@
 from ..models import SunBot, Employees, Students
 from .extra import Extra
+from .persons import Persons
 
 class Bot():
     __inst = None 
@@ -49,30 +50,24 @@ class Bot():
         if(len(data["args"]) != 2):
             return "Аргументы команды 'логин' и 'пароль' через пробел."
         login = self.__encodeInfo(*data["args"])
-        res = {"bot_id": data["id"], "employee": None, "student": None}
-        try:
-            row = Employees.objects.get(login=login)
-            res["employee"] = row
-        except:
-            try:
-                row = Students.objects.get(login=login)
-                res["student"] = row
-            except:
-                pass
-        if(res["employee"] == None and res["student"] == None):
+        res = {"bot_id": data["id"], "employees": None, "students": None}
+        row = Persons().getPerson(login)
+        if(row):
+            res[row["tp"]] = row["row"]
+        else:
             return "Ошибочные логин и пароль."
         sb = self.__getRow(data)
         if(sb):
             sb.bot_id = res["bot_id"]
-            sb.employee = res["employee"]
-            sb.student = res["student"]
+            sb.employees = res["employees"]
+            sb.students = res["students"]
         else:
             sb = SunBot(**res)         
         try:
             sb.save()
         except:
-            return "Ошибка записи в базу данных сервера."    
-        return "Ваша регистрация:\n{}".format(row.getFullName())
+            return "Ошибка записи в базу данных сервера." 
+        return "Ваша регистрация:\n{}".format(row["row"].getFullName())
 
  
     def __delete(self, data):
