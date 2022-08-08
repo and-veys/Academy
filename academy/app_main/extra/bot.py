@@ -16,7 +16,7 @@ class Bot():
                 "start": [self.__start, "Приветствие"],
                 "registration": [self.__registration, "Регистрация"],
                 "delete": [self.__delete, "Выход из регистрации"],                
-                "now": [self.__now, "Расписание на сегодня"],
+                "now": [self.__now, "Расписание на сегодня"],               #TODO сделать
                 "help": [self.__help, "Справка"]
         }     
     def message(self, dt):         

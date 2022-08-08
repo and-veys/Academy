@@ -1,7 +1,7 @@
 {% extends "main.html" %}
 {% load static %}
 {% block caption %}
-	Структура Академии
+	Курсы и предметы обучения
 {% endblock caption %}
 {% block main %}
 	<div class="start_main">
@@ -12,14 +12,10 @@
 					<li><b>{{key}}</b></li>
 						<ul class="list_name">
 							{% for k, e in el.items %}
-								<li><i>{{k}}</i></li>
+								<li><i>Курс "{{k}}"</i></li>
 								<ul>
 									{% for k1, e1 in e.items %}
-										<div class="li_name">
-										<li> 
-											<a class="li_name" href={{"/departments/employees/"|add:k1}}>{{e1}}</a>
-										</li>
-										</div>
+										<li> {{e1}} </li>
 									{% endfor %}
 								</ul>
 							{% endfor %}

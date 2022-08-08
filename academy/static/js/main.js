@@ -75,6 +75,8 @@ function isNavigationKey(k) {
 }
 
 function validation(id, str){
+	if(str == undefined)
+		return false;
 	mask = {
 		"reg_login": "[A-Za-z0-9]",
 		"reg_password": "[A-Za-z0-9]",

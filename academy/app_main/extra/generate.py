@@ -1,11 +1,23 @@
-from ..models import Students, Employees, Groups, Genders, Departments, Status_Employees
 from .extra import Extra
 import string
 import random
 from calendar import monthrange
 from datetime import date
+from django.conf import settings
+import pickle
 
-
+from ..models import    Genders, \
+                        Status_Departments, \
+                        Status_Employees, \
+                        Status_Aliases, \
+                        Departments, \
+                        Courses, \
+                        Subjects, \
+                        Course_Subject, \
+                        Groups, \
+                        Students, \
+                        Employees, \
+                        Schedule
 
 
 class Generate():
@@ -122,34 +134,52 @@ class Generate():
                     "Э": "e",
                     "Ю": "yu",
                     "Я": "ya"} 
+        self.__classes = [
+            Genders,
+            Status_Departments,
+            Status_Employees,
+            Status_Aliases,
+            Departments,
+            Courses,
+            Subjects,
+            Course_Subject,
+            Groups,
+            Students,
+            Employees,
+            Schedule
+        ]
 
-    def generatePersons(self):
-        """Генерация работников и студентов"""
-        prof = Employees.objects.all()
+    def generateStudents(self):
+        """Генерация студентов"""
         stud = Students.objects.all()
-        if(len(prof) + len(stud) > 0):
-            return "Уже имеются {} {} и {} {}".format(
-                len(prof), Extra().getStringAmountProfessors(len(prof)),
-                len(stud), Extra().getStringAmountStudents(len(stud)))
-        
-        gr = list(Groups.objects.all())        
+        if(len(stud)):
+            return "Студенты: уже есть {} {} <br />".format(len(stud), Extra().getStringAmountStudents(len(stud)))
+        gr = list(Groups.objects.all())  
+        count = 0
         for i in range(100):
             pers = self.__getPersonInfo()
             pers["group"] = random.choice(gr)           #TODO TEST
             try:
                 Students.objects.create(**pers)
+                count += 1
             except:
-                pass 
-        
+                pass    
+        return "Студенты: создано {} {} <br />".format(count, Extra().getStringAmountStudents(count))
+
+    def generateEmployees(self):
+        """Генерация работников"""
+        emp = Employees.objects.all()
+        if(len(emp)):
+            return "Сотрудники: уже есть {} {} <br />".format(len(emp), Extra().getStringAmountProfessors(len(emp)))
         dp = list(Departments.objects.all())
-        #stL = Status_Employees.objects.get(index="leader")             #TODO TEST
-        #stE = Status_Employees.objects.get(index="employee")
+        count = 0
         for i in dp:
-            self.__createEmployee(i, "leader")
-            for e in range(random.randint(3, 5)):
-                self.__createEmployee(i, "employee")        
-         
-        return "Всё сделано. Проверьте."   
+            while(self.__createEmployee(i, "leader") == 0):
+                pass
+            count += 1
+            for e in range(random.randint(3, 6)):
+                count += self.__createEmployee(i, "employee") 
+        return "Сотрудники: создано {} {} <br />".format(count, Extra().getStringAmountProfessors(count))
     
     def __createEmployee(self, dp, st):
         pers = self.__getPersonInfo()
@@ -157,8 +187,9 @@ class Generate():
         pers["status"] = Status_Employees.objects.get(index=st)
         try:
             Employees.objects.create(**pers)
+            return 1
         except:
-            pass
+            return 0
     
     def __getPersonInfo(self):
         gn = random.choice(self.__gender)
@@ -180,16 +211,49 @@ class Generate():
         res["login"] = ""
         for n in range(self.__login["COUNT"]):
             res["login"] += random.choice(self.__login["CHARS"])
-        return res    
+        return res   
+        
+                
+    def serialize(self):
+        res = ""
+        for el in self.__classes:
+            res += self.__save(el)
+        return res   
             
+    def __save(self, cl):
+        try:
+            file = open("{}/{}.dat".format(settings.DATA_URL, cl.__name__), "wb")
+        except:
+            return "{}: ошибка записи в файл <br />".format(cl.__name__)
+        rows = cl.objects.all().values()
+        for el in rows:
+            pickle.dump(el, file)
+        return "{}: сохранено {} {} <br />".format(cl.__name__, len(rows), Extra().getStringAmountNotes(len(rows)))
             
+    def loaddata(self):
+        res = ""
+        for el in self.__classes:
+            res += self.__load(el)
+        return res
             
-            
-            
-            
-            
-            
-            
+    def __load(self, cl):
+        rows = cl.objects.all()
+        if(len(rows)):
+            return "{}: уже есть {} {} <br />".format(cl.__name__, len(rows), Extra().getStringAmountNotes(len(rows))) 
+        try:
+            file = open("{}/{}.dat".format(settings.DATA_URL, cl.__name__), "rb")
+        except:
+            return "{}: ошибка чтения файла <br />".format(cl.__name__)
+        count = 0
+        while(True):
+            try:
+                data = pickle.load(file)
+            except:
+                break;
+            q = cl(**data)
+            q.save(True)
+            count += 1
+        return "{}: создано {} {} <br />".format(cl.__name__, count, Extra().getStringAmountNotes(count))     
             
             
             

@@ -1,0 +1,16 @@
+{% extends "main.html" %}
+{% block caption %}
+	Рабочая страница "{{status}}"
+{% endblock caption %}
+{% block main %}
+	<div class="start_main">
+		{% csrf_token %}
+		{% block work %}
+			Страница находится на стадии разработки
+		{% endblock work %}
+		<a class="my_a" href='{{"/personal/"|add:persons|add:"/"|add:id}}'> Личный кабинет </a>
+	</div>
+{% endblock main %}
+
+
+

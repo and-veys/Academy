@@ -4,7 +4,7 @@ from .models import Genders
 from .models import Status_Departments, Status_Employees, Status_Aliases
 from .models import Students, Groups, Courses
 from .models import Employees, Departments 
-
+from .models import Subjects, Course_Subject
  
                   
 
@@ -17,3 +17,5 @@ admin.site.register(Departments)
 admin.site.register(Status_Departments)
 admin.site.register(Status_Employees)
 admin.site.register(Status_Aliases)
+admin.site.register(Subjects)
+admin.site.register(Course_Subject)

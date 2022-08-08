@@ -1,5 +1,5 @@
 from ..models import Departments as dp, Employees as em, Status_Employees as st
-from .extra import Extra
+
 
 class Departments():
     __inst = None 

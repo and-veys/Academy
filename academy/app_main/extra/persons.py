@@ -45,7 +45,7 @@ class Persons():
         except:
             return "\nОшибка чтения записи на сервере."        
         if("login" in data):            #TODO
-            if(self.getPerson(data["login"])):
+            if(self.isAdministrator(data["login"]) or self.getPerson(data["login"])):
                 return "\nСовпадение логина и пароля в базе данных."            
             row.login = data["login"]        
         if("phone" in data):
@@ -69,17 +69,6 @@ class Persons():
             except:
                 pass
         return {}    
-    
-    def isRegistration(self, request):
-        try:
-            login = request.COOKIES["login"]
-            session = request.session[login] 
-        except:
-            return ""    
-        try:
-            return self.__getPerson(**session).getShotName()
-        except:
-            return ""
         
     def getRegistration(self, data):        
         row = self.getPerson(data["login"])
@@ -90,15 +79,29 @@ class Persons():
                 "age": Extra().getRestDay(),
                 "path": "/personal/{}/{}".format(row["tp"], row["row"].id),
                 "OK": True
-            }
+            } 
+        if(self.isAdministrator(data["login"])):
+            return {
+                "login": data["login"], 
+                "session": {"id": -1, "tp": "root"},
+                "age": Extra().getRestDay(),
+                "path": "\nВы вошли как Администратор.",
+                "OK": True
+            }   
         return {"path": "\nОшибочные логин и пароль.", "OK": False}
             
+    def isAdministrator(self, login): 
+        return (login == settings.ROOT_USER)
         
-        
-
+    def getSession(self, request):
+        try:
+            return request.session[request.COOKIES["login"]] 
+        except:
+            return {}
             
-        
-        
+    def getWork(self, id, tp):
+        return self.__getPerson(id, tp).getPersonalInfo()
+
         
         
         

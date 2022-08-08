@@ -9,8 +9,10 @@ class Extra:
         return cls.__inst 
     def __init(self):
         self.__amount_months = ["месяц", "месяца", "месяцев"]
-        self.__amount_professors = ["профессор", "профессора", "профессоров"]
+        self.__amount_professors = ["сотрудник", "сотрудника", "сотрудников"]
         self.__amount_students = ["студент", "студента", "студентов"]
+        self.__amount_lessons = ["занятие", "занятия", "занятий"]
+        self.__amount_notes = ["запись", "записи", "записей"]
         
     def getStringAmountMonths(self, m):
         return self.__getStringAmount(m, self.__amount_months)
@@ -20,6 +22,12 @@ class Extra:
     
     def getStringAmountStudents(self, m):
         return self.__getStringAmount(m, self.__amount_students)  
+    
+    def getStringAmountLessons(self, m):
+        return self.__getStringAmount(m, self.__amount_lessons)
+    
+    def getStringAmountNotes(self, m):
+        return self.__getStringAmount(m, self.__amount_notes)
     
     def __getStringAmount(self, m, arr):
         """Добавляет правильные окончания к существительным от их количества"""

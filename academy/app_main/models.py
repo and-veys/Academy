@@ -12,6 +12,7 @@ class Genders(models.Model):
         db_table = "amv_genders"        
     def __str__(self):
         return "{} ({})".format(self.name, self.index)
+
         
 class Status_Departments(models.Model):
     """Таблица статуса отдела"""
@@ -54,10 +55,23 @@ class Status_Aliases(models.Model):
         unique_together = ('status_department', 'status_employee')
     def __str__(self):
         return "{} ({}): {}, {}".format(self.name, self.pl_name, str(self.status_employee), str(self.status_department))
-             
+                   
+class Departments(models.Model):
+    """Таблица факультетов/отделов"""
+    name = models.CharField('Наименование', max_length = 64, unique=True)
+    status = models.ForeignKey(Status_Departments, on_delete=models.CASCADE, verbose_name="Статус отдела")
+    class Meta: 
+        ordering = ['name']  
+        verbose_name = "Отдел"                     
+        verbose_name_plural = "Отделы"
+        db_table = "amv_departments"
+    def __str__(self):
+        return "{} ({})".format(self.name, str(self.status))
+
 class Courses(models.Model):
     """Таблица учебных курсов"""
     name = models.CharField('Наименование', max_length = 64, unique=True) 
+    department = models.ForeignKey(Departments, null=True, on_delete=models.CASCADE, verbose_name="Отдел")
     amount_months = models.IntegerField('Количество месяцев')
     class Meta: 
         ordering = ['name']  
@@ -65,11 +79,45 @@ class Courses(models.Model):
         verbose_name_plural = "Курсы"
         db_table = "amv_courses"
     def __str__(self):
-        return "{} ({} {})".format(
+        return "{} ({} {}) - {}".format(
                 self.name, 
                 str(self.amount_months), 
-                Extra().getStringAmountMonths(self.amount_months)) 
-        
+                Extra().getStringAmountMonths(self.amount_months),
+                str(self.department)) 
+
+class Subjects(models.Model):
+    """Таблица предметов"""
+    name = models.CharField('Наименование', max_length = 64, unique=True)
+    department = models.ForeignKey(Departments, on_delete=models.CASCADE, verbose_name="Отдел")
+    amount_lessons = models.IntegerField('Количество занятий')
+    class Meta: 
+        ordering = ['department']  
+        verbose_name = "Предмет"                     
+        verbose_name_plural = "Предметы"
+        db_table = "amv_subjects"   
+    
+    def __str__(self):
+        return "{} - {} ({} {})".format(
+                self.name, 
+                str(self.department), 
+                self.amount_lessons, 
+                Extra().getStringAmountLessons(self.amount_lessons))
+
+class Course_Subject(models.Model):
+    """Таблица курсов-предметов"""
+    course = models.ForeignKey(Courses, on_delete=models.CASCADE, verbose_name="Курс")
+    subject = models.ForeignKey(Subjects, on_delete=models.CASCADE, verbose_name="Предмет")
+    class Meta: 
+        ordering = ['course']  
+        verbose_name = "Курс-Предмет"                     
+        verbose_name_plural = "Курсы-Предметы"
+        unique_together = ('subject', 'course')
+        db_table = "amv_сourse_subject"     
+    
+    def __str__(self):
+        return "{}. Курс: {}".format(str(self.subject), self.course.name)
+
+
 class Groups(models.Model):
     """Таблица групп студентов"""
     name = models.CharField('Номер группы', max_length = 16, unique=True)    
@@ -85,27 +133,22 @@ class Groups(models.Model):
                 self.name,
                 str(self.course),
                 Extra().getStringData(self.started))
-        
-class Departments(models.Model):
-    """Таблица факультетов/отделов"""
-    name = models.CharField('Наименование', max_length = 64, unique=True)
-    status = models.ForeignKey(Status_Departments, on_delete=models.CASCADE, verbose_name="Статус отдела")
-    class Meta: 
-        ordering = ['name']  
-        verbose_name = "Отдел"                     
-        verbose_name_plural = "Отделы"
-        db_table = "amv_departments"
-    def __str__(self):
-        return "{} ({})".format(self.name, str(self.status))
-
-
-
-  
+    def save(self, my_generate=False, *args, **kwargs ):
+        if(my_generate):
+            super(Groups, self).save(*args, **kwargs)
+        if(self.pk):
+            return
+        super(Groups, self).save(*args, **kwargs)
+        rows = Course_Subject.objects.filter(course=self.course.id)
+        for el in rows:
+            for ls in range(el.subject.amount_lessons):
+                Schedule.objects.create(group=self, subject=el.subject)  
+ 
 class Person(models.Model):
     """Общий класс-родитель для Студентов и Преподавателей"""
     lastname = models.CharField('Фамилия', max_length = 64)
     firstname = models.CharField('Имя', max_length = 64)
-    patronymic = models.CharField('Отчество', max_length = 64)  
+    patronymic = models.CharField('Отчество', max_length = 64, default="", null=True, blank=True)  
     birthday = models.DateField('День рождения')
     phone = models.CharField('Телефон', max_length = 16)
     e_mail = models.CharField('Эл. почта', max_length = 64) 
@@ -116,10 +159,10 @@ class Person(models.Model):
     class Meta:        
         abstract = True       
     def getShotName(self):
-        pt = ("" if self.patronymic == "" else self.patronymic[0:1] + ".")
+        pt = (self.patronymic[0:1] + "." if self.patronymic else "")
         return "{} {}.{}".format(self.lastname, self.firstname[0:1], pt)
     def getFullName(self):
-        pt = ("" if self.patronymic == "" else " " + self.patronymic) 
+        pt = (" " + self.patronymic if self.patronymic else "") 
         return "{} {}{}".format(self.lastname, self.firstname, pt)
     def getInfo(self):
         return {
@@ -155,8 +198,10 @@ class Students(Person):
         res["group"] = self.group.name
         res["course"] = self.group.course.name
         res["persons"]= "students"
+        res["html"] = "work_students.html"
+        res["status"] = "Студент"
         return res
-    
+       
 class Employees(Person):
     """Таблица работников"""
     department = models.ForeignKey(Departments, on_delete=models.CASCADE, verbose_name="Отдел")
@@ -185,9 +230,10 @@ class Employees(Person):
         res = self.getInfo()
         res["department"] = self.department.name
         res["status"] = self.getStatusAlias()
-        res["persons"]= "employees"
+        res["persons"] = "employees"
+        res["html"] = "work_employees_{}_{}.html".format(self.department.status.index, self.status.index)
         return res
-        
+      
 class SunBot(models.Model):
     """Таблица зарегистрированных чатов"""
     bot_id = models.IntegerField('ID чата', unique=True)
@@ -202,3 +248,18 @@ class SunBot(models.Model):
         
     def getPerson(self):
         return (self.employees if self.students == None else self.students)        #TODO test bot as student
+
+
+
+class Schedule(models.Model):
+    """Расписание предметов"""
+    lesson_date = models.DateTimeField('Дата и время занятия', null=True)
+    group = models.ForeignKey(Groups, on_delete=models.CASCADE, verbose_name="Группа")
+    subject = models.ForeignKey(Subjects, on_delete=models.CASCADE, verbose_name="Предмет")
+    professor = models.ForeignKey(Employees, null=True, on_delete=models.CASCADE, verbose_name="Преподаватель")
+    class Meta: 
+        ordering = ['lesson_date']  
+        verbose_name = "Расписание"                     
+        verbose_name_plural = "Расписания"
+        indexes = [models.Index(fields=['lesson_date'])]
+        db_table = "amv_schedule"      
