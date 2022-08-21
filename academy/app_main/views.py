@@ -1,12 +1,14 @@
 from django.shortcuts import render
 from django.http import JsonResponse, HttpResponse
-from .extra.registration import Registration
+
 from .extra.generate import Generate
 from .extra.departments import Departments
 from .extra.courses import Courses
 from .extra.persons import Persons
+from .extra.calendar import Calendar
 from .extra.bot import Bot
 import json
+from datetime import date
 
 
 def isAccessAdministrator(fun):
@@ -15,17 +17,19 @@ def isAccessAdministrator(fun):
         if(session):
             if(session["id"] == -1):
                 return fun(request)
-            return render(request, "error_access.html") 
+        return render(request, "error_access.html") 
     return wrapper
 
 
 def isAccess(fun):          #доступ по id, person или администратору
-    def wrapper(request, person, id):
+    def wrapper(request, **kwargs):
+        person = kwargs["person"]
+        id = kwargs["id"]
         session = Persons().getSession(request)
         if(session):
             if(session["id"] == -1 or (person == session["tp"] and id == session["id"])):
-                return fun(request, person, id)
-            return render(request, "error_access.html") 
+                return fun(request, **kwargs)
+        return render(request, "error_access.html") 
     return wrapper
 
 
@@ -51,8 +55,6 @@ def infoEmployeesShot(request, id):           #"departments/employees/<int:id>"
     
 @isAccess
 def infoPersons(request, person, id):          #"personal/<str:person>/<int:id>"
-    print("*"*88)
-    print(Persons().getSession(request))
     """Страница с информацией (полной) о работниках и студентах"""
     return  personalInformation(request, person, id, True, ["/work/{}/{}".format(person, id), "Приступить к работе"]) #TODO
 
@@ -108,16 +110,28 @@ def registration(request):                          #"registration/"
         return res  
     return render(request, "registration.html", {"login": bool(Persons().getSession(request))})
 
-def courses(request):                           #"courses/"
+def courses(request):                               #"courses/"
     """Страница курсов обучения (доступна для всех)"""    
     content = Courses().createStructure()      
     return render(request, "courses.html", {"data": content, "path": ""})
 
 @isAccess
-def work(request, person, id):
-    info = Persons().getWork(id, person)
+def work(request, person, id):                      #TODO           #"work/"
+    """Рабочая страница работников и студентов"""
+    info = Persons().getWork(id, person)   
+    info["today"] = date.today().strftime("%Y%m")
     return render(request, info["html"], info)
 
+@isAccess
+def calendar(request, person, id, dt):            #TODO           #"calendar/"
+    """Страница календаря"""                        
+    info = Calendar().getMonthData(dt)
+    if(info):    
+        info["events"] = Persons().getEvent(id, person, info["range"])
+    else:
+        return render(request, "error_access.html")  
+    info["back"] = "/work/{}/{}".format(person, id)
+    return render(request, "calendar.html", Calendar().getContent(info))
 
 @isAccessAdministrator
 def generate(request):                                  #"generate/"

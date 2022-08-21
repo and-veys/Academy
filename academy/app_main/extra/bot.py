@@ -46,7 +46,7 @@ class Bot():
             return "Здравствуйте,\n{}.\nПомощь по боту - команда /help.".format(row.getPerson().getFullName())
         return ""
         
-    def __registration(self, data):       
+    def __registration(self, data):       #/registration Andrey 123456
         if(len(data["args"]) != 2):
             return "Аргументы команды 'логин' и 'пароль' через пробел."
         login = self.__encodeInfo(*data["args"])

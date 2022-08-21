@@ -16,7 +16,13 @@ html {
 	--a-bg-color:			black;
 	--main-width:			46rem;
 	--holder-color:			rgb(150,150,150);
-	
+	--calendar-color:		black;
+	--calendar-hover:		lightgray;
+	--calendar-num:			lightgray;
+	--calendar-border:		blue;
+	--calendar-today:		red;
+	--calendar-weekend:		red;
+	--calendar-event:		lightgreen;
 }
 #main {
 	height:					100vh;
@@ -127,7 +133,7 @@ html {
 	color:					var(--holder-color);
 }
 
-.error_message {
+.error_message, .text_red {
 	color:					red;
 }
 
@@ -206,13 +212,98 @@ th, td {
 	font-size:				1.5rem;	
 }
 
-
-
-
 #file {
 	position:				fixed;
 	top:					-100rem;
 	opacity:				0; 
+}
+
+
+
+
+
+.calendar_head {
+	width:				100%;
+	display:			flex;
+	flex-direction:		row;
+	justify-content: 	space-between;
+    align-items: 		center;
+	font-size:			1.5rem;
+	padding:			0.5rem;
+	border:				none;
+	
+	
+}
+.arrow {	
+	width:				1rem;
+	height:				2rem;
+	overflow:			hidden;
+}
+
+.arrow_left, .arrow_right  {
+	width:				2rem;
+	height:				2rem;
+	background-color:	var(--calendar-color);
+}
+.arrow_left  {
+	transform-origin:	left top;
+	transform: 			translateY(50%) rotate(-45deg);	
+}
+.arrow_right {
+	transform-origin:	right top;
+	transform: 			translate(-50%, 50%) rotate(45deg);	
+}
+.arrow_left:hover, .arrow_right:hover  {
+	background-color:	var(--calendar-hover);
+	cursor: 			pointer;
+}
+
+.calendar_num, .calendar_date {
+	width:				5rem;
+	font-weight:		bold;
+	font-size:			1.2rem;
+	padding:			0.5rem;
+	border:				0.1rem solid var(--calendar-border);
+	text-align:			center;
+}
+
+.calendar_num {
+	color:				var(--calendar-num);	
+}
+
+.calendar_date {	
+	color:				var(--calendar-color);	
+}
+.calendar_weekend {
+	color:				var(--calendar-weekend);
+}
+.calendar_today {
+	padding:			0.3rem;
+	border:				0.3rem solid var(--calendar-today);
+}
+
+
+.calendar_date:hover {
+	cursor: 			pointer;
+}
+
+
+.calendar_events {
+	background-color:	var(--calendar-event);
+}
+
+#calender_info {
+	width:				100%;
+	height:				4.6rem;
+	overflow-y:			auto;
+	text-align:			left;
+	font-size:			1rem;
+	font-weight:		normal;
+	color:				var(--calendar-color);
+}
+
+.between {
+	justify-content: 	space-between;
 }
 
 

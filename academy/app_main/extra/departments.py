@@ -1,5 +1,5 @@
 from ..models import Departments as dp, Employees as em, Status_Employees as st
-
+from django.db.models import Q
 
 class Departments():
     __inst = None 
@@ -13,7 +13,7 @@ class Departments():
         rows = dp.objects.all().order_by("status__sort_weight", "name")
         stat = st.objects.all().order_by("sort_weight")   
         for el in rows:
-            temp = em.objects.filter(department=el.id)
+            temp = em.objects.filter(Q(department=el.id) & Q(activ=True))
             pl = {}
             for q in stat:
                 pers = temp.filter(status=q.id)

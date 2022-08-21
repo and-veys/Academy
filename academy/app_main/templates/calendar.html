@@ -1,0 +1,71 @@
+{% extends "main.html" %}
+{% block caption %}
+	Календарь
+{% endblock caption %}
+{% block main %}
+	<div class="start_main between">
+		{% csrf_token %}
+			 
+		
+		<table class="calendar">
+			<tr id="property">				
+				<th colspan="5">
+					<div class="calendar_head">
+						<div class="arrow">
+							<div id="monLeft" class="arrow_left" onclick="click_arrow(event)"></div>
+						</div>
+						{{ month.1 }}
+						<div class="arrow">
+							<div id="monRight" class="arrow_right" onclick="click_arrow(event)"></div>
+						</div>	
+					</div>
+				</th>
+				<th colspan="3">
+					<div class="calendar_head" >
+						<div class="arrow">
+							<div id="yeaLeft" class="arrow_left" onclick="click_arrow(event)"></div>
+						</div>
+						{{ year }}
+						<div class="arrow">
+							<div id="yeaRight" class="arrow_right" onclick="click_arrow(event)"></div>
+						</div>	
+					</div>
+				</th>
+			</tr>
+			
+			
+			<tr>
+				{% for w in daysofweek %}
+					<td class='calendar_num'> {{w}}</td>
+				{% endfor %}
+			</tr>
+			{% for w in days%}
+				<tr>
+					<td class='calendar_num'>{{ w.0 }}</td>
+					{% for d in w.1%}
+						{% if d.0 == "0" %}
+							<td class="calendar_num"></td>
+						{% else %}
+							<td class="{{d.1}}" id='{{"day"|add:d.0}}' onclick="click_calendar(event)"> 
+								{{ d.0 }} 
+								<input type="hidden" id='{{"hday"|add:d.0}}' value="{{d.2}}">
+							</td>							
+						{% endif %}
+					{% endfor %}
+				</tr>				
+			{% endfor %}	
+			<tr>
+				<td colspan="8" class="calendar_num">
+					<div id="calender_info">
+						
+						Подробная информация, кликните на дате.
+					</div> 
+				</td>
+			</tr>
+		</table>
+		<a class="my_a small" href="{{back}}"> Назад </a>	
+	</div>
+{% endblock main %}
+
+
+

@@ -102,7 +102,8 @@ class Persons():
     def getWork(self, id, tp):
         return self.__getPerson(id, tp).getPersonalInfo()
 
-        
+    def getEvent(self, id, tp, rg):             #TODO
+        return {"1": ["One", "Two", "Three"], "13": ["Five"]}
         
         
         

@@ -17,7 +17,10 @@ from ..models import    Genders, \
                         Groups, \
                         Students, \
                         Employees, \
-                        Schedule
+                        Schedule, \
+                        NamesWeekDays, \
+                        NamesMonths, \
+                        WeekEnds
 
 
 class Generate():
@@ -146,7 +149,10 @@ class Generate():
             Groups,
             Students,
             Employees,
-            Schedule
+            Schedule, 
+            NamesWeekDays, 
+            NamesMonths, 
+            WeekEnds
         ]
 
     def generateStudents(self):

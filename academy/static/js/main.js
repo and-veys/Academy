@@ -1,3 +1,4 @@
+
 //-------------------------------------------------------------------------
 function click_image(input) {		//реакция на загрузку фотографии
 	data = get_click_image(input);
@@ -15,8 +16,6 @@ function click_image(input) {		//реакция на загрузку фотог
 		});
 	};	
 	fr.readAsArrayBuffer(input.files[0]);
-
-
 }
 function get_click_image(input) {
 	tp = input.files[0].type;
@@ -118,6 +117,54 @@ function click_registration(event) {	//реакция на регистраци�
 		response_go(temp);		
 	}); 			
 }
+//---------------------------------------------------
+function click_arrow(event) {
+	path = document.location.pathname.split("/");
+	el = path[path.length - 1];
+	y = Number(el.substring(0, 4));
+	m = Number(el.substring(4));
+	switch(event.target.id) {
+		case "yeaLeft":
+			--y;
+		break;
+		case "yeaRight":
+			++y;
+		break;
+		case "monLeft":
+			--m;
+			if(m == 0){
+				--y;
+				m = 12;
+			}				
+		break;
+		case "monRight":
+			++m;
+			if(m == 13) {
+				++y;
+				m = 1;
+			}
+	}
+	m = String(m);
+	if(m.length == 1)
+		m = "0" + m;
+	path[path.length - 1] = String(y) + m;
+	document.location.href = path.join("/");
+}
+
+function click_calendar(event) {
+	info = JSON.parse(document.getElementById("h" + event.target.id).value);
+
+	str = info["day"];
+	if(info["weekend"] != "")
+		str = "<span class='text_red'>" + str + ". " + info["weekend"] + "</span>";
+	for(el of info["events"])
+		str += ("<br />" + el);
+		
+	
+	document.getElementById("calender_info").innerHTML = str;
+	
+	console.log(info);
+}	
 
 
 //---------------------------------------------------
