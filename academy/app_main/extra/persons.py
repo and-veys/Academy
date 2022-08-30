@@ -1,6 +1,7 @@
-from ..models import Employees, Students
+from ..models import Employees, Students, Schedule
 from .extra import Extra
 from django.conf import settings
+from django.db.models import Q
 
 class Persons():
     __inst = None 
@@ -11,19 +12,18 @@ class Persons():
         return cls.__inst 
     def __init(self):
         self.__person = {"employees": Employees, "students": Students}
+        self.__event = {
+            "my_employees":None,
+            "my_students":None
+            }
         
     def createStructure(self, id, tp): 
-        try:
-            row = self.__getPerson(id, tp)
-        except:
-            return {"OK": False} 
-        return row.getPersonalInfo()      
+        if(type(id) == type(1)):
+            id = self.getPersonFromId(id, tp)        
+        return id.getPersonalInfo()      
     
     def loadPhoto(self, data, id, tp):
-        try:
-            row = self.__getPerson(id, tp)
-        except:
-            return "\nОшибка чтения записи на сервере."
+        row = id
         path = "{}/persons/{}.{}".format(settings.MEDIA_ROOT, row.login, data["type"])
         try:
             file = open(path, "wb")
@@ -37,15 +37,12 @@ class Persons():
             row.save()
         except:
             return "\nОшибка записи базы данных на сервере."
-        return "/personal/{}/{}".format(tp, id)
+        return "/personal/{}/{}".format(tp, id.id)
             
-    def loadInfo(self, data, id, tp):
-        try:
-            row = self.__getPerson(id, tp)
-        except:
-            return "\nОшибка чтения записи на сервере."        
+    def loadInfo(self, data, id, tp): 
+        row = id
         if("login" in data):            #TODO
-            if(self.isAdministrator(data["login"]) or self.getPerson(data["login"])):
+            if(self.isAdministrator(data["login"]) or self.getPersonFromLogin(data["login"])):
                 return "\nСовпадение логина и пароля в базе данных."            
             row.login = data["login"]        
         if("phone" in data):
@@ -56,14 +53,9 @@ class Persons():
             row.save()
         except:
             return "\nОшибка записи базы данных на сервере."
-        return "/personal/{}/{}".format(tp, id)
+        return "/personal/{}/{}".format(tp, id.id)  
     
-    def __getPerson(self, id, tp):
-        return self.__person[tp].objects.get(id=id)
-    
-    def getPerson(self, login, tp=None):
-        if(tp != None):
-            return self.__getPerson(login, tp)    
+    def getPersonFromLogin(self, login):
         for k, cl in self.__person.items():       
             try:
                 row = cl.objects.get(login=login)
@@ -71,9 +63,20 @@ class Persons():
             except:
                 pass
         return {}    
-        
+    
+    
+    def getPersonFromId(self, id, tp):
+        try:
+            return self.__person[tp].objects.get(id=id)
+        except:
+            pass
+        return {}
+       
     def getRegistration(self, data):        
-        row = self.getPerson(data["login"])
+        row = self.getPersonFromLogin(data["login"])
+        print("+"*88)
+        print(data["login"])
+        print(row)
         if(row):
             return {
                 "login": data["login"], 
@@ -102,9 +105,22 @@ class Persons():
             return {}
             
     def getWork(self, id, tp):
-        return self.__getPerson(id, tp).getPersonalInfo()
+        return id.getPersonalInfo()
 
-    def getEvent(self, id, tp, rg):             #TODO
+    def getEvent(self, id, tp, rg, ev):             #TODO
+        dtMin, dtMax = rg   
+        print("*"*88)
+        a = 1
+        print(type("")==type(a))
+        
+        
+        #rows = WeekEnds.objects.filter(~Q(delay=None) & Q(delay__gte=dtMin) & Q(delay__lte=dtMax))
+        
+    
+    
+    
+    
+    
         return {"1": ["One", "Two", "Three"], "13": ["Five"]}
         
         

@@ -28,7 +28,9 @@
 				</b><br/><br/>	
 				{{lastname}}<br/>
 				{{firstname}}<br/>
-				{{patronymic}}<br/>
+				{% if patronymic %}
+					{{patronymic}}<br/>
+				{% endif %}
 					
 			</div>
 		</div>

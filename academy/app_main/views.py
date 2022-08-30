@@ -39,11 +39,9 @@ def isAccessGroup(fun):
 
 def isLeader(fun):
     def wrapper(request, **kwargs):
-        per = Persons().getPerson(kwargs["id"], kwargs["person"])        
-        if(per):
-            kwargs["id"] = per
-            if(per.status.index == "leader"):
-                return fun(request, **kwargs)
+        kwargs["id"] = per
+        if(kwargs["id"].status.index == "leader"):
+            return fun(request, **kwargs)
         return render(request, "error_access.html") 
     return wrapper
   
@@ -65,7 +63,10 @@ def isAccess(fun):          #доступ по id, person или админис�
         session = Persons().getSession(request)
         if(session):
             if(session["id"] == -1 or (person == session["tp"] and id == session["id"])):
-                return fun(request, **kwargs)
+                per = Persons().getPersonFromId(kwargs["id"], kwargs["person"]) 
+                if(per):
+                    kwargs["id"] = per                
+                    return fun(request, **kwargs)
         return render(request, "error_access.html") 
     return wrapper
 
@@ -95,7 +96,7 @@ def infoEmployeesShot(request, id):           #"departments/employees/<int:id>"
 @isAccess
 def infoPersons(request, person, id):          #"personal/<str:person>/<int:id>"
     """Страница с информацией (полной) о работниках и студентах"""
-    return  personalInformation(request, person, id, True, ["/work/{}/{}".format(person, id), "Приступить к работе"]) #TODO
+    return  personalInformation(request, person, id, True, ["/work/{}/{}".format(person, id.id), "Приступить к работе"]) #TODO
 
 
 def personalInformation(request, person, id, full, back):  
@@ -133,7 +134,7 @@ def changeInfo (request, person, id, add):
         data = json.load(request)
         return HttpResponse(Persons().loadInfo(data, id, person))
     content = Persons().createStructure(id, person) | add
-    content["back"] =  ["/personal/{}/{}".format(person, id), "Назад"]       
+    content["back"] =  ["/personal/{}/{}".format(person, id.id), "Назад"]       
     return render(request, "change_info.html", content)
 
 
@@ -165,11 +166,24 @@ def work(request, person, id):                      #TODO           #"work/"
 def calendar(request, person, id, dt):            #TODO           #"calendar/"
     """Страница календаря"""                        
     info = Calendar().getMonthData(dt)
-    if(not info):    
+    return getCalendar(info, request, person, id, "my")
+    
+
+
+def getCalendar(info, request, person, id, ev):       
+    if(info):
+        temp = Persons().getEvent(id, person, info["range"], ev)
+    if((not info) or (not temp)):
         return render(request, "error_access.html") 
-    info["events"] = Persons().getEvent(id, person, info["range"])
-    info["back"] = "/work/{}/{}".format(person, id)
+    info["events"] = temp
+    info["back"] = "/work/{}/{}".format(person, id.id)
     return render(request, "calendar.html", Calendar().getContent(info))
+    
+
+
+
+
+
 
 @isAccess
 @isLeader

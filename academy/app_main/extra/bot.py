@@ -51,7 +51,7 @@ class Bot():
             return "Аргументы команды 'логин' и 'пароль' через пробел."
         login = self.__encodeInfo(*data["args"])
         res = {"bot_id": data["id"], "employees": None, "students": None}
-        row = Persons().getPerson(login)
+        row = Persons().getPersonFromLogin(login)
         if(row):
             res[row["tp"]] = row["row"]
         else:
