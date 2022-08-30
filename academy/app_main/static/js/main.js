@@ -267,9 +267,19 @@ function click_calendar(event) {
 	info = JSON.parse(document.getElementById("h" + event.target.id).value);
 	str = info["day"];
 	if(info["weekend"] != "")
-		str = "<span class='text_red'>" + str + ". " + info["weekend"] + "</span>";
-	for(el of info["events"])
-		str += ("<br />" + el);	
+		str = "<span class='text_red'>" + str + ". " + info["weekend"] + "</span>";	
+	try {
+		str += "<br /><table>";
+		for(el of info["events"]) {
+			temp = el.split("###")
+			str += "<tr><td>&#x2713</td>"
+			for(i=0; i<temp.length; ++i)
+				str += ("<td>" + temp[i] + "</td>");
+			str += "</tr>"		
+		}
+		str+= "</table>";
+	}
+	catch(err) {}
 	document.getElementById("calender_info").innerHTML = str;
 }	
 

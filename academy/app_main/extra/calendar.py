@@ -34,7 +34,7 @@ class Calendar():
         }
         return res
         
-    def getContent(self, dt):                    
+    def getContent(self, dt):  
         arr = []
         for row in dt["days"]:
             r = []
@@ -47,8 +47,7 @@ class Calendar():
                         "day": "{}, {}".format(
                                     Extra().getStringData(date(dt["year"], dt["month"], el)),
                                     dt["daysofweek"][len(r)][0]),
-                        "weekend": "",
-                        "events": []}                    
+                        "weekend": ""}                    
                     cl = ["calendar_date"]
                     if(ind in dt["weekends"]):
                         cl.append("calendar_weekend")
@@ -58,7 +57,7 @@ class Calendar():
                         temp["day"] = "Сегодня " + temp["day"]; 
                     if(ind in dt["events"]):
                         cl.append("calendar_events") 
-                        temp["events"] = dt["events"][ind]           #TODO                     
+                        temp["events"] = dt["events"][ind]           #TODO   
                     temp = json.dumps(temp)  
                     cl = " ".join(cl)
                 r.append([str(el), cl, temp])

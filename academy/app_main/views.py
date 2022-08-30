@@ -11,7 +11,12 @@ from .extra.bot import Bot
 import json
 from datetime import date
 
-
+def isAccessDIR(fun):
+    def wrapper(request, **kwargs):
+        if(kwargs["id"].department.status.index == "DIR"):            #TODO     
+            return fun(request, **kwargs)
+        return render(request, "error_access.html") 
+    return wrapper
 
 def isAccessSchedule(fun):
     def wrapper(request, **kwargs):
@@ -22,7 +27,6 @@ def isAccessSchedule(fun):
                 return fun(request, **kwargs)
         return render(request, "error_access.html") 
     return wrapper
-
 
 
 def isAccessGroup(fun):
@@ -38,9 +42,8 @@ def isAccessGroup(fun):
     return wrapper
 
 def isLeader(fun):
-    def wrapper(request, **kwargs):
-        kwargs["id"] = per
-        if(kwargs["id"].status.index == "leader"):
+    def wrapper(request, **kwargs):        
+        if(kwargs["person"]=="employees" and kwargs["id"].status.index == "leader"):
             return fun(request, **kwargs)
         return render(request, "error_access.html") 
     return wrapper
@@ -69,8 +72,6 @@ def isAccess(fun):          #доступ по id, person или админис�
                     return fun(request, **kwargs)
         return render(request, "error_access.html") 
     return wrapper
-
-
 
 
 def bot(request):                                   #"bot/"
@@ -164,18 +165,27 @@ def work(request, person, id):                      #TODO           #"work/"
 
 @isAccess
 def calendar(request, person, id, dt):            #TODO           #"calendar/"
-    """Страница календаря"""                        
+    """Страница личного календаря"""                      
+    return getCalendar(request, person, id, dt, "my")
+
+@isAccess
+@isLeader
+def calendar_department(request, person, id, dt):            #TODO           #"calendar_department/"
+    """Страница календаря отдела"""                      
+    return getCalendar(request, person, id, dt, "dep")   
+
+
+@isAccess
+@isAccessDIR
+def calendar_all(request, person, id, dt):            #TODO           #"calendar_all/"
+    """Страница календаря всех"""                      
+    return getCalendar(request, person, id, dt, "all")   
+
+def getCalendar(request, person, id, dt, ev):     
     info = Calendar().getMonthData(dt)
-    return getCalendar(info, request, person, id, "my")
-    
-
-
-def getCalendar(info, request, person, id, ev):       
-    if(info):
-        temp = Persons().getEvent(id, person, info["range"], ev)
-    if((not info) or (not temp)):
+    if(not info):
         return render(request, "error_access.html") 
-    info["events"] = temp
+    info["events"] = Persons().getEvent(id, person, info["range"], ev)
     info["back"] = "/work/{}/{}".format(person, id.id)
     return render(request, "calendar.html", Calendar().getContent(info))
     

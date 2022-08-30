@@ -14,6 +14,8 @@ urlpatterns = [
     path("work/<str:person>/<int:id>", views.work),
     path("groups/<str:person>/<int:id>", views.groups),
     path("calendar/<str:person>/<int:id>/<int:dt>", views.calendar),
+    path("calendar_department/<str:person>/<int:id>/<int:dt>", views.calendar_department),
+    path("calendar_all/<str:person>/<int:id>/<int:dt>", views.calendar_all),
     
     path("set_schedule/<str:person>/<int:id>/<int:grp>/<int:sbj>", views.set_schedule),
     path("get_schedule/<str:person>/<int:id>/<int:grp>/<int:sbj>", views.get_schedule),

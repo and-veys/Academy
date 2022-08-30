@@ -1,6 +1,6 @@
 from django.db import models
 from .extra.extra import Extra
-from datetime import timedelta
+from datetime import timedelta, date
 
 class Genders(models.Model):
     """Таблица полов"""
@@ -187,6 +187,14 @@ class Person(models.Model):
             "fio": self.getShotName(),
             "OK": self.activ
         }
+    def getStringActiv(self):            
+        act = ""
+        if(not self.activ):
+            if(self.gender.index == "F"):
+                act += " - не доступна"
+            else:
+                act += " - не доступен"
+        return act
       
 class Students(Person):
     """Таблица студентов"""
@@ -198,8 +206,7 @@ class Students(Person):
         indexes = [models.Index(fields=['login'])]
         db_table = "amv_students"
     def __str__(self):
-        act = ("" if self.activ else " - не доступен")
-        return "{} (группа {}){}".format(self.getShotName(), str(self.group), act)
+        return "{} (группа {}){}".format(self.getShotName(), str(self.group),  self.getStringActiv())
     
     def getPersonalInfo(self):
         res = self.getInfo()
@@ -231,9 +238,13 @@ class Employees(Person):
             return ("Сотрудники" if pl else "Сотрудник")
         return (al.pl_name if pl else al.name)
     
-    def __str__(self):
-        act = ("" if self.activ else " - не доступен")
-        return "{} ({}) - {}: {}{}".format(self.getShotName(), str(self.department), str(self.status), self.getStatusAlias(), act)
+    def __str__(self):           
+        return "{} ({}) - {}: {}{}".format(
+            self.getShotName(), 
+            str(self.department), 
+            str(self.status), 
+            self.getStatusAlias(), 
+            self.getStringActiv())
         
     def getPersonalInfo(self):
         res = self.getInfo()
@@ -289,11 +300,29 @@ class Schedule(models.Model):
         self.lesson_time = LessonTimes.objects.get(id=dt[1])
         self.save()
         
+    def getStringInfo(self):        
+        temp = [
+                Extra().getStringTimeShort(self.lesson_time.time), 
+                '"{}"'.format(self.subject.name),
+                self.getActivProfessor()]
+        return "###".join(temp)
         
+    def __str__(self):
+        return "{} {} {} {} {}".format(
+                Extra().getStringData(self.lesson_date),
+                Extra().getStringTimeShort(self.lesson_time.time),
+                self.group.name,
+                self.subject.name,
+                self.professor.getShotName())
         
-        
-        
-        
+    def getActivProfessor(self):
+        pr = self.isActivProfessor()
+        return (pr.getShotName() if pr else "" )
+    
+    def isActivProfessor(self):      #TODO протестить не активного профессора
+        if(self.professor != None and self.professor.activ == False and self.lesson_date >= date.today()):
+            return None;
+        return self.professor   
         
         
         

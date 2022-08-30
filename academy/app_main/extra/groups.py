@@ -39,14 +39,8 @@ class Groups():
             temp = sch.filter(subject=el.subject)             
             res[str(el.subject.id)] = [
                     el.subject.name, 
-                    list(map(lambda s: {"date": s.lesson_date, "professor": self.__isActivProfessor(s)}, temp))]
-        return res   
-    
-    def __isActivProfessor(self, sch):      #TODO протестить не активного профессора
-        if(sch.professor != None and sch.professor.activ == False and sch.lesson_date >= date.today()):
-            return None;
-        return sch.professor
-            
+                    list(map(lambda s: {"date": s.lesson_date, "professor": s.isActivProfessor()}, temp))]
+        return res            
     
     def createSchedule(self, g, s):
         emp = Employees.objects.filter(department=s.department, activ=True)    
@@ -92,16 +86,15 @@ class Groups():
         res = {}
         an = ""
         for el in rows:
-            pr = self.__isActivProfessor(el)
             but = "was"
             if(date.today() <= el.lesson_date):
-                but = ("" if pr else "bg_red")
+                but = ("" if el.isActivProfessor() else "bg_red")
                 if(an == ""):
                     an = str(el.id)               
             temp = [but, [
                 Extra().getStringData(el.lesson_date),
                 Extra().getStringTimeShort(el.lesson_time.time),
-                (pr.getShotName() if pr else "Не назначено")]]
+                el.getActivProfessor()]]
             res[str(el.id)] = temp
         return {
                 "group_subject": '{}, "{}"'.format(grp.name, sbj.name),
@@ -110,7 +103,7 @@ class Groups():
                 "anchor": str(an)}
     
     def createLesson(self, sch):
-        pr = self.__isActivProfessor(sch)
+        pr = sch.isActivProfessor()
         res = self.createSchedule(sch.group, sch.subject)
         res["group_subject"] = '{}, "{}"'.format(res["group"], res["subject"])
         res["currentdate"] =  Extra().getStringData(sch.lesson_date)

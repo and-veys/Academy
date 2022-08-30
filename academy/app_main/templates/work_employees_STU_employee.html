@@ -1,2 +1,4 @@
 {% extends "work.html" %}
-
+{% block work %}
+	<a class="my_a" href='{{"/calendar/"|add:persons|add:"/"|add:id|add:"/"|add:today}}'> Моё расписание</a>
+{% endblock work %}

@@ -2,6 +2,7 @@ from ..models import Employees, Students, Schedule
 from .extra import Extra
 from django.conf import settings
 from django.db.models import Q
+from datetime import timedelta
 
 class Persons():
     __inst = None 
@@ -12,10 +13,6 @@ class Persons():
         return cls.__inst 
     def __init(self):
         self.__person = {"employees": Employees, "students": Students}
-        self.__event = {
-            "my_employees":None,
-            "my_students":None
-            }
         
     def createStructure(self, id, tp): 
         if(type(id) == type(1)):
@@ -74,9 +71,6 @@ class Persons():
        
     def getRegistration(self, data):        
         row = self.getPersonFromLogin(data["login"])
-        print("+"*88)
-        print(data["login"])
-        print(row)
         if(row):
             return {
                 "login": data["login"], 
@@ -107,22 +101,32 @@ class Persons():
     def getWork(self, id, tp):
         return id.getPersonalInfo()
 
-    def getEvent(self, id, tp, rg, ev):             #TODO
-        dtMin, dtMax = rg   
-        print("*"*88)
-        a = 1
-        print(type("")==type(a))
+    def getEvent(self, id, tp, rg, ev):             #TODO Test         
+        dtMin, dtMax = rg
+        temp = "{}_{}".format(ev, tp)        
+        if(temp == "my_employees"):
+            rows = Schedule.objects.filter(Q(lesson_date__gte=dtMin) & Q(lesson_date__lte=dtMax) & Q(professor__id=id.id))
+        elif(temp=="my_students"):
+            rows = Schedule.objects.filter(Q(lesson_date__gte=dtMin) & Q(lesson_date__lte=dtMax) & Q(group__id=id.group.id))
+        elif(temp=="dep_employees"): 
+            rows = Schedule.objects.filter(Q(lesson_date__gte=dtMin) & Q(lesson_date__lte=dtMax) & Q(subject__department=id.department)).order_by('lesson_date')
+        elif(temp=="all_employees"):
+            rows = Schedule.objects.filter(Q(lesson_date__gte=dtMin) & Q(lesson_date__lte=dtMax))
+        else:
+            return {} 
+        dt = timedelta(days=1)
+        res = {}
+        while(dtMin <= dtMax):
+            q = rows.filter(lesson_date=dtMin).order_by('lesson_time')
+            if(len(q)):                
+                temp = []
+                for el in q:
+                    temp.append(el.getStringInfo())
+                res[str(dtMin.day)] = temp
+            dtMin += dt
+        return res  
         
-        
-        #rows = WeekEnds.objects.filter(~Q(delay=None) & Q(delay__gte=dtMin) & Q(delay__lte=dtMax))
-        
-    
-    
-    
-    
-    
-        return {"1": ["One", "Two", "Three"], "13": ["Five"]}
-        
+
         
         
         
