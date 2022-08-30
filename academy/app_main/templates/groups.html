@@ -1,0 +1,37 @@
+{% extends "main.html" %}
+{% load static %}
+{% block caption %}
+	Группы и предметы
+{% endblock caption %}
+{% block main %}
+	<div class="start_main">
+		{% csrf_token %}
+		<div class="list">			
+			{% for key, el in data.items %}
+				<ul>
+					<li><i> Группа "{{el.0}}", курс "{{ el.1}}"</i></li>
+					<ul class="list_name">
+						{% for k, e in el.2.items %}
+							<li>
+								{% if e.1%}										
+									<a class="li_name text_red" href='{{"/set_schedule/"|add:person|add:"/"|add:key|add:"/"|add:k}}'>
+										{{e.0}} (нет расписания)
+									</a>
+								{% elif e.2 %}
+									<a class="li_name text_red" href='{{"/get_schedule/"|add:person|add:"/"|add:key|add:"/"|add:k}}'>
+									{{e.0}}	(нет преподавателя)									
+									</a>							
+								{% else %}									
+									<a class="li_name" href='{{"/get_schedule/"|add:person|add:"/"|add:key|add:"/"|add:k}}'>
+									{{e.0}}										
+									</a>
+								{% endif %}
+							</li>
+ 						{% endfor %}
+					</ul>
+				</ul>			
+			{% endfor%}
+		</div>		
+		<a class="my_a" href='{{"/work/"|add:person}}'> Назад </a>
+	</div>
+{% endblock main %}

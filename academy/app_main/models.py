@@ -1,5 +1,6 @@
 from django.db import models
 from .extra.extra import Extra
+from datetime import timedelta
 
 class Genders(models.Model):
     """Таблица полов"""
@@ -143,6 +144,11 @@ class Groups(models.Model):
         for el in rows:
             for ls in range(el.subject.amount_lessons):
                 Schedule.objects.create(group=self, subject=el.subject)  
+    def endStudy(self):        
+        return self.started + timedelta(self.course.amount_months*30)
+        
+
+        
  
 class Person(models.Model):
     """Общий класс-родитель для Студентов и Преподавателей"""
@@ -192,7 +198,7 @@ class Students(Person):
         indexes = [models.Index(fields=['login'])]
         db_table = "amv_students"
     def __str__(self):
-        act = ("" if self.activ else " - не числится")
+        act = ("" if self.activ else " - не доступен")
         return "{} (группа {}){}".format(self.getShotName(), str(self.group), act)
     
     def getPersonalInfo(self):
@@ -226,7 +232,7 @@ class Employees(Person):
         return (al.pl_name if pl else al.name)
     
     def __str__(self):
-        act = ("" if self.activ else " - уволен")
+        act = ("" if self.activ else " - не доступен")
         return "{} ({}) - {}: {}{}".format(self.getShotName(), str(self.department), str(self.status), self.getStatusAlias(), act)
         
     def getPersonalInfo(self):
@@ -252,19 +258,36 @@ class SunBot(models.Model):
     def getPerson(self):
         return (self.employees if self.students == None else self.students)        #TODO test bot as student
 
+
+class LessonTimes(models.Model):  
+    time = models.TimeField("Время урока", unique=True)
+    class Meta:
+        ordering = ['time']  
+        verbose_name = "Время начала урока"                     
+        verbose_name_plural = "Время начала уроков" 
+        db_table = "amv_times_lesson"
+    def __str__(self):
+        return "{}: {}".format(str(self.id), str(self.time))
+
 class Schedule(models.Model):
     """Расписание предметов"""
-    lesson_date = models.DateTimeField('Дата и время занятия', null=True)
+    lesson_date = models.DateField('Дата занятия', null=True)
+    lesson_time = models.ForeignKey(LessonTimes, on_delete=models.CASCADE, verbose_name="Время урока", null=True)
     group = models.ForeignKey(Groups, on_delete=models.CASCADE, verbose_name="Группа")
     subject = models.ForeignKey(Subjects, on_delete=models.CASCADE, verbose_name="Предмет")
     professor = models.ForeignKey(Employees, null=True, on_delete=models.SET_NULL, verbose_name="Преподаватель")
     class Meta: 
-        ordering = ['lesson_date']  
+        ordering = ['lesson_date', 'lesson_time']  
         verbose_name = "Расписание"                     
         verbose_name_plural = "Расписания"
         indexes = [models.Index(fields=['lesson_date'])]
         db_table = "amv_schedule"      
-        
+    
+    def setLesson(self, dt, pr):
+        self.lesson_date = dt[0]
+        self.professor = pr
+        self.lesson_time = LessonTimes.objects.get(id=dt[1])
+        self.save()
         
         
         
@@ -332,4 +355,5 @@ class WeekEnds(models.Model):
     def getNameDay(self):
         return ("{}, перенос с {}".format(self.name, Extra().getStringData(self.delay)) if self.delay else self.name)
         
+
     

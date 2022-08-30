@@ -66,9 +66,7 @@ class Calendar():
                 
    
             
-            
-        
-        print(arr[0][2], "\n", arr[2][0])
+
         
         #TODO make days-line
         return {

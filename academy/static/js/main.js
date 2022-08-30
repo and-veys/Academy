@@ -69,6 +69,85 @@ function get_click_change_info() {
 	return {"error": "Ошибка валидации введенного текста."}
 
 }
+//-------------------------------------------------------------------------	
+function click_schedule() {		//реакция на установку расписания
+	data = get_click_schedule();
+	if(isErrorData(data))
+		return;
+	click_disabled();
+	fetch("", createPOST(data))
+	.then(response => response.text())		
+	.then(temp => {
+		click_enabled();
+		response_go(temp);
+		});
+}
+function get_click_schedule() {
+	dt = getDate(document.getElementById("reg_date").value);
+	bg = getDate(document.getElementById("begin").innerHTML);
+	ed = getDate(document.getElementById("end").innerHTML);
+	if(!dt)
+		return {"error": "Ошибка ввода данных. Формат даты: ДД.ММ.ГГГГ"};
+	if(dt < bg || dt > ed)
+		return {"error": "Ошибка ввода данных. Дата первого занятия вне срока обучения"};
+	sel = document.getElementsByTagName("select")
+	temp = {"times": [], "professor": []};
+	for(i=0; i<sel.length; ++i)
+		temp[sel[i].id].push(sel[i].value);
+	if(temp["professor"]=="")
+		return {"error": "Ошибка ввода данных. Не выбран преподаватель"};
+	prof = Number(temp["professor"][0].split("_")[1]);	
+	tm = new Array(temp["times"].length)
+	am = 0;
+	for(i=0; i<tm.length; ++i) {
+		a = temp["times"][i].split("_");
+		tm[Number(a[1])-1] = Number(a[2]);
+		am += Number(a[2]);
+	}
+	if(am==0)
+		return {"error": "Ошибка ввода данных. Не выбрано время занятий"};
+
+	
+	if(getLesson(dt, tm) == 0)
+		return {"error": "Ошибка ввода данных. Не выбрано время первого занятия"};
+	am = Number(document.getElementById("amount").innerHTML);	
+	les = [];
+	while(les.length != am) {
+		d = getLesson(dt, tm);
+		if(d != 0) 
+			les.push([[dt.getFullYear(), dt.getMonth()+1, dt.getDate()].join("-"), d]);
+		dt = new Date(dt.getFullYear(), dt.getMonth(), dt.getDate()+1);
+	}
+	if((new Date(les[les.length - 1][0])) > ed)
+		return {"error": "Ошибка ввода данных. Дата последнего занятия вне срока обучения"};	
+	return {
+		"professor": prof,
+		"lessons": les,
+	};
+}
+function getLesson(dt, tm) {
+	d = dt.getDay();
+	if(d == 0) d = 7;
+	return tm[d-1];	
+}
+
+function getDate(str) {
+	var dt = str.split(".")
+	if(dt.length != 3)
+		return null;
+	for(i=0; i<3; ++i) {
+		dt[i] = Number(dt[i]);
+		if(dt[i]==NaN)
+			return null;		
+	}
+	temp = new Date(dt[2], dt[1]-1, dt[0])
+	if(temp.getFullYear() != dt[2] || temp.getMonth()+1 != dt[1] || temp.getDate() != dt[0])
+		return null;
+	return temp;
+}
+
+
+//-------------------------------------------------------------------------	
 function isNavigationKey(k) {
 	return (k == 8 || k == 46 || k == 37 || k == 39) 
 }
@@ -81,6 +160,7 @@ function validation(id, str){
 		"reg_password": "[A-Za-z0-9]",
 		"reg_password_2": "[A-Za-z0-9]",
 		"reg_phone": "[0-9\-\+]",
+		"reg_date": "[0-9.]"
 	}
 	mask = mask[id];
 	if(mask) {
@@ -117,6 +197,7 @@ function click_registration(event) {	//реакция на регистраци�
 		response_go(temp);		
 	}); 			
 }
+
 //---------------------------------------------------
 function click_arrow(event) {
 	path = document.location.pathname.split("/");
@@ -153,17 +234,12 @@ function click_arrow(event) {
 
 function click_calendar(event) {
 	info = JSON.parse(document.getElementById("h" + event.target.id).value);
-
 	str = info["day"];
 	if(info["weekend"] != "")
 		str = "<span class='text_red'>" + str + ". " + info["weekend"] + "</span>";
 	for(el of info["events"])
-		str += ("<br />" + el);
-		
-	
+		str += ("<br />" + el);	
 	document.getElementById("calender_info").innerHTML = str;
-	
-	console.log(info);
 }	
 
 

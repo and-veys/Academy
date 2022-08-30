@@ -95,7 +95,7 @@ html {
 
 
 
-.my_a, .my_input {
+.my_a, .my_input, .my_div {
 	width:					90%;
 	height:					4rem;
 	border-radius:			2rem;
@@ -113,7 +113,7 @@ html {
 .my_input:hover {
 	cursor: 				pointer;
 }
-.my_a {
+.my_a, .my_div {
 	background-color:		var(--elem-color);	
 	color:					var(--input-bg-color);
 	border:					0;
@@ -131,10 +131,6 @@ html {
 }
 .my_input::-webkit-input-placeholder {
 	color:					var(--holder-color);
-}
-
-.error_message, .text_red {
-	color:					red;
 }
 
 .list {
@@ -168,7 +164,6 @@ li {
 	cursor: 				pointer;
 }
 
-
 th, td {
 	padding:				0.2rem;
 }
@@ -182,6 +177,13 @@ th, td {
 	justify-content: 	space-evenly;
 	
 }
+
+.info_div {
+	width:				90%;
+	font-size:			1.5rem;
+    align-items: 		left;
+}
+
 
 .three_in_row {
 	width:				30%;
@@ -212,6 +214,21 @@ th, td {
 	font-size:				1.5rem;	
 }
 
+.verysmall {
+	height:					3rem;
+	font-size:				1rem;	
+}
+
+.circle {
+	height:					2.4rem;
+	width:					2.4rem;
+	border-radius:			50%;
+	background-color:		var(--elem-color);	
+	color:					var(--input-bg-color);				
+	font-size:				1.5rem;
+	font-weight:			bold;
+	padding:				0;
+}
 #file {
 	position:				fixed;
 	top:					-100rem;
@@ -258,7 +275,7 @@ th, td {
 	cursor: 			pointer;
 }
 
-.calendar_num, .calendar_date {
+.calendar_num, .calendar_date, .calendar_days {
 	width:				5rem;
 	font-weight:		bold;
 	font-size:			1.2rem;
@@ -271,9 +288,11 @@ th, td {
 	color:				var(--calendar-num);	
 }
 
-.calendar_date {	
+.calendar_date, .calendar_days {	
 	color:				var(--calendar-color);	
 }
+
+
 .calendar_weekend {
 	color:				var(--calendar-weekend);
 }
@@ -286,6 +305,7 @@ th, td {
 .calendar_date:hover {
 	cursor: 			pointer;
 }
+
 
 
 .calendar_events {
@@ -306,15 +326,16 @@ th, td {
 	justify-content: 	space-between;
 }
 
-
-/* 
-
-.between {
-	justify-content: 		space-between;
+.error_message, .text_red {
+	color:					red;
 }
-.circle {
-	width:					4rem
+
+.bg_red {
+	background-color:		red;
 }
+
+
+
 select {
 	-moz-appearance: 		none;
 	-webkit-appearance: 	none;	
@@ -323,5 +344,15 @@ select {
 select:invalid {
 	color:					var(--holder-color);
 }
- */
+
+.bold {
+	font-weight:			bold;
+}
+.normal {
+	font-weight:			normal;
+}
+.center {
+	display:				flex;
+	justify-content: 		center
+}
 

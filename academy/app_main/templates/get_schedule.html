@@ -1,0 +1,42 @@
+{% extends "main.html" %}
+{% load static %}
+{% block caption %}
+	{{group_subject}}
+{% endblock caption %}
+{% block main %}
+	<div class="start_main">
+		{% csrf_token %}	
+		<div class="list center">
+			<table>
+				<tr>
+					{% for el in caption%}
+						<td class="calendar_days">{{el}}</td>
+					{%endfor%}	
+					<td></td>
+				</tr>
+				{%for k, el in lessons.items %}
+					<tr id={{k}}>				
+						<td class="calendar_days normal">{{ forloop.counter}}</td>
+						{%for i in el.1 %}	
+							<td class="calendar_days normal"><nobr>{{i}}</nobr></td>
+						{%endfor%}
+						<td>
+							{% if el.0 == "was" %}						
+								<div class="my_div circle">&#x2713 </div>
+							{% else %}
+								<a class='{{"my_a circle "|add:el.0}}' 
+										href='{{"/edit_schedule/"|add:person|add:edit|add:k}}'></a>								
+							{% endif %}
+						</td>							
+					</tr>
+				{% endfor %}				
+			</table>		
+		</div>		
+		
+		<div class="row_div">
+			<a href= '{{"#"|add:anchor}}' class="my_a small two_in_row">К ближайшему уроку</a>
+			<a class="my_a small two_in_row" href='{{"/groups/"|add:person}}'> Назад </a>
+		</div>
+	</div>	
+		
+{% endblock main %}

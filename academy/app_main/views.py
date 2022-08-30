@@ -6,12 +6,49 @@ from .extra.departments import Departments
 from .extra.courses import Courses
 from .extra.persons import Persons
 from .extra.calendar import Calendar
+from .extra.groups import Groups
 from .extra.bot import Bot
 import json
 from datetime import date
 
 
-def isAccessAdministrator(fun):
+
+def isAccessSchedule(fun):
+    def wrapper(request, **kwargs):
+        sch = Groups().getSchedule(kwargs["sch"])        
+        if(sch):       
+            if(sch.group.id == kwargs["grp"].id and sch.subject.id == kwargs["sbj"].id):
+                kwargs["sch"] = sch
+                return fun(request, **kwargs)
+        return render(request, "error_access.html") 
+    return wrapper
+
+
+
+def isAccessGroup(fun):
+    def wrapper(request, **kwargs):
+        data = Groups().getGroup(kwargs["grp"], kwargs["sbj"])          
+        per = kwargs["id"]
+        if(data):       
+            if(per.department == data["group"].course.department):
+                kwargs["grp"]=data["group"]
+                kwargs["sbj"]=data["subject"]
+                return fun(request, **kwargs)
+        return render(request, "error_access.html") 
+    return wrapper
+
+def isLeader(fun):
+    def wrapper(request, **kwargs):
+        per = Persons().getPerson(kwargs["id"], kwargs["person"])        
+        if(per):
+            kwargs["id"] = per
+            if(per.status.index == "leader"):
+                return fun(request, **kwargs)
+        return render(request, "error_access.html") 
+    return wrapper
+  
+  
+def isAccessAdministrator(fun): #Доступ только администратору
     def wrapper(request):
         session = Persons().getSession(request)
         if(session):
@@ -31,6 +68,8 @@ def isAccess(fun):          #доступ по id, person или админис�
                 return fun(request, **kwargs)
         return render(request, "error_access.html") 
     return wrapper
+
+
 
 
 def bot(request):                                   #"bot/"
@@ -65,7 +104,7 @@ def personalInformation(request, person, id, full, back):
         return HttpResponse(Persons().loadPhoto(data, id, person)) 
     content = Persons().createStructure(id, person)     
     content["back"] = back    
-    content["full"] = full   
+    content["full"] = full 
     if(content["OK"]):
         return render(request, "info_persons.html", content)
     else:
@@ -126,12 +165,57 @@ def work(request, person, id):                      #TODO           #"work/"
 def calendar(request, person, id, dt):            #TODO           #"calendar/"
     """Страница календаря"""                        
     info = Calendar().getMonthData(dt)
-    if(info):    
-        info["events"] = Persons().getEvent(id, person, info["range"])
-    else:
-        return render(request, "error_access.html")  
+    if(not info):    
+        return render(request, "error_access.html") 
+    info["events"] = Persons().getEvent(id, person, info["range"])
     info["back"] = "/work/{}/{}".format(person, id)
     return render(request, "calendar.html", Calendar().getContent(info))
+
+@isAccess
+@isLeader
+def groups(request, person, id):
+    info = Groups().createStructure(id)
+    if(not info):    
+        return render(request, "error_access.html")           
+    return render(request, "groups.html", {"data": info, "person": "{}/{}".format(person, id.id)})
+
+@isAccess
+@isLeader
+@isAccessGroup
+def set_schedule(request, person, id, grp, sbj):
+    if(request.method.upper() == "POST"):
+        data = json.load(request)
+        return HttpResponse(Groups().setSchedule(data, grp, sbj, "/groups/{}/{}".format(person, id.id)));
+    info = Groups().createSchedule(grp, sbj)
+    if(not info):    
+        return render(request, "error_access.html") 
+    info["person"] = "{}/{}".format(person, id.id)
+    return render(request, "set_schedule.html", info)
+
+@isAccess
+@isLeader
+@isAccessGroup
+def get_schedule(request, person, id, grp, sbj):
+    info = Groups().createLessons(grp, sbj)
+    info["person"] = "{}/{}".format(person, id.id)
+    info["edit"] = "/{}/{}/".format(grp.id, sbj.id)
+    return render(request, "get_schedule.html", info)
+
+@isAccess
+@isLeader
+@isAccessGroup
+@isAccessSchedule
+def edit_schedule(request, person, id, grp, sbj, sch):
+    back = "/get_schedule/{}/{}/{}/{}#{}".format(person, id.id, grp.id, sbj.id, sch.id)
+    if(request.method.upper() == "POST"):
+        data = json.load(request)
+        return HttpResponse(Groups().setEditSchedule(data, sch, back));
+
+    info = Groups().createLesson(sch) 
+    info["back"] = back
+    return render(request, "edit_lesson.html", info) 
+    
+
 
 @isAccessAdministrator
 def generate(request):                                  #"generate/"
@@ -149,6 +233,6 @@ def serialize(request):                                 #"serialize/"
 def loaddata(request):                                  #loaddata/"
     return HttpResponse(Generate().loaddata())
     
-    
+  
     
     

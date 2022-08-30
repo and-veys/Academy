@@ -61,7 +61,9 @@ class Persons():
     def __getPerson(self, id, tp):
         return self.__person[tp].objects.get(id=id)
     
-    def getPerson(self, login):
+    def getPerson(self, login, tp=None):
+        if(tp != None):
+            return self.__getPerson(login, tp)    
         for k, cl in self.__person.items():       
             try:
                 row = cl.objects.get(login=login)

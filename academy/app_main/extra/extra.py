@@ -53,6 +53,11 @@ class Extra:
             dt = datetime.now()
         return dt.strftime("%H:%M:%S")
     
+    def getStringTimeShort(self, dt=None):
+        """Форматный вывод времени""" 
+        if(dt == None):
+            dt = datetime.now()
+        return dt.strftime("%H:%M")
     
     
     def getStringPhone(self, ph):

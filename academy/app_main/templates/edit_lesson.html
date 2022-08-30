@@ -1,0 +1,34 @@
+{% extends "main.html" %}
+{% load static %}
+{% block caption %}
+	{{group_subject}}
+{% endblock caption %}
+{% block main %}
+	<div class="start_main">
+		{% csrf_token %}			
+		<input id="reg_date" type="text" class="my_input" onkeydown="key_down_text(event)" value='{{currentdate}}'/>		
+		<select id="times" class="my_input">
+			{%for key, el in lessontimes.items %}
+				<option value='{{"tm_"|add:key}}' 
+				{% if key == currenttime %}
+					selected
+				{% endif %}
+				>{{el}}</option>
+			{%endfor%}
+		</select>
+		<select id="professor" required class="my_input">
+			<option value="" disabled selected hidden>ПРЕПОДАВАТЕЛЬ</option>
+			{%for key, el in professors.items %}
+				<option value="{{'prf_'|add:key}}"
+				{% if key == currentprofessor %}
+					selected
+				{% endif %}
+				>{{el}}</option>
+			{%endfor%}
+		</select> 
+		<input type="button" class="my_a" value = "OK" onclick="click_edit_schedule()">
+		<a class="my_a" href='{{back}}'> Назад </a>
+	
+	</div>	
+		
+{% endblock main %}
