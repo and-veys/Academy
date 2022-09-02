@@ -271,10 +271,9 @@ function click_calendar(event) {
 	try {
 		str += "<br /><table>";
 		for(el of info["events"]) {
-			temp = el.split("###")
 			str += "<tr><td>&#x2713</td>"
-			for(i=0; i<temp.length; ++i)
-				str += ("<td>" + temp[i] + "</td>");
+			for(i=0; i<el.length; ++i)
+				str += ("<td>" + el[i] + "</td>");
 			str += "</tr>"		
 		}
 		str+= "</table>";

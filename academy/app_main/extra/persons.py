@@ -103,7 +103,7 @@ class Persons():
 
     def getEvent(self, id, tp, rg, ev):             #TODO Test         
         dtMin, dtMax = rg
-        temp = "{}_{}".format(ev, tp)        
+        temp = "{}_{}".format(ev, tp)  
         if(temp == "my_employees"):
             rows = Schedule.objects.filter(Q(lesson_date__gte=dtMin) & Q(lesson_date__lte=dtMax) & Q(professor__id=id.id))
         elif(temp=="my_students"):

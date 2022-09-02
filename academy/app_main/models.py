@@ -267,7 +267,7 @@ class SunBot(models.Model):
         db_table = "amv_sunbot"      
         
     def getPerson(self):
-        return (self.employees if self.students == None else self.students)        #TODO test bot as student
+        return (("employees", self.employees) if self.students == None else ("students", self.students))        #TODO test bot as student
 
 
 class LessonTimes(models.Model):  
@@ -301,11 +301,10 @@ class Schedule(models.Model):
         self.save()
         
     def getStringInfo(self):        
-        temp = [
+        return [
                 Extra().getStringTimeShort(self.lesson_time.time), 
                 '"{}"'.format(self.subject.name),
                 self.getActivProfessor()]
-        return "###".join(temp)
         
     def __str__(self):
         return "{} {} {} {} {}".format(
