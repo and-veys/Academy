@@ -14,7 +14,7 @@ CONTENT_TYPES = ["text", "audio", "document", "photo", "sticker", "video", "vide
                  "migrate_from_chat_id", "pinned_message"]
 
 
-commands = [
+COMMANDS = [
         'start',
         'delete',
         'registration',
@@ -25,7 +25,7 @@ commands = [
         'date'
 ]
 
-@bot.message_handler(commands=commands)
+@bot.message_handler(commands=COMMANDS)
 def bot_function(msg):
     try:
         resp = requests.get("http://127.0.0.1:8000/bot", {"command": msg.text, "id": msg.chat.id})

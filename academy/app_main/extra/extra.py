@@ -13,6 +13,7 @@ class Extra:
         self.__amount_students = ["студент", "студента", "студентов"]
         self.__amount_lessons = ["занятие", "занятия", "занятий"]
         self.__amount_notes = ["запись", "записи", "записей"]
+        self.__amount_marks = ["оценка", "оценки", "оценок"]
         
     def getStringAmountMonths(self, m):
         return self.__getStringAmount(m, self.__amount_months)
@@ -28,6 +29,12 @@ class Extra:
     
     def getStringAmountNotes(self, m):
         return self.__getStringAmount(m, self.__amount_notes)
+    
+    def getStringAmountMarks(self, m):
+        return self.__getStringAmount(m, self.__amount_marks)
+    
+    def getStringAmount(self, m, ar):
+        return self.__getStringAmount(m, ar)
     
     def __getStringAmount(self, m, arr):
         """Добавляет правильные окончания к существительным от их количества"""
@@ -83,3 +90,10 @@ class Extra:
         dtT = datetime(dtN.year, dtN.month, dtN.day)   
         return (24*60*60 - (dtN - dtT).seconds)  
 
+    def getRoundString(self, n, k): 
+        if(n==None):
+            n=0
+        return format(round(n, k), ".{}f".format(k))
+        
+        
+        

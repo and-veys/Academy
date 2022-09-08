@@ -206,7 +206,7 @@ class Students(Person):
         indexes = [models.Index(fields=['login'])]
         db_table = "amv_students"
     def __str__(self):
-        return "{} (группа {}){}".format(self.getShotName(), str(self.group),  self.getStringActiv())
+        return "{} (группа {}){} - id={}".format(self.getShotName(), str(self.group),  self.getStringActiv(), self.id)
     
     def getPersonalInfo(self):
         res = self.getInfo()
@@ -239,12 +239,13 @@ class Employees(Person):
         return (al.pl_name if pl else al.name)
     
     def __str__(self):           
-        return "{} ({}) - {}: {}{}".format(
+        return "{} ({}) - {}: {}{} - id={}".format(
             self.getShotName(), 
             str(self.department), 
             str(self.status), 
             self.getStatusAlias(), 
-            self.getStringActiv())
+            self.getStringActiv(),
+            self.id)
         
     def getPersonalInfo(self):
         res = self.getInfo()
@@ -291,7 +292,7 @@ class Schedule(models.Model):
         ordering = ['lesson_date', 'lesson_time']  
         verbose_name = "Расписание"                     
         verbose_name_plural = "Расписания"
-        indexes = [models.Index(fields=['lesson_date'])]
+        indexes = [models.Index(fields=['lesson_date']), models.Index(fields=['group', 'subject'])]
         db_table = "amv_schedule"      
     
     def setLesson(self, dt, pr):
@@ -338,9 +339,9 @@ class Schedule(models.Model):
         
         
 
-class CalendarNames(models.Model):
+class NamesInfo(models.Model):
     index = models.IntegerField('Индекс', unique=True)
-    name = models.CharField('Полное название', max_length = 16, unique=True)
+    name = models.CharField('Полное название', max_length = 24, unique=True)
     shortName = models.CharField('Короткое название', max_length = 4, unique=True)
     
     class Meta:        
@@ -352,7 +353,7 @@ class CalendarNames(models.Model):
     def getInfo(self):
         return (self.name, self.shortName)
 
-class NamesWeekDays(CalendarNames): 
+class NamesWeekDays(NamesInfo): 
     class Meta:
         ordering = ['index']  
         verbose_name = "День недели"                     
@@ -360,7 +361,7 @@ class NamesWeekDays(CalendarNames):
         db_table = "amv_names_weekdays"   
         
         
-class NamesMonths(CalendarNames):
+class NamesMonths(NamesInfo):
     class Meta:
         ordering = ['index']  
         verbose_name = "Месяц"                     
@@ -383,5 +384,22 @@ class WeekEnds(models.Model):
     def getNameDay(self):
         return ("{}, перенос с {}".format(self.name, Extra().getStringData(self.delay)) if self.delay else self.name)
         
+class NamesMarks(NamesInfo):
+    class Meta:
+        ordering = ['index']  
+        verbose_name = "Оценка"                     
+        verbose_name_plural = "Оценки" 
+        db_table = "amv_names_mark"
 
-    
+
+
+class Marks(models.Model):
+    lesson = models.ForeignKey(Schedule, on_delete=models.CASCADE, verbose_name="Урок")
+    student = models.ForeignKey(Students, on_delete=models.CASCADE, verbose_name="Студент")
+    mark = models.ForeignKey(NamesMarks, on_delete=models.CASCADE, verbose_name="Оценка")
+    class Meta:
+        ordering = ['lesson']  
+        verbose_name = "Оценка студента"                     
+        verbose_name_plural = "Оценки студентов" 
+        db_table = "amv_marks"
+        indexes = [models.Index(fields=['lesson']), models.Index(fields=['student'])]

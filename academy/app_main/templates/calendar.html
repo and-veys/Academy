@@ -46,9 +46,8 @@
 						{% if d.0 == "0" %}
 							<td class="calendar_num"></td>
 						{% else %}
-							<td class="{{d.1}}" id='{{"day"|add:d.0}}' onclick="click_calendar(event)"> 
+							<td class="{{d.1}}" id='{{"day"|add:d.0}}' data-info="{{d.2}}" onclick="click_calendar(event)"> 
 								{{ d.0 }} 
-								<input type="hidden" id='{{"hday"|add:d.0}}' value="{{d.2}}">
 							</td>							
 						{% endif %}
 					{% endfor %}

@@ -228,7 +228,23 @@ function click_registration(event) {	//реакция на регистраци�
 		response_go(temp);		
 	}); 			
 }
-
+//---------------------------------------------------
+function click_sort(param) {	
+	arr = new Array(document.getElementsByClassName("rows").length)
+	for(i=0; i<arr.length; ++i) {
+		n = document.getElementById("n"+i);
+		m = Number(document.getElementById("m"+i).innerHTML);
+		arr[i] = [n.getElementsByTagName("a")[0].innerHTML, m, n.innerHTML]; 		
+	}
+	if(param == 'fio')
+		arr.sort((a, b)=>(a[0].localeCompare(b[0])));
+	else
+		arr.sort((a, b)=>(a[1] > b[1] ? -1:1));
+	for(i=0; i<arr.length; ++i) {
+		document.getElementById("n"+i).innerHTML = arr[i][2];
+		document.getElementById("m"+i).innerHTML = arr[i][1].toFixed(2);
+	}
+}
 //---------------------------------------------------
 function click_arrow(event) {
 	path = document.location.pathname.split("/");
@@ -264,7 +280,7 @@ function click_arrow(event) {
 }
 
 function click_calendar(event) {
-	info = JSON.parse(document.getElementById("h" + event.target.id).value);
+	info = JSON.parse(event.target.dataset.info)
 	str = info["day"];
 	if(info["weekend"] != "")
 		str = "<span class='text_red'>" + str + ". " + info["weekend"] + "</span>";	

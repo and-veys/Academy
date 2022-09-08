@@ -5,7 +5,7 @@ from .models import Status_Departments, Status_Employees, Status_Aliases
 from .models import Students, Groups, Courses
 from .models import Employees, Departments 
 from .models import Subjects, Course_Subject
-from .models import NamesWeekDays, NamesMonths, WeekEnds, LessonTimes
+from .models import NamesWeekDays, NamesMonths, WeekEnds, LessonTimes, NamesMarks
                   
 
 admin.site.register(Genders)
@@ -23,3 +23,7 @@ admin.site.register(NamesWeekDays)
 admin.site.register(NamesMonths)
 admin.site.register(WeekEnds)
 admin.site.register(LessonTimes)
+admin.site.register(NamesMarks)
+
+
+

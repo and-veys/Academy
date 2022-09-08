@@ -1,0 +1,45 @@
+{% extends "main.html" %}
+{% load static %}
+{% block caption %}
+	Группа "{{group}}", <br />
+	{% if subject %}
+		предмет "{{subject}}"
+	{% else %}
+		 курс "{{course}}"
+	{% endif %}
+{% endblock caption %}
+{% block main %}
+	<div class="start_main">
+		{% csrf_token %}
+		<div class="table center">
+			<table>
+				<tr>
+					<td colspan=2 class="calendar_days"><nobr>Средняя оценка</nobr><br /> </nobr>по группе</nobr></td>					
+					<td class="calendar_days">{{total}}</td>
+				</tr>
+				<tr>
+					<td class="calendar_days"></td>
+					<td class="calendar_days">Студент</td>
+					<td class="calendar_days"><nobr>Средняя оценка</nobr></td>
+				</tr>				
+				{% for el in data %}
+					<tr class="rows">
+						<td class="row_table">{{forloop.counter}}</td>
+						<td id='n{{forloop.counter0|stringformat:"i"}}' class="row_table"><nobr>
+							<a class="li_name" href='{{person|add:el.0}}'> {{el.1}} </a>
+						</nobr></td>
+						<td id='m{{forloop.counter0|stringformat:"i"}}' class="row_table">{{el.2}}</td>
+					</tr>
+				{% endfor%}			
+			</table>
+
+		
+			
+		</div>
+		<div class="row_div">
+			<input type="button" class="my_a three_in_row small" value='По фамилии' onclick="click_sort('fio')" />
+			<input type="button" class="my_a three_in_row small" value='По оценке' onclick="click_sort('rng')"/>
+			<a class="my_a three_in_row small" href='{{back}}'> Назад </a>
+		</div>
+	</div>
+{% endblock main %}

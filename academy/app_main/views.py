@@ -11,14 +11,27 @@ from .extra.bot import Bot
 import json
 from datetime import date
 
-def isAccessDIR(fun):
+def isDIR(fun):
     def wrapper(request, **kwargs):
         if(kwargs["id"].department.status.index == "DIR"):            #TODO     
             return fun(request, **kwargs)
         return render(request, "error_access.html") 
     return wrapper
 
-def isAccessSchedule(fun):
+
+def isStudent(fun):
+    def wrapper(request, **kwargs):
+        gr = kwargs["grp"]
+        std = Groups().getStudent(kwargs["std"])       
+        if(std):       
+            if(gr.id == std.group.id):
+                kwargs["std"] = std
+                return fun(request, **kwargs)
+        return render(request, "error_access.html") 
+    return wrapper
+
+
+def isSchedule(fun):
     def wrapper(request, **kwargs):
         sch = Groups().getSchedule(kwargs["sch"])        
         if(sch):       
@@ -29,14 +42,33 @@ def isAccessSchedule(fun):
     return wrapper
 
 
-def isAccessGroup(fun):
+def isSubject(fun):
     def wrapper(request, **kwargs):
-        data = Groups().getGroup(kwargs["grp"], kwargs["sbj"])          
         per = kwargs["id"]
-        if(data):       
-            if(per.department == data["group"].course.department):
-                kwargs["grp"]=data["group"]
-                kwargs["sbj"]=data["subject"]
+        data = Groups().getGroupSubject(kwargs["grp"], kwargs["sbj"])  
+        if(data):  
+            if(kwargs["person"]=="employees"):
+                res = (per.department == data["course"].department)
+            else:
+                res = (per.group.course == data["course"])     
+            if(res):
+                kwargs["sbj"]=data["subject"]                    
+                return fun(request, **kwargs)
+        return render(request, "error_access.html") 
+    return wrapper
+
+
+def isGroup(fun):
+    def wrapper(request, **kwargs):
+        per = kwargs["id"]
+        data = Groups().getGroup(kwargs["grp"])  
+        if(data):              
+            if(kwargs["person"]=="employees"):
+                res = (per.department == data.course.department)
+            else:
+                res = (per.group == data)
+            if(res):
+                kwargs["grp"]=data                
                 return fun(request, **kwargs)
         return render(request, "error_access.html") 
     return wrapper
@@ -49,7 +81,7 @@ def isLeader(fun):
     return wrapper
   
   
-def isAccessAdministrator(fun): #Доступ только администратору
+def isAdministrator(fun): #Доступ только администратору
     def wrapper(request):
         session = Persons().getSession(request)
         if(session):
@@ -93,6 +125,9 @@ def departments(request):                           #"departments/"
 def infoEmployeesShot(request, id):           #"departments/employees/<int:id>"
     """Страница с информацией (краткой) о работниках"""
     return personalInformation(request, "employees", id, False, ["/departments", "К структуре Академии"])
+
+
+
     
 @isAccess
 def infoPersons(request, person, id):          #"personal/<str:person>/<int:id>"
@@ -176,7 +211,7 @@ def calendar_department(request, person, id, dt):            #TODO           #"c
 
 
 @isAccess
-@isAccessDIR
+@isDIR
 def calendar_all(request, person, id, dt):            #TODO           #"calendar_all/"
     """Страница календаря всех"""                      
     return getCalendar(request, person, id, dt, "all")   
@@ -205,7 +240,8 @@ def groups(request, person, id):
 
 @isAccess
 @isLeader
-@isAccessGroup
+@isGroup
+@isSubject
 def set_schedule(request, person, id, grp, sbj):
     if(request.method.upper() == "POST"):
         data = json.load(request)
@@ -218,45 +254,123 @@ def set_schedule(request, person, id, grp, sbj):
 
 @isAccess
 @isLeader
-@isAccessGroup
+@isGroup
+@isSubject
 def get_schedule(request, person, id, grp, sbj):
     info = Groups().createLessons(grp, sbj)
+    if(not info):    
+        return render(request, "error_access.html") 
     info["person"] = "{}/{}".format(person, id.id)
     info["edit"] = "/{}/{}/".format(grp.id, sbj.id)
     return render(request, "get_schedule.html", info)
 
 @isAccess
 @isLeader
-@isAccessGroup
-@isAccessSchedule
+@isGroup
+@isSubject
+@isSchedule
 def edit_schedule(request, person, id, grp, sbj, sch):
     back = "/get_schedule/{}/{}/{}/{}#{}".format(person, id.id, grp.id, sbj.id, sch.id)
     if(request.method.upper() == "POST"):
         data = json.load(request)
         return HttpResponse(Groups().setEditSchedule(data, sch, back));
-
+    
     info = Groups().createLesson(sch) 
     info["back"] = back
     return render(request, "edit_lesson.html", info) 
+
     
+@isAccess
+@isLeader
+def progress(request, person, id):                  
+    info = Groups().createStructure(id)
+    if(not info):    
+        return render(request, "error_access.html")           
+    return render(request, "progress_groups.html", {"data": info, "person": "{}/{}".format(person, id.id)}) 
 
 
-@isAccessAdministrator
+
+@isAccess   
+@isLeader
+@isGroup                                        
+def marks_group(request, person, id, grp):
+    info = Groups().getMarksGroup(grp)    
+    info["person"] = "/marks_group_student/{}/{}/{}/".format(person, id.id, grp.id)
+    info["back"] = "/progress/{}/{}".format(person, id.id)
+    return render(request, "get_marks.html", info)   
+
+@isAccess   
+@isLeader
+@isGroup
+@isStudent
+def marks_group_student(request, person, id, grp, std):                 #TODO
+    info = Groups().getMarksStudent(std)
+    info["back"] = "/marks_group/{}/{}/{}".format(person, id.id, grp.id)
+    info["person"] = "/info_student/{}/{}/{}/{}".format(person, id.id, grp.id, std.id)
+    return render(request, "get_student_marks.html", info)  
+
+
+@isAccess   
+@isLeader
+@isGroup
+@isStudent
+def info_student(request, person, id, grp, std):
+    back = "/marks_group_student/{}/{}/{}/{}".format(person, id.id, grp.id, std.id)
+    return personalInformation(request, "students", std.id, False, [back, "Назад"])
+        
+
+
+@isAccess
+@isLeader
+@isGroup
+@isSubject
+def marks_subject(request, person, id, grp, sbj):   #TODO
+    info = Groups().getMarksGroup(grp, sbj)
+    info["person"] = "/marks_subject_student/{}/{}/{}/{}/".format(person, id.id, grp.id, sbj.id)
+    info["back"] = "/progress/{}/{}".format(person, id.id)
+    return render(request, "get_marks.html", info)  
+
+@isAccess   
+@isLeader
+@isGroup
+@isSubject
+@isStudent
+def marks_subject_student(request, person, id, grp, sbj, std):                 #TODO
+    info = Groups().getMarksStudent(std, sbj)
+    info["back"] = "/marks_subject/{}/{}/{}/{}".format(person, id.id, grp.id, sbj.id)
+    info["person"] = "/info_student/{}/{}/{}/{}/{}".format(person, id.id, grp.id, sbj.id, std.id)
+    return render(request, "get_student_marks.html", info)  
+
+@isAccess   
+@isLeader
+@isGroup
+@isSubject
+@isStudent
+def info_student2(request, person, id, grp, sbj, std):
+    back = "/marks_subject_student/{}/{}/{}/{}/{}".format(person, id.id, grp.id, sbj.id, std.id)
+    return personalInformation(request, "students", std.id, False, [back, "Назад"])
+
+
+@isAdministrator
 def generate(request):                                  #"generate/"
     """Генерация студентов и преподавателей"""
     res = ""
     res += Generate().generateStudents()
     res += Generate().generateEmployees()
+    res += Generate().generateMarks()
     return HttpResponse(res)
 
-@isAccessAdministrator
+@isAdministrator
 def serialize(request):                                 #"serialize/"              
     return HttpResponse(Generate().serialize())
 
-@isAccessAdministrator                                  
+@isAdministrator                                  
 def loaddata(request):                                  #loaddata/"
     return HttpResponse(Generate().loaddata())
     
+
+
+
   
     
     

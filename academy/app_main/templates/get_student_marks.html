@@ -1,0 +1,52 @@
+{% extends "main.html" %}
+{% load static %}
+{% block caption %}
+	{{lastname}}
+	{% if patronymic %}
+		<br /> {{firstname}} {{patronymic}}
+	{%else%}
+		{{firstname}}
+	{% endif %}
+{% endblock caption %}
+{% block main %}
+	<div class="start_main">
+		{% csrf_token %}
+		<div class="table center">
+			<table>
+				<tr>
+					{% if subject %}
+						<td colspan=2 class="calendar_days"><nobr>Средняя оценка по предмету</nobr> <br />"{{subject}}"</td>
+					{% else %}
+						<td colspan=3 class="calendar_days"><nobr>Средняя оценка </nobr><br /> <nobr>по всем предметам</nobr></td>
+					{% endif %}
+					<td class="calendar_days">{{total}}</td>
+				</tr>
+				<tr>
+					<td class="calendar_days"></td>
+					<td class="calendar_days">Дата</td>
+					{% if subject == "" %}
+						<td class="calendar_days"><nobr>Предмет</nobr></td>
+					{% endif %}
+					<td class="calendar_days"><nobr>Оценка</nobr></td>
+				</tr>				
+				{% for el in data %}
+					<tr>
+						<td class="row_table">{{forloop.counter}}</td>
+						<td class="row_table">{{el.0}}</td>
+						{% if subject == "" %}
+							<td class="row_table"><nobr>{{el.1}}</nobr></td>
+						{% endif %}
+						<td class="row_table">{{el.2}}</td>
+					</tr>
+				{% endfor%}			
+			</table>
+
+		
+			
+		</div>
+		<div class="row_div">
+			<a class="my_a two_in_row small" href='{{person}}'> Студент </a>
+			<a class="my_a two_in_row small" href='{{back}}'> Назад </a>
+		</div>
+	</div>
+{% endblock main %}

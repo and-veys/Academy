@@ -4,7 +4,7 @@
 	{% if department %}
 		{{department}}
 	{% else %}	
-		Курс "{{course}}"	
+		Группа "{{group}}", <br /> курс "{{course}}",  	
 	{% endif %}
 {% endblock caption %}
 {% block main %}
@@ -58,7 +58,7 @@
 				<input id="file" type="file" onchange="click_image(this)" accept=".jpg,.jpeg,.png" />
 			</div>		
 		{% endif %}		
-		<a class="my_a small" href={{back.0}}> {{back.1}} </a>
+		<a class="my_a" href={{back.0}}> {{back.1}} </a>
 	</div>
 {% endblock main %}
 

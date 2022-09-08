@@ -5,6 +5,7 @@ from calendar import monthrange
 from datetime import date
 from django.conf import settings
 import pickle
+from django.db.models import Q
 
 from ..models import    Genders, \
                         Status_Departments, \
@@ -18,9 +19,12 @@ from ..models import    Genders, \
                         Students, \
                         Employees, \
                         Schedule, \
+                        LessonTimes, \
                         NamesWeekDays, \
                         NamesMonths, \
-                        WeekEnds
+                        WeekEnds, \
+                        NamesMarks, \
+                        Marks
 
 
 class Generate():
@@ -149,10 +153,14 @@ class Generate():
             Groups,
             Students,
             Employees,
+            LessonTimes,
             Schedule, 
             NamesWeekDays, 
             NamesMonths, 
-            WeekEnds
+            WeekEnds, 
+            NamesMarks,
+            Marks,
+
         ]
 
     def generateStudents(self):
@@ -261,6 +269,27 @@ class Generate():
             count += 1
         return "{}: создано {} {} <br />".format(cl.__name__, count, Extra().getStringAmountNotes(count))     
             
-            
+    def generateMarks(self):
+        kol = 0
+        les = 0
+        dt = date.today()
+        rows = Schedule.objects.filter(~Q(lesson_date=None) & Q(lesson_date__lte=dt))
+        for el in rows:
+            if(len(Marks.objects.filter(lesson=el))):
+                continue
+            st = Students.objects.filter(group=el.group)
+            les += 1
+            for w in st:                
+                if(random.randint(0, 1)==0):
+                    kol += 1
+                    data = {"lesson": el, "student":w, "mark": NamesMarks.objects.get(index=random.randint(2, 5))}
+                    Marks.objects.create(**data)                   
+        return "Оценки: добавлено {} {} в {} {} <br />".format(
+                            kol, Extra().getStringAmountMarks(kol),
+                            les, Extra().getStringAmount(les, ["уроке", "уроках", "уроках"]))        
+        
+        
+        
+        
             
             
