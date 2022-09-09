@@ -351,6 +351,14 @@ def info_student2(request, person, id, grp, sbj, std):
     return personalInformation(request, "students", std.id, False, [back, "Назад"])
 
 
+
+def marks(request, person, id):
+    return render(request, "error_access.html") 
+
+
+
+
+
 @isAdministrator
 def generate(request):                                  #"generate/"
     """Генерация студентов и преподавателей"""

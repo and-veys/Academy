@@ -304,6 +304,7 @@ class Schedule(models.Model):
     def getStringInfo(self):        
         return [
                 Extra().getStringTimeShort(self.lesson_time.time), 
+                self.group.name,
                 '"{}"'.format(self.subject.name),
                 self.getActivProfessor()]
         
