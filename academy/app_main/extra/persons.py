@@ -13,11 +13,29 @@ class Persons():
         return cls.__inst 
     def __init(self):
         self.__person = {"employees": Employees, "students": Students}
-        
-    def createStructure(self, id, tp): 
+    
+    def getData(self, id, person):  
+        return Extra().getDataObject(self.__person[person], id)
+
+    def control(self, kwargs):
+        return (kwargs["id"].getType() == kwargs["person"])     
+    
+    
+    
+    
+    def createStructure(self, id, tp):         
         if(type(id) == type(1)):
-            id = self.getPersonFromId(id, tp)        
-        return id.getPersonalInfo()      
+            id = self.getData(id, tp)
+            if(not id):
+                return {"OK": False}
+        return id.getPersonalInfo()  
+
+
+
+
+
+
+        
     
     def loadPhoto(self, data, id, tp):
         row = id
@@ -62,12 +80,7 @@ class Persons():
         return {}    
     
     
-    def getPersonFromId(self, id, tp):
-        try:
-            return self.__person[tp].objects.get(id=id)
-        except:
-            pass
-        return {}
+
        
     def getRegistration(self, data):        
         row = self.getPersonFromLogin(data["login"])

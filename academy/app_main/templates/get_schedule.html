@@ -25,7 +25,7 @@
 								<div class="my_div circle">&#x2713 </div>
 							{% else %}
 								<a class='{{"my_a circle "|add:el.0}}' 
-										href='{{"/edit_schedule/"|add:person|add:edit|add:k}}'></a>								
+										href='{{"/editschedule"|add:person|add:k}}'></a>								
 							{% endif %}
 						</td>							
 					</tr>
@@ -35,7 +35,7 @@
 		
 		<div class="row_div">
 			<a href= '{{"#"|add:anchor}}' class="my_a small two_in_row">К ближайшему уроку</a>
-			<a class="my_a small two_in_row" href='{{"/groups/"|add:person}}'> Назад </a>
+			<a class="my_a small two_in_row" href='{{back}}'> Назад </a>
 		</div>
 	</div>	
 		

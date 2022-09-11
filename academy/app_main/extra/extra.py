@@ -14,6 +14,13 @@ class Extra:
         self.__amount_lessons = ["занятие", "занятия", "занятий"]
         self.__amount_notes = ["запись", "записи", "записей"]
         self.__amount_marks = ["оценка", "оценки", "оценок"]
+    
+    def getDataObject(self, db, id):        
+        try:
+            temp = db.objects.get(id=id)   
+        except:
+            return None    
+        return temp
         
     def getStringAmountMonths(self, m):
         return self.__getStringAmount(m, self.__amount_months)
@@ -94,6 +101,16 @@ class Extra:
         if(n==None):
             n=0
         return format(round(n, k), ".{}f".format(k))
+        
+    def paint(self, *arg):
+        print("*"*88)
+        for el in arg:
+            print(el)
+        print("*"*88)
+        
+    def getPath(self, *args):        
+        return "/" + "/".join(map(str, args))
+ 
         
         
         

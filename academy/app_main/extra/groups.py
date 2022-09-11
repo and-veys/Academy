@@ -1,4 +1,4 @@
-from ..models import Groups as gr, Course_Subject, Schedule, Subjects, Employees, NamesWeekDays, LessonTimes
+from ..models import Groups as db, Course_Subject, Schedule, Subjects, Employees, NamesWeekDays, LessonTimes
 from ..models import Marks, Students
 from .extra import Extra
 from datetime import date
@@ -19,33 +19,16 @@ class Groups():
             cls.__inst = super().__new__(cls)
         return cls.__inst 
     
-    def getGroup(self, grp):  
-        try:
-            g = gr.objects.get(id=grp)               
-        except:
-            None    
-        return g
+    def getData(self, id, person):  
+        return Extra().getDataObject(db, id)
     
-    def getStudent(self, std):  
-        try:
-            s = Students.objects.get(id=std)               
-        except:
-            None    
-        return s
-    
-    
-    def getGroupSubject(self, grp, sbj):  
-        try:
-            g = grp
-            s = Subjects.objects.get(id=sbj)
-            cs = Course_Subject.objects.get(course__id=g.course.id, subject__id=sbj)                   
-        except:
-            return {}     
-        return {"group": g, "subject": s, "course": cs.course}
-    
-    
-    def createStructure(self, per): #TODO протестить не активного профессора
-        rows = gr.objects.filter(course__department=per.department)
+    def control(self, kwargs):
+        if(kwargs["person"] == "employees"):
+            return (kwargs["grp"].course.department.id == kwargs["id"].department.id)        
+        return (kwargs["grp"].id == kwargs["id"].group.id)
+        
+    def createStructure(self, per):
+        rows = db.objects.filter(course__department=per.department)
         res = {}
         for r in rows:
             temp = self.__getSchedule(r)
@@ -57,7 +40,7 @@ class Groups():
             res[str(r.id)] = [r.name, r.course.name, temp]            
         return res
     
-    def __getSchedule(self, gr):        #TODO протестить не активного профессора
+    def __getSchedule(self, gr):      
         sch = Schedule.objects.filter(group=gr)
         cs = Course_Subject.objects.filter(course=gr.course)
         res = {}
@@ -68,90 +51,27 @@ class Groups():
                     list(map(lambda s: {"date": s.lesson_date, "professor": s.isActivProfessor()}, temp))]
         return res            
     
-    def createSchedule(self, g, s):
-        emp = Employees.objects.filter(department=s.department, activ=True)    
-        return {
-            "group": g.name,
-            "subject": s.name,
-            "course": g.course.name,
-            "begin": Extra().getStringData(g.started),
-            "end": Extra().getStringData(g.endStudy()),
-            "amount": s.amount_lessons,
-            "professors": dict(map(lambda s: (str(s.id), s.getShotName()), emp)),
-            "daysofweek": list(map(lambda s: [s.shortName, str(s.index)], NamesWeekDays.objects.all())),
-            "lessontimes": dict(map(lambda s: (str(s.id), Extra().getStringTimeShort(s.time)), LessonTimes.objects.all()))
-            }
+   
+
     
     
-    def getSchedule(self, sch):
-        try:
-            sch = Schedule.objects.get(id=sch)
-        except:
-            return {}
-        return sch
-        
-    
-    def setSchedule(self, data, gr, sb, back):
-        sch = Schedule.objects.filter(group=gr.id, subject=sb.id)
-        if(len(sch) != len(data["lessons"])):
-            return "\nОшибка совместимости. Обратитесь к администратору"
-        pr = Employees.objects.get(id=data["professor"])       
-        i=0
-        for el in sch:
-            el.setLesson(data["lessons"][i], pr)
-            i+=1
-        return back
-    
-    def setEditSchedule(self, data, sch, back):
-        pr = Employees.objects.get(id=data["professor"])            
-        sch.setLesson(data["lesson"], pr);    
-        return back
-    
-    def createLessons(self, grp, sbj):
-        rows = Schedule.objects.filter(group=grp.id, subject=sbj.id).order_by('lesson_date', 'lesson_time')
-        res = {}
-        an = ""
-        for el in rows:
-            but = "was"
-            if(date.today() <= el.lesson_date):
-                but = ("" if el.isActivProfessor() else "bg_red")
-                if(an == ""):
-                    an = str(el.id)               
-            temp = [but, [
-                Extra().getStringData(el.lesson_date),
-                Extra().getStringTimeShort(el.lesson_time.time),
-                el.getActivProfessor()]]
-            res[str(el.id)] = temp
-        return {
-                "group_subject": '{}, "{}"'.format(grp.name, sbj.name),
-                "caption": ["Урок", "Дата", "Время", "Преподаватель"],
-                "lessons": res,
-                "anchor": str(an)}
-    
-    def createLesson(self, sch):
-        pr = sch.isActivProfessor()
-        res = self.createSchedule(sch.group, sch.subject)
-        res["group_subject"] = '{}, "{}"'.format(res["group"], res["subject"])
-        res["currentdate"] =  Extra().getStringData(sch.lesson_date)
-        res["currenttime"] = str(sch.lesson_time.id)
-        res["currentprofessor"] = str(pr.id if pr else -1)
-        return res
 
 
-    def query_debugger(func):               #TODO  удалить и импорты
-        @functools.wraps(func)
-        def inner_func(*args, **kwargs):
-            reset_queries()            
-            start_queries = len(connection.queries)
-            start = time.perf_counter()
-            result = func(*args, **kwargs)
-            end = time.perf_counter()
-            end_queries = len(connection.queries)
-            print(f"Function : {func.__name__}")
-            print(f"Number of Queries : {end_queries - start_queries}")
-            print(f"Finished in : {(end - start):.2f}s")
-            return result
-        return inner_func
+
+    # def query_debugger(func):               #TODO  удалить и импорты
+        # @functools.wraps(func)
+        # def inner_func(*args, **kwargs):
+            # reset_queries()            
+            # start_queries = len(connection.queries)
+            # start = time.perf_counter()
+            # result = func(*args, **kwargs)
+            # end = time.perf_counter()
+            # end_queries = len(connection.queries)
+            # print(f"Function : {func.__name__}")
+            # print(f"Number of Queries : {end_queries - start_queries}")
+            # print(f"Finished in : {(end - start):.2f}s")
+            # return result
+        # return inner_func
 
     def getMarksGroup(self, grp, sbj=None):             #TODO            
         data = dict(map(lambda s: (str(s.id), [s.getShotName(), 0]), Students.objects.filter(group=grp))) 
@@ -179,7 +99,6 @@ class Groups():
             "data": data,
             "subject": (sbj.name if sbj else "")}
             
-    #@query_debugger
     def getMarksStudent(self, std, sbj=None):        
         if(sbj):
             marks = Marks.objects.select_related('lesson', 'mark').filter(student=std, lesson__subject=sbj).order_by('-lesson__lesson_date') 

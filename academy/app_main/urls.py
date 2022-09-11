@@ -5,38 +5,62 @@ from django.urls import path
 from . import views                    
     
 urlpatterns = [
+    path("bot/", views.bot),
+    
     path("", views.main, name="main"), 
     path("departments/", views.departments),
+    path("info/<int:id>", views.info),
+    path("info/<str:person>/<int:id>/<int:grp>/<int:std>", views.info),
+    path("info/<str:person>/<int:id>/<int:grp>/<int:sbj>/<int:std>", views.info),
+    
+    
+    
+    
     path("courses/", views.courses),
     path("registration/", views.registration),
-    path("departments/employees/<int:id>", views.infoEmployeesShot),
-    path("personal/<str:person>/<int:id>", views.infoPersons),
-    path("work/<str:person>/<int:id>", views.work),
-    path("groups/<str:person>/<int:id>", views.groups),
-    path("calendar/<str:person>/<int:id>/<int:dt>", views.calendar),
-    path("calendar_department/<str:person>/<int:id>/<int:dt>", views.calendar_department),
-    path("calendar_all/<str:person>/<int:id>/<int:dt>", views.calendar_all),
     
-    path("set_schedule/<str:person>/<int:id>/<int:grp>/<int:sbj>", views.set_schedule),
-    path("get_schedule/<str:person>/<int:id>/<int:grp>/<int:sbj>", views.get_schedule),
-    path("edit_schedule/<str:person>/<int:id>/<int:grp>/<int:sbj>/<int:sch>", views.edit_schedule),    
+    path("personal/<str:person>/<int:id>", views.personalInfo),
+    path("changeinfo/<str:person>/<int:id>", views.changePersonal),
+    path("changepassword/<str:person>/<int:id>", views.changePassword),
+    
+    path("work/<str:person>/<int:id>", views.work),    
+    path("groups/<str:person>/<int:id>", views.groups),
+    
+    path("setschedule/<str:person>/<int:id>/<int:grp>/<int:sbj>", views.setSchedule),
+    path("getschedule/<str:person>/<int:id>/<int:grp>/<int:sbj>", views.getSchedule),
+    path("editschedule/<str:person>/<int:id>/<int:grp>/<int:sbj>/<int:sch>", views.editSchedule),    
+        
+    path("calendar/<str:person>/<int:id>/<int:dt>", views.calendar),
+    path("calendardepartment/<str:person>/<int:id>/<int:dt>", views.calendarDepartment),
+    path("calendarall/<str:person>/<int:id>/<int:dt>", views.calendarAll),
     
     path("progress/<str:person>/<int:id>", views.progress),
 
-    path("marks_group/<str:person>/<int:id>/<int:grp>", views.marks_group),
-    path("marks_group_student/<str:person>/<int:id>/<int:grp>/<int:std>", views.marks_group_student),
-    path("info_student/<str:person>/<int:id>/<int:grp>/<int:std>", views.info_student),
-      
-    path("marks_subject/<str:person>/<int:id>/<int:grp>/<int:sbj>", views.marks_subject),
-    path("marks_subject_student/<str:person>/<int:id>/<int:grp>/<int:sbj>/<int:std>", views.marks_subject_student),
-    path("info_student/<str:person>/<int:id>/<int:grp>/<int:sbj>/<int:std>", views.info_student2),
+    path("marksgroup/<str:person>/<int:id>/<int:grp>", views.marksGroup),    
+    path("markssubject/<str:person>/<int:id>/<int:grp>/<int:sbj>", views.marksSubject),
+    
+    
+    path("marksgroupstudent/<str:person>/<int:id>/<int:grp>/<int:std>", views.marksGroupStudent),
+    path("markssubjectstudent/<str:person>/<int:id>/<int:grp>/<int:sbj>/<int:std>", views.marksSubjectStudent),
+    
+    
+    
+    
+    
+    
+    
+    
+
 
     path("marks/<str:person>/<int:id>", views.marks),
+    
+    
+    
+    
     
     path("serialize/", views.serialize),
     path("generate/", views.generate),
     path("loaddata/", views.loaddata),    
-    path("bot/", views.bot),
-    path("changeinfo/<str:person>/<int:id>", views.changePersonal),
-    path("changepassword/<str:person>/<int:id>", views.changePassword)
+    
+
 ]

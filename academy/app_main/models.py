@@ -208,11 +208,14 @@ class Students(Person):
     def __str__(self):
         return "{} (группа {}){} - id={}".format(self.getShotName(), str(self.group),  self.getStringActiv(), self.id)
     
+    def getType(self):
+        return "students"
+    
     def getPersonalInfo(self):
         res = self.getInfo()
         res["group"] = self.group.name
         res["course"] = self.group.course.name
-        res["persons"]= "students"
+        res["persons"]= self.getType()
         res["html"] = "work_students.html"
         res["status"] = "Студент"
         return res
@@ -237,7 +240,7 @@ class Employees(Person):
         except:
             return ("Сотрудники" if pl else "Сотрудник")
         return (al.pl_name if pl else al.name)
-    
+        
     def __str__(self):           
         return "{} ({}) - {}: {}{} - id={}".format(
             self.getShotName(), 
@@ -246,12 +249,14 @@ class Employees(Person):
             self.getStatusAlias(), 
             self.getStringActiv(),
             self.id)
+    def getType(self):
+        return "employees"
         
     def getPersonalInfo(self):
         res = self.getInfo()
         res["department"] = self.department.name
         res["status"] = self.getStatusAlias()
-        res["persons"] = "employees"
+        res["persons"] = self.getType()
         res["html"] = "work_employees_{}_{}.html".format(self.department.status.index, self.status.index)
         return res
       
