@@ -277,6 +277,7 @@ class SunBot(models.Model):
 
 
 class LessonTimes(models.Model):  
+    """Таблица времени начала уроков"""
     time = models.TimeField("Время урока", unique=True)
     class Meta:
         ordering = ['time']  
@@ -292,7 +293,7 @@ class Schedule(models.Model):
     lesson_time = models.ForeignKey(LessonTimes, on_delete=models.CASCADE, verbose_name="Время урока", null=True)
     group = models.ForeignKey(Groups, on_delete=models.CASCADE, verbose_name="Группа")
     subject = models.ForeignKey(Subjects, on_delete=models.CASCADE, verbose_name="Предмет")
-    professor = models.ForeignKey(Employees, null=True, on_delete=models.SET_NULL, verbose_name="Преподаватель")
+    professor = models.ForeignKey(Employees, null=True, on_delete=models.PROTECT, verbose_name="Преподаватель")
     class Meta: 
         ordering = ['lesson_date', 'lesson_time']  
         verbose_name = "Расписание"                     
@@ -346,6 +347,7 @@ class Schedule(models.Model):
         
 
 class NamesInfo(models.Model):
+    """Общий класс-родитель для стандартных наименований"""
     index = models.IntegerField('Индекс', unique=True)
     name = models.CharField('Полное название', max_length = 24, unique=True)
     shortName = models.CharField('Короткое название', max_length = 4, unique=True)
@@ -360,6 +362,7 @@ class NamesInfo(models.Model):
         return (self.name, self.shortName)
 
 class NamesWeekDays(NamesInfo): 
+    """Таблица дней недели"""
     class Meta:
         ordering = ['index']  
         verbose_name = "День недели"                     
@@ -368,6 +371,7 @@ class NamesWeekDays(NamesInfo):
         
         
 class NamesMonths(NamesInfo):
+    """Таблица месяцев"""
     class Meta:
         ordering = ['index']  
         verbose_name = "Месяц"                     
@@ -375,6 +379,7 @@ class NamesMonths(NamesInfo):
         db_table = "amv_names_month"
 
 class WeekEnds(models.Model):
+    """Таблица праздничных дней с их переносами"""
     date = models.DateField("Дата", unique=True)
     name = models.CharField('Название', max_length = 64, default="Выходной") 
     delay = models.DateField("Дата", unique=True, null=True, blank=True)
@@ -391,6 +396,7 @@ class WeekEnds(models.Model):
         return ("{}, перенос с {}".format(self.name, Extra().getStringData(self.delay)) if self.delay else self.name)
         
 class NamesMarks(NamesInfo):
+    """Таблица наименований оценок"""
     class Meta:
         ordering = ['index']  
         verbose_name = "Оценка"                     
@@ -400,6 +406,7 @@ class NamesMarks(NamesInfo):
 
 
 class Marks(models.Model):
+    """Таблица оценок студентов"""
     lesson = models.ForeignKey(Schedule, on_delete=models.CASCADE, verbose_name="Урок")
     student = models.ForeignKey(Students, on_delete=models.CASCADE, verbose_name="Студент")
     mark = models.ForeignKey(NamesMarks, on_delete=models.CASCADE, verbose_name="Оценка")

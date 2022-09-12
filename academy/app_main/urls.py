@@ -35,7 +35,7 @@ urlpatterns = [
     path("calendarall/<str:person>/<int:id>/<int:dt>", views.calendarAll),
     
     path("progress/<str:person>/<int:id>", views.progress),
-
+        
     path("marksgroup/<str:person>/<int:id>/<int:grp>", views.marksGroup),    
     path("markssubject/<str:person>/<int:id>/<int:grp>/<int:sbj>", views.marksSubject),
     

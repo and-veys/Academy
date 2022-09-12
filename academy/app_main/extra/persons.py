@@ -87,7 +87,7 @@ class Persons():
         if(row):
             return {
                 "login": data["login"], 
-                "session": {"id": row["row"].id, "tp": row["tp"]},
+                "session": {"id": row["row"].id, "tp": row["tp"], "name": row["row"].getShotName()},
                 "age": Extra().getRestDay(),
                 "path": "/personal/{}/{}".format(row["tp"], row["row"].id),
                 "OK": True
@@ -95,7 +95,7 @@ class Persons():
         if(self.isAdministrator(data["login"])):
             return {
                 "login": data["login"], 
-                "session": {"id": -1, "tp": "root"},
+                "session": {"id": -1, "tp": "root", "name": "Администратор"},
                 "age": Extra().getRestDay(),
                 "path": "\nВы вошли как Администратор.",
                 "OK": True
@@ -105,11 +105,7 @@ class Persons():
     def isAdministrator(self, login): 
         return (login == settings.ROOT_USER)
         
-    def getSession(self, request):
-        try:
-            return request.session[request.COOKIES["login"]] 
-        except:
-            return {}
+
             
     def getWork(self, id, tp):
         return id.getPersonalInfo()

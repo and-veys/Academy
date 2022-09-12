@@ -1,5 +1,6 @@
 from datetime import datetime 
-        
+from django.shortcuts import render
+
 class Extra:
     __inst = None 
     def __new__(cls):
@@ -110,7 +111,21 @@ class Extra:
         
     def getPath(self, *args):        
         return "/" + "/".join(map(str, args))
- 
+    
+    def getSession(self, request):
+        try:
+            return request.session[request.COOKIES["login"]] 
+        except:
+            return {}
+
+    def render(self, *args):
+        res = self.getSession(args[0])
+        if(res):
+            if(len(args) == 2):
+                return render(*args, {"title_person": res["name"]})
+            else:
+                args[2]["title_person"] = res["name"]
+        return render(*args) 
         
         
         

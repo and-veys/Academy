@@ -24,11 +24,16 @@ class Groups():
     
     def control(self, kwargs):
         if(kwargs["person"] == "employees"):
+            if(kwargs["id"].department.status.index == "DIR"):
+                return True            
             return (kwargs["grp"].course.department.id == kwargs["id"].department.id)        
         return (kwargs["grp"].id == kwargs["id"].group.id)
         
     def createStructure(self, per):
-        rows = db.objects.filter(course__department=per.department)
+        if(per.department.status.index == "DIR"):
+            rows = db.objects.all()
+        else:
+            rows = db.objects.filter(course__department=per.department)
         res = {}
         for r in rows:
             temp = self.__getSchedule(r)

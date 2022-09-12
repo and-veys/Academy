@@ -10,7 +10,7 @@
 		<input id="reg_password" type="password" class="my_input" 
 					placeholder="ПАРОЛЬ" onkeydown="key_down_text(event)" />
 		<input type="button" class="my_a" value="Войти" onclick="click_registration(event)" />	
-		{% if login %}
+		{% if title_person %}
 			<input id="login" type="button" class="my_a" value="Войти как ..." onclick="click_registration(event)" />	
 		{% endif %}	
 		<a class="my_a" href="/"> На главную страницу </a>
