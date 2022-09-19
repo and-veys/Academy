@@ -15,10 +15,13 @@ class Persons():
         self.__person = {"employees": Employees, "students": Students}
     
     def getData(self, id, person):  
-        return Extra().getDataObject(self.__person[person], id)
+        try:
+            return Extra().getDataObject(self.__person[person], id)
+        except:
+            return None
 
     def control(self, kwargs):
-        return (kwargs["id"].getType() == kwargs["person"])     
+        return ((kwargs["id"].getType() == kwargs["person"]) and kwargs["id"].activ)     
     
     
     
@@ -97,7 +100,7 @@ class Persons():
                 "login": data["login"], 
                 "session": {"id": -1, "tp": "root", "name": "Администратор"},
                 "age": Extra().getRestDay(),
-                "path": "\nВы вошли как Администратор.",
+                "path": Extra().getPath("administrator"),
                 "OK": True
             }   
         return {"path": "\nОшибочные логин и пароль.", "OK": False}

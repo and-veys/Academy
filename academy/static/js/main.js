@@ -4,16 +4,10 @@ function click_image(input) {		//реакция на загрузку фотог
 	data = get_click_image(input);
 	if(isErrorData(data))
 		return;
-	fr = new FileReader();
-	click_disabled();
-	fr.onload = function () {
+	fr = new FileReader();	
+	fr.onload = function () {		
 		data["pic"] = Array.from(new Uint8Array(fr.result));
-		fetch("", createPOST(data))
-		.then(response => response.text())		
-		.then(temp => {
-			click_enabled();
-			response_go(temp);
-		});
+		sendPOST(data);
 	};	
 	fr.readAsArrayBuffer(input.files[0]);
 }
@@ -26,17 +20,9 @@ function get_click_image(input) {
 //-------------------------------------------------------------------------	
 function click_change_info(event) {			//реакция на изменение данных
 	data = get_click_change_info();
-	console.log(data);
 	if(isErrorData(data))
 		return;
-	
-	click_disabled();
-	fetch("", createPOST(data))
-	.then(response => response.text())		
-	.then(temp => {
-		click_enabled();
-		response_go(temp);
-		});
+	sendPOST(data);
 }
 function get_click_change_info() {
 	login = document.getElementById("reg_login");
@@ -74,14 +60,17 @@ function click_schedule() {		//реакция на установку распи
 	data = get_click_schedule();
 	if(isErrorData(data))
 		return;
-	click_disabled();
-	fetch("", createPOST(data))
-	.then(response => response.text())		
-	.then(temp => {
-		click_enabled();
-		response_go(temp);
-		});
+	sendPOST(data);	
 }
+
+function click_edit_schedule() { //реакция на установку изменения расписания
+	data = get_click_edit_schedule();
+	if(isErrorData(data))
+		return;
+	sendPOST(data);
+}
+
+
 function get_click_schedule() {
 	dt = getDate(document.getElementById("reg_date").value);
 	bg = getDate(document.getElementById("begin").innerHTML);
@@ -122,8 +111,24 @@ function get_click_schedule() {
 		return {"error": "Ошибка ввода данных. Дата последнего занятия вне срока обучения"};	
 	return {
 		"professor": prof,
-		"lessons": les,
-	};
+		"lessons": les};
+}
+
+
+
+function get_click_edit_schedule() {
+	dt = getDate(document.getElementById("reg_date").value);
+	if(!dt)
+		return {"error": "Ошибка ввода данных. Формат даты: ДД.ММ.ГГГГ"};
+	tm = document.getElementById("times").value;
+	prof = document.getElementById("professor").value;
+	if(prof == "")
+		return {"error": "Ошибка ввода данных. Не выбран преподаватель"};
+	tm = Number(tm.split("_")[1]);
+	prof = Number(prof.split("_")[1]);	
+	return {
+		"professor": prof,
+		"lesson": [[dt.getFullYear(), dt.getMonth()+1, dt.getDate()].join("-"), tm]};
 }
 function getLesson(dt, tm) {
 	d = dt.getDay();
@@ -189,15 +194,25 @@ function click_registration(event) {	//реакция на регистраци�
 		data = get_click_change_info(); 	
 	if(isErrorData(data))
 		return;	
-	click_disabled();	
-	fetch("", createPOST(data))
-	.then(response => response.text())		
-	.then(temp => {
-		click_enabled();
-		response_go(temp);		
-	}); 			
+	sendPOST(data);		
 }
-
+//---------------------------------------------------
+function click_sort(param) {	
+	arr = new Array(document.getElementsByClassName("rows").length)
+	for(i=0; i<arr.length; ++i) {
+		n = document.getElementById("n"+i);
+		m = Number(document.getElementById("m"+i).innerHTML);
+		arr[i] = [n.getElementsByTagName("a")[0].innerHTML, m, n.innerHTML]; 		
+	}
+	if(param == 'fio')
+		arr.sort((a, b)=>(a[0].localeCompare(b[0])));
+	else
+		arr.sort((a, b)=>(a[1] > b[1] ? -1:1));
+	for(i=0; i<arr.length; ++i) {
+		document.getElementById("n"+i).innerHTML = arr[i][2];
+		document.getElementById("m"+i).innerHTML = arr[i][1].toFixed(2);
+	}
+}
 //---------------------------------------------------
 function click_arrow(event) {
 	path = document.location.pathname.split("/");
@@ -233,12 +248,21 @@ function click_arrow(event) {
 }
 
 function click_calendar(event) {
-	info = JSON.parse(document.getElementById("h" + event.target.id).value);
+	info = JSON.parse(event.target.dataset.info)
 	str = info["day"];
 	if(info["weekend"] != "")
-		str = "<span class='text_red'>" + str + ". " + info["weekend"] + "</span>";
-	for(el of info["events"])
-		str += ("<br />" + el);	
+		str = "<span class='text_red'>" + str + ". " + info["weekend"] + "</span>";	
+	try {
+		str += "<br /><table>";
+		for(el of info["events"]) {
+			str += "<tr><td class='calendar_info'>&#x2713</td>"
+			for(i=0; i<el.length; ++i)
+				str += ("<td class='calendar_info'>" + el[i] + "</td>");
+			str += "</tr>"		
+		}
+		str+= "</table>";
+	}
+	catch(err) {}
 	document.getElementById("calender_info").innerHTML = str;
 }	
 
@@ -252,6 +276,16 @@ function getCookie(cook) {		//получить логин из cookie
 			return temp[1];
 	}
 	return "";
+}
+
+function sendPOST(data) {
+	click_disabled();
+	fetch("", createPOST(data))
+	.then(response => response.text())		
+	.then(temp => {
+		click_enabled();
+		response_go(temp);
+	});
 }
 function createPOST(data, accept='text/html') {	//структура пост запроса
 	csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value
@@ -306,102 +340,26 @@ function disabledTag(tag, dis) {
 }
 //-------------------------------------------------------------------------	
 
+function click_edit_marks() {				//реакция на изменение оценок
+	data = get_click_edit_marks();
+	if(isErrorData(data))
+		return;
+	sendPOST(data);
+}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/* function getChoicePerson(name, ex=""){
-	data = {"event": name};
-	dep = document.getElementById('app_department');
-	if(dep) {
-		data["dep"] = getID(dep.value);
-		if(ex != "dep") {
-			data["sta"] = getID(document.getElementById('app_status').value);
-			data["emp"] = getID(document.getElementById('app_employee').value);
-			if(ex == "OK")
-				if(data["dep"]==0 || data["sta"]==0)
-					data = {"error": "Отдел и должность должны быть указаны."} 
-				else
-					data["OK"] = getCookie("login");
-		}
-		//TODO проверки
+function get_click_edit_marks() {		
+	sel = document.getElementsByTagName("select");
+	data = []
+	for(i=0; i<sel.length; ++i) {
+		if(sel[i].value != "")
+			data.push([Number(sel[i].id), Number(sel[i].value)]);	
 	}
-	return data
-}	
-	
-	
-
-
-function getPersonalInfo() {
-	id = document.getElementById("app_select").value;
-	ln = document.getElementById("reg_lastname").value;
-	fn = document.getElementById("reg_firstname").value;
-	pt = document.getElementById("reg_patronymic").value;
-	bd = document.getElementById("reg_birthday").value.split(".").reverse();
-	ph = document.getElementById("reg_phone").value.split("-").join('');
-	em = document.getElementById("reg_e_mail").value;
-
-	if(id=="")
-		return {"error": "Выберете Вашу заявку."};
-	if(ln.length == 0 || fn.length == 0)
-		return {"error": "Фамилия и Имя должны быть не менее 1-го символа."};
-	if(bd.length != 3)
-		return {"error": "Ошибочная дата рождения. Формат даты: 'ДД.ММ.ГГГГ'."};
-	temp = new Date(bd.join('-'));	
-	if(temp.getDate() != Number(bd[2]) || temp.getMonth() != Number(bd[1])-1 || temp.getFullYear() != Number(bd[0]))
-		return {"error": "Ошибочная дата рождения. Такой даты не бывает."};
-	temp = (new Date()).getFullYear()- temp.getFullYear();	
-	if(temp < 10 || temp > 90)
-		return {"error": "Ошибочная дата рождения. Возрастные ограничения."};	
-	if(ph.length < 12 || ph[0] != '+')
-		return {"error": "Ошибочный телефон. Допустимый формат: '+X-XXX-XXX-XX-XX'."};	
-	temp = em.split('@')
-	if(em.split(' ').length != 1 || temp.length != 2 || temp[1].split('.').length == 1)
-		return {"error": "Явно ошибочная электронная почта."};
-	
-	temp = (s => {
-					if(s.length == 0) return "";
-					s.toLowerCase();
-					return s[0].toUpperCase() + s.substring(1);})
-	
-	return {
-		//"person": document.location.href.split('/').pop(),
-		"id": getID(id),
-		"info": {
-			"lastname": 	temp(ln),
-			"firstname": 	temp(fn),
-			"patronymic": 	temp(pt),
-			"birthday":		bd.join('-'),
-			"phone":		ph,
-			"e_mail":		em
-		}		
-	}
+	if(data.length == 0) 
+		return {"error": "Не поставлено ни одной оценки."};
+	return  data;  
 }
 
-
-
-
-
-
-
-
-
-function getID(id) {
-	return Number(id.substring(3));
-}
+//-------------------------------------------------------------------------	
 
 
 
@@ -411,109 +369,16 @@ function getID(id) {
 
 
 
-function saveData() {
-	console.log("!save");
-}
-function loadData() {
-	console.log("!load");
-}
-function getStudent() {
-	console.log("getStudent");
-}
-function getEmployee() {
-	console.log("getEmployee");
-}
 
 
 
-//-----------------------------------------------------------------
-
-function click_personal_info(event) {
-	data = getPersonalInfo();
-	if(isErrorData(data))
-		return;	
-	click_disabled();
-	fetch("", createPOST(data))
-	.then(response => response.text())		
-	.then(temp => {
-		click_enabled();
-		document.getElementById("center").innerHTML = temp;});
-}
-
-function click_registration(event) {
-	if (event.target.id == "login")
-		data = {"login": getCookie("login")};			
-	else
-		data = getLoginPassword();
-	if(isErrorData(data))
-		return;	
-	click_disabled();	
-	fetch("", createPOST(data, 'application/json'))
-	.then(response => response.json())		
-	.then(temp => {
-		click_enabled();
-		if(temp["href"]=="") 
-			errorMessage("Ошибочные логин и пароль. Повторите.");			
-		else
-			if(temp["html"]=="")
-				window.location.href = temp["href"];
-			else
-				document.getElementById("center").innerHTML = temp["html"];
-	});			
-}
-function click_choice_delegation(event) {
-	data = {"id": event.target.id, "login": getCookie("login")}
-	click_disabled();
-	fetch("", createPOST(data, 'application/json'))
-	.then(response => response.json())		
-	.then(temp => {
-		click_enabled();
-		window.location.href = temp["href"];
-	});			
-}
 
 
 
-function click_administrator(name, ex="") {
-	data = getChoicePerson(name, ex);
-	if(isErrorData(data))
-		return;	
-	click_disabled();
-	fetch("", createPOST(data))
-	.then(response => response.text())		
-	.then(temp => {
-		click_enabled();
-		document.getElementById("center").innerHTML = temp;});			
-	
-	
 
-	
-	
-	
-	
-	
-	
-	
-	fun = {
-			"employee": getEmployee,
-			"student": getStudent,
-			"save": saveData,
-			"load": loadData};
-	fun[name](); 
-	
-}
 
- */
- 
- 
- 
-/* function click_person(event) {		//реакция на нажатие фамилии	
-	data = {"id": event.target.id}
-	click_disabled();	
-	fetch("", createPOST(data))
-	.then(response => response.text())		
-	.then(temp => {
-		click_enabled();
-		window.location.href = temp;
-	});			
-} */
+
+
+
+
+

@@ -1,0 +1,20 @@
+{% extends "main.html" %}
+{% load static %}
+{% block caption %}
+	{{caption}}
+{% endblock caption %}
+{% block main %}
+	<div class="start_main">
+		{% csrf_token %}
+		<div class="list">	
+			<ul class="list_name">
+				{% for k1, e1 in data.items %}										
+					<li> 
+						<a class="li_name" href={{"/info"|add:person|add:k1}}>{{e1}}</a>
+					</li>									
+				{% endfor %}
+			</ul>
+		</div>	
+		<a class="my_a" href={{back}}> Назад </a>
+	</div>
+{% endblock main %}

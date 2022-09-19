@@ -5,7 +5,7 @@ from .groups import Groups
 from .subjects import Subjects
 from .students import Students
 from .schedule import Schedule
-
+from .departments import Departments
 
 class Access():
     __inst = None 
@@ -19,7 +19,7 @@ class Access():
         """Конвертирование и проверка параметров"""
         def wrapper(request, **kwargs):
             if("person" in kwargs):
-                arr = {"id": Persons(), "grp": Groups(), "sbj": Subjects(), "std": Students(), "sch": Schedule()}
+                arr = {"id": Persons(), "grp": Groups(), "sbj": Subjects(), "std": Students(), "sch": Schedule(), "cwk": Departments()}
             else:
                 arr = {}
             res = True
@@ -31,6 +31,7 @@ class Access():
                     else:
                         res = False
                         break
+            
             if(res):
                 for el in kwargs:
                     if((el in arr) and (not arr[el].control(kwargs))):
@@ -48,7 +49,7 @@ class Access():
                 return fun(request, **kwargs)
             session = Extra().getSession(request)
             if(session):
-                if(session["id"] == -1 or (kwargs["person"] == session["tp"] and kwargs["id"].id == session["id"])):
+                if(session["id"] == -1 or (kwargs["person"] == session["tp"] and kwargs["id"] == session["id"])):
                     return fun(request, **kwargs)
             return Extra().render(request, "error_access.html") 
         return wrapper

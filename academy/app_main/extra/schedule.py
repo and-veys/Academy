@@ -1,6 +1,8 @@
-from ..models import Schedule as db, Employees, NamesWeekDays, LessonTimes
+from ..models import Schedule as db, Employees, NamesWeekDays, LessonTimes, Groups, Subjects, NamesMarks, Students, Marks
 from .extra import Extra
 from datetime import date
+
+from django.db.models import Count
 
 class Schedule():
     __inst = None 
@@ -44,7 +46,7 @@ class Schedule():
             
             
             
-    def createLessons(self, grp, sbj):
+    def createLessons(self, grp, sbj, prf=True):
         rows = db.objects.filter(group=grp.id, subject=sbj.id).order_by('lesson_date', 'lesson_time')
         res = {}
         an = ""
@@ -53,19 +55,24 @@ class Schedule():
             if(date.today() <= el.lesson_date):
                 but = ("" if el.isActivProfessor() else "bg_red")
                 if(an == ""):
-                    an = str(el.id)               
-            temp = [but, [
-                Extra().getStringData(el.lesson_date),
-                Extra().getStringTimeShort(el.lesson_time.time),
-                el.getActivProfessor()]]
+                    an = str(el.id) 
+            if(prf):
+                temp = [but, [
+                    Extra().getStringData(el.lesson_date),
+                    Extra().getStringTimeShort(el.lesson_time.time),
+                    el.getActivProfessor()]]
+            else:
+                temp = [but, [
+                    Extra().getStringData(el.lesson_date),
+                    Extra().getStringTimeShort(el.lesson_time.time)],
+                    el.professor.id]
             res[str(el.id)] = temp
         return {
                 "group_subject": '{}, "{}"'.format(grp.name, sbj.name),
-                "caption": ["Урок", "Дата", "Время", "Преподаватель"],
                 "lessons": res,
                 "anchor": str(an)}
                 
-                
+               
                 
                 
     def createLesson(self, sch):
@@ -77,14 +84,63 @@ class Schedule():
         res["currentprofessor"] = str(pr.id if pr else -1)
         return res           
                 
-            
-                
-        
+          
     
     def setEditSchedule(self, data, sch):
         pr = Employees.objects.get(id=data["professor"])            
         sch.setLesson(data["lesson"], pr);    
-                
-                
-                
-                
+    
+
+    
+
+    
+    
+              
+    def createProfessorSubjects(self, id):
+        rows = db.objects.filter(professor=id)        
+        temp = rows.values("subject").annotate(cnt=Count('id')).order_by('subject__name') 
+        res = {} 
+        for el in temp:  
+            s = Subjects.objects.get(id=el["subject"])
+            gr = rows.filter(subject__id=el["subject"]).values("group").annotate(cnt=Count('id')).order_by('group__name')
+            ar = {}
+            for q in gr:
+                g = Groups.objects.get(id=q["group"])
+                ar[str(g.id)] = [g.name, g.course.name]
+            res[str(s.id)] = [s.name, ar]
+        return res
+    
+    
+    def createMarks(self, sch):
+        rows = Students.objects.filter(group=sch.group)
+        mm = Marks.objects.filter(lesson=sch)
+        nm = dict(map(lambda s: (str(s.id), s.name), NamesMarks.objects.all()))
+        res = {}
+        for el in rows:
+            try:
+                temp = mm.get(student=el)
+                temp = nm[str(temp.mark.id)]
+            except:
+                temp = ""
+            res[str(el.id)] = [el.getShotName(), temp]    
+     
+        return {
+            "data": res,
+            "group": sch.group.name,
+            "subject": sch.subject.name,
+            "date": Extra().getStringData(sch.lesson_date),
+            "time": Extra().getStringTimeShort(sch.lesson_time.time),
+            "marks": nm
+        
+        }
+        
+    @Extra().query_debugger     
+    def setMarks(self, grp, sch, data):
+        mm = dict(map(lambda s: (s.id, s), NamesMarks.objects.all()))
+        std = Students.objects.filter(group=grp)
+        for el in data:
+            Marks.objects.create(lesson=sch, student=std.get(id=el[0]), mark=mm[el[1]])
+        return ""
+        
+        
+     

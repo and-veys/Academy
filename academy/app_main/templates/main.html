@@ -9,7 +9,7 @@
 		<title>
 			 
 			{%if title_person %}
-				Солнышко: {{title_person}}
+				Солнышко: {{title_person.name}}
 			{% else %}
 				Солнышко
 			{% endif %}
@@ -20,7 +20,12 @@
 			<div id="top">
 				<img id="logo" src={% static "pic/logo.png" %} />
 				<div>
-					<a id="academy" href="/">Академия "Солнышко"</a>
+					{% if title_person and title_person.id != "-1"%}						
+						<a class="academy" href='{{"/work/"|add:title_person.tp|add:"/"|add:title_person.id}}'>
+					{% else %}
+						<a class="academy" href='/'>
+					{% endif %}
+					Академия "Солнышко"</a>
 				</div>
 				<img id="logo" src={% static "pic/logo.png" %} />
 			</div>
@@ -33,7 +38,7 @@
 				{% endblock main %}
 			</div>
 			<div id="bottom">
-			Обновлено {% now "d.m.Y" %} в {% now "H:i:s" %}
+			<a class="academy" href="/"> Обновлено {% now "d.m.Y" %} в {% now "H:i:s" %} </a>
 			</div>
 		</div>
 	</body>

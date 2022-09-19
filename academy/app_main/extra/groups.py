@@ -4,10 +4,9 @@ from .extra import Extra
 from datetime import date
 
 
-from django.db.models import Count, Sum, Avg, Min, Max
-from django.db import connection, reset_queries
-import time
-import functools
+from django.db.models import Avg
+
+
 
 
 
@@ -55,30 +54,8 @@ class Groups():
                     el.subject.name, 
                     list(map(lambda s: {"date": s.lesson_date, "professor": s.isActivProfessor()}, temp))]
         return res            
-    
-   
 
-    
-    
-
-
-
-    # def query_debugger(func):               #TODO  удалить и импорты
-        # @functools.wraps(func)
-        # def inner_func(*args, **kwargs):
-            # reset_queries()            
-            # start_queries = len(connection.queries)
-            # start = time.perf_counter()
-            # result = func(*args, **kwargs)
-            # end = time.perf_counter()
-            # end_queries = len(connection.queries)
-            # print(f"Function : {func.__name__}")
-            # print(f"Number of Queries : {end_queries - start_queries}")
-            # print(f"Finished in : {(end - start):.2f}s")
-            # return result
-        # return inner_func
-
-    def getMarksGroup(self, grp, sbj=None):             #TODO            
+    def getMarksGroup(self, grp, sbj=None):                       
         data = dict(map(lambda s: (str(s.id), [s.getShotName(), 0]), Students.objects.filter(group=grp))) 
         if(sbj):
             marks = Marks.objects.filter(lesson__group=grp, lesson__subject=sbj) 
@@ -121,4 +98,13 @@ class Groups():
                 "total": Extra().getRoundString(mm, 2),
                 "data": data,
                 "subject": (sbj.name if sbj else "")}
+    
+    def createGroup(self, grp):
+        rows = Students.objects.filter(group=grp).order_by('lastname')
+        return {
+            "caption": 'Группа "{}"'.format(grp.name),
+            "data": dict(map(lambda s: (str(s.id), s.getShotName()), rows))    
+        }
+        
+        
         

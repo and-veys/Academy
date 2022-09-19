@@ -41,7 +41,7 @@ html {
 	padding:				0.5rem;	
 }
 
-#academy {
+.academy {
 	text-decoration: 		none;	
 	color:					var(--main-text-color);
 	
@@ -177,6 +177,7 @@ li {
 }
 
 th, td {
+	font-size:				1.5rem;
 	padding:				0.2rem;
 }
 
@@ -226,9 +227,10 @@ th, td {
 	font-size:				1.5rem;	
 }
 
-.verysmall {
-	height:					3rem;
-	font-size:				1rem;	
+.marks {
+	height:					2rem;
+	font-size:				1.2rem;
+	width:					15rem;
 }
 
 .circle {
@@ -298,6 +300,11 @@ th, td {
 
 .calendar_num {
 	color:				var(--calendar-num);	
+}
+
+.calendar_info {
+	font-size:			1rem;
+
 }
 
 .calendar_date, .calendar_days {	

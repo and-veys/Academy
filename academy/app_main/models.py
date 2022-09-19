@@ -326,7 +326,7 @@ class Schedule(models.Model):
         pr = self.isActivProfessor()
         return (pr.getShotName() if pr else "" )
     
-    def isActivProfessor(self):      #TODO протестить не активного профессора
+    def isActivProfessor(self):      
         if(self.professor != None and self.professor.activ == False and self.lesson_date >= date.today()):
             return None;
         return self.professor   

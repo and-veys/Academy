@@ -1,0 +1,43 @@
+﻿{% extends "main.html" %}
+{% load static %}
+{% block caption %}
+	Группа "{{group}}", <br />
+	предмет "{{subject}}"
+{% endblock caption %}
+{% block main %}
+	<div class="start_main">
+		{% csrf_token %}
+		<div class="table center">
+			<table>
+				<tr><td colspan="3" class="calendar_days">{{date}} в {{time}}</td></tr>
+				<tr>
+					<td class="calendar_days"></td>
+					<td class="calendar_days">Студент</td>
+					<td class="calendar_days"><nobr>Оценка</nobr></td>
+				</tr>				
+				{% for key, el in data.items %}
+					<tr class="rows">
+						<td class="row_table">{{forloop.counter}}</td>
+						<td class="row_table"><a class="li_name" href='{{"/info"|add:person|add:key}}'><nobr>{{el.0}}</nobr></a></td>
+						<td class="row_table">
+							{%if el.1 %}
+								{{el.1}}
+							{% else %}								
+								<select id='{{key}}' class="my_input marks">
+									<option value="" selected>нет оценки</option>
+									{%for k, m in marks.items %}
+										<option value="{{k}}">{{m}}</option>
+									{%endfor%}
+								</select> 
+							{% endif %}
+						</td>
+					</tr>
+				{% endfor%}			
+			</table>
+		</div>
+		<div class="row_div">
+			<input type="button" class="my_a two_in_row small" value='OK' onclick="click_edit_marks()"/>
+			<a class="my_a two_in_row small" href='{{back}}'> Назад </a>
+		</div>
+	</div>
+{% endblock main %}

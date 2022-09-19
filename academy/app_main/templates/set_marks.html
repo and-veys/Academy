@@ -12,24 +12,24 @@
 					<td class="calendar_days"> Урок </td>	
 					<td class="calendar_days"> Дата </td>	
 					<td class="calendar_days"> Время </td>	
-					<td class="calendar_days"> Преподаватель </td>	
 					<td></td>
 				</tr>
 				{%for k, el in lessons.items %}
-					<tr id={{k}}>				
-						<td class="calendar_days normal">{{ forloop.counter}}</td>
-						{%for i in el.1 %}	
-							<td class="calendar_days normal"><nobr>{{i}}</nobr></td>
-						{%endfor%}
-						<td>
-							{% if el.0 == "was" %}						
-								<div class="my_div circle">&#x2713 </div>
-							{% else %}
-								<a class='{{"my_a circle "|add:el.0}}' 
-										href='{{"/editschedule"|add:person|add:k}}'></a>								
-							{% endif %}
-						</td>							
-					</tr>
+					{% if el.2 == id %}
+						<tr id={{k}}>				
+							<td class="calendar_days normal">{{ forloop.counter}}</td>
+							{%for i in el.1 %}	
+								<td class="calendar_days normal"><nobr>{{i}}</nobr></td>
+							{%endfor%}
+							<td>
+								{% if el.0 == "was" %}						
+									<a class="my_a circle" href='{{"/editmarks"|add:person|add:k}}'></a>
+								{% else %}
+									<div class="my_div circle">&#x2014 </div>																
+								{% endif %}
+							</td>							
+						</tr>
+					{% endif %}
 				{% endfor %}				
 			</table>		
 		</div>		

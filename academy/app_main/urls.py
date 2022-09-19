@@ -7,14 +7,16 @@ from . import views
 urlpatterns = [
     path("bot/", views.bot),
     
-    path("", views.main, name="main"), 
+    path("", views.main), 
     path("departments/", views.departments),
     path("info/<int:id>", views.info),
     path("info/<str:person>/<int:id>/<int:grp>/<int:std>", views.info),
     path("info/<str:person>/<int:id>/<int:grp>/<int:sbj>/<int:std>", views.info),
-    
-    
-    
+    path("info/<str:person>/<int:id>/<int:grp>/<int:sbj>/<int:sch>/<int:std>", views.info),
+    path("info/<str:person>/<int:id>/<int:cwk>", views.info),
+
+
+
     
     path("courses/", views.courses),
     path("registration/", views.registration),
@@ -42,21 +44,12 @@ urlpatterns = [
     
     path("marksgroupstudent/<str:person>/<int:id>/<int:grp>/<int:std>", views.marksGroupStudent),
     path("markssubjectstudent/<str:person>/<int:id>/<int:grp>/<int:sbj>/<int:std>", views.marksSubjectStudent),
-    
-    
-    
-    
-    
-    
-    
-    
-
 
     path("marks/<str:person>/<int:id>", views.marks),
+    path("setmarks/<str:person>/<int:id>/<int:grp>/<int:sbj>", views.setMarks),
+    path("editmarks/<str:person>/<int:id>/<int:grp>/<int:sbj>/<int:sch>", views.editMarks),
     
-    
-    
-    
+    path("coworkers/<str:person>/<int:id>", views.coworkers),
     
     path("serialize/", views.serialize),
     path("generate/", views.generate),

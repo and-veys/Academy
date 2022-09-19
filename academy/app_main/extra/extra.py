@@ -1,6 +1,10 @@
 from datetime import datetime 
 from django.shortcuts import render
 
+import functools
+from django.db import connection, reset_queries
+import time
+
 class Extra:
     __inst = None 
     def __new__(cls):
@@ -18,10 +22,9 @@ class Extra:
     
     def getDataObject(self, db, id):        
         try:
-            temp = db.objects.get(id=id)   
+            return db.objects.get(id=id)   
         except:
             return None    
-        return temp
         
     def getStringAmountMonths(self, m):
         return self.__getStringAmount(m, self.__amount_months)
@@ -120,12 +123,29 @@ class Extra:
 
     def render(self, *args):
         res = self.getSession(args[0])
-        if(res):
+        if(res): 
+            Extra().paint(res)
+            res["id"] = str(res["id"])
             if(len(args) == 2):
-                return render(*args, {"title_person": res["name"]})
+                return render(*args, {"title_person": res})
             else:
-                args[2]["title_person"] = res["name"]
+                args[2]["title_person"] = res       
+                
         return render(*args) 
-        
+    
+    def query_debugger(self, func):               #TODO  удалить и импорты
+        @functools.wraps(func)
+        def inner_func(*args, **kwargs):
+            reset_queries()            
+            start_queries = len(connection.queries)
+            start = time.perf_counter()
+            result = func(*args, **kwargs)
+            end = time.perf_counter()
+            end_queries = len(connection.queries)
+            print(f"Function : {func.__name__}")
+            print(f"Number of Queries : {end_queries - start_queries}")
+            print(f"Finished in : {(end - start):.2f}s")
+            return result
+        return inner_func   
         
         

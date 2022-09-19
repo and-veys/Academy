@@ -1,0 +1,29 @@
+{% extends "main.html" %}
+{% load static %}
+{% block caption %}
+	Мои предметы и группы
+{% endblock caption %}
+{% block main %}
+	<div class="start_main">
+		{% csrf_token %}
+		<div class="list">			
+			{% for key, el in data.items %}
+				<ul>
+					<li> 					
+					<i> Предмет "{{el.0}}"</i>				
+					</li>
+					<ul class="list_name">
+						{% for k, e in el.1.items %}
+							<li>
+								<a class="li_name" href='{{"/setmarks"|add:person|add:k|add:"/"|add:key}}'>
+									Группа "{{e.0}}", курс "{{e.1}}"								
+								</a>
+							</li>							
+ 						{% endfor %}
+					</ul>
+				</ul>			
+			{% endfor%}
+		</div>		
+		<a class="my_a" href='{{back}}'> Назад </a>
+	</div>
+{% endblock main %}

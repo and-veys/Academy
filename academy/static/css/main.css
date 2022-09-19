@@ -4,7 +4,10 @@ margin: 			0;
 box-sizing:			border-box;
 }
 html {
-	font-size:				20px;
+	min-height:				700px;
+	min-width:				700px;
+	font-size:				15px;
+	
 	font-family:			"Arial", sans-serif;
 	color:					black;
 	--main-color:			rgb(200,255,255);
@@ -38,7 +41,7 @@ html {
 	padding:				0.5rem;	
 }
 
-#academy {
+.academy {
 	text-decoration: 		none;	
 	color:					var(--main-text-color);
 	
@@ -138,8 +141,17 @@ html {
 	overflow-y:				auto;
 	margin-bottom:			2rem;
 	width:					100%;	
-	height:					70%;
+	height:					90%;
 }
+
+.table {
+	font-size:				1.5rem;
+	overflow-y:				auto;
+	margin-bottom:			2rem;
+	width:					100%;	
+	//height:					70%;
+}
+
 .list_name {
 	font-size:				1.2rem;
 	padding-bottom:			1.5rem;
@@ -165,6 +177,7 @@ li {
 }
 
 th, td {
+	font-size:				1.5rem;
 	padding:				0.2rem;
 }
 
@@ -214,9 +227,10 @@ th, td {
 	font-size:				1.5rem;	
 }
 
-.verysmall {
-	height:					3rem;
-	font-size:				1rem;	
+.marks {
+	height:					2rem;
+	font-size:				1.2rem;
+	width:					15rem;
 }
 
 .circle {
@@ -275,7 +289,7 @@ th, td {
 	cursor: 			pointer;
 }
 
-.calendar_num, .calendar_date, .calendar_days {
+.calendar_num, .calendar_date, .calendar_days, .row_table {
 	width:				5rem;
 	font-weight:		bold;
 	font-size:			1.2rem;
@@ -288,10 +302,18 @@ th, td {
 	color:				var(--calendar-num);	
 }
 
+.calendar_info {
+	font-size:			1rem;
+
+}
+
 .calendar_date, .calendar_days {	
 	color:				var(--calendar-color);	
 }
 
+.row_table {
+	font-weight:		normal;
+}
 
 .calendar_weekend {
 	color:				var(--calendar-weekend);
@@ -314,7 +336,7 @@ th, td {
 
 #calender_info {
 	width:				100%;
-	height:				4.6rem;
+	height:				5rem;
 	overflow-y:			auto;
 	text-align:			left;
 	font-size:			1rem;
@@ -333,8 +355,6 @@ th, td {
 .bg_red {
 	background-color:		red;
 }
-
-
 
 select {
 	-moz-appearance: 		none;

@@ -15,50 +15,65 @@ import json
 from datetime import date
 
 
+def render(*args):
+    return Extra().render(*args)
+
 def bot(request):                                   
     """Обработчик сообщений от телебота"""
     if("command" not in request.GET):
-        return Extra().render(request, "error_access.html")
+        return render(request, "error_access.html")
     resp = Bot().message(request.GET)
     return HttpResponse(resp)
 
+def pageNotFound(request, exception):
+    return render(request, "error_404.html")
+
+
 def main(request):                                  
     """Главная страница"""
-    return Extra().render(request, "start.html")
+    return render(request, "start.html")
 
 def departments(request):                           
     """Страница структуры отделов"""        
     content = Departments().createStructure()    
-    return Extra().render(request, "departments.html", {"data": content})
+    return render(request, "departments.html", {"data": content})
 
 def courses(request):                             
     """Страница курсов обучения"""    
     content = Courses().createStructure()      
-    return Extra().render(request, "courses.html", {"data": content})
+    return render(request, "courses.html", {"data": content})
 
-
-@Access().convertData
 @Access().isAccess
+@Access().convertData
 def info(request, **kwargs):         
     """Страница с краткой информацией о работниках/студентах"""
     if("person" not in kwargs):
         back = ["/departments", "К структуре Академии"]
         per = "employees"
         id = kwargs["id"]
-    elif("grp" in kwargs and "std" in kwargs):
+    elif("std" in kwargs):
         per = "students"
         id = kwargs["std"]
-        temp = map(lambda s: (s if (type(s) == type("1")) else s.id), kwargs.values())
-        if("sbj" in kwargs):
-            back = [Extra().getPath("markssubjectstudent", *temp), "Назад"]
+        temp = list(map(lambda s: (s if (type(s) == type("1")) else s.id), kwargs.values()))
+        if("sch" in kwargs):
+            temp = temp[:-1]
+            back = "editmarks"
         else:
-            back = [Extra().getPath("marksgroupstudent", *temp), "Назад"]
+            if("sbj" in kwargs):
+                back = "markssubjectstudent"
+            else:
+                back = "marksgroupstudent"
+        back = [Extra().getPath(back, *temp), "Назад"] 
+    elif("cwk" in kwargs):
+        per = kwargs["person"]
+        id = kwargs["cwk"]
+        back = [Extra().getPath("coworkers", kwargs["person"], kwargs["id"].id), "Назад"]        
     else:
-        return Extra().render(request, "error_access.html")
+        return render(request, "error_access.html")   
     return personalInformation(request, per, id, False, back)
 
-@Access().convertData
 @Access().isAccess
+@Access().convertData
 def personalInfo(request, person, id):          
     """Страница с информацией (полной) о работниках и студентах"""
     back = [Extra().getPath("work", person, id.id), "Приступить к работе"]
@@ -73,9 +88,9 @@ def personalInformation(request, person, id, full, back):
     content["back"] = back    
     content["full"] = full 
     if(content["OK"]):
-        return Extra().render(request, "info_persons.html", content)
+        return render(request, "info_persons.html", content)
     else:
-        return Extra().render(request, "error_access.html")
+        return render(request, "error_access.html")
 
 
 def registration(request):                         
@@ -88,21 +103,20 @@ def registration(request):
             request.session[data["login"]] = data["session"]
             res.set_cookie("login", data["login"], max_age = data["age"])  
         return res  
-    return Extra().render(request, "registration.html")
+    return render(request, "registration.html")
 
-
-@Access().convertData
 @Access().isAccess
-def changePersonal(request, person, id):            #"changeinfo/<str:person>/<int:id>"
+@Access().convertData
+def changePersonal(request, person, id):            
     """Страница изменения личных данных"""
     res = {
         "caption": "Изменение персональных данных",
         "info": True}
     return changeInfo(request, person, id, res)
-    
+
+@Access().isAccess  
 @Access().convertData
-@Access().isAccess
-def changePassword(request, person, id):            #"changepassword/<str:person>/<int:id>"
+def changePassword(request, person, id):           
     """Страница изменения пароля"""
     res = {
         "caption": "Изменение идентификации",
@@ -116,35 +130,33 @@ def changeInfo (request, person, id, add):
         return HttpResponse(Persons().loadInfo(data, id, person))
     content = Persons().createStructure(id, person) | add
     content["back"] = Extra().getPath("personal", person, id.id)     
-    return Extra().render(request, "change_info.html", content)
+    return render(request, "change_info.html", content)
 
 
-
-@Access().convertData
 @Access().isAccess
+@Access().convertData
 def work(request, person, id):                      #TODO           #"work/"
     """Рабочая страница работников и студентов"""
     info = Persons().getWork(id, person)   
     info["today"] = date.today().strftime("%Y%m")
-    return Extra().render(request, info["html"], info)
-    
+    return render(request, info["html"], info)
+
+@Access().isAccess  
 @Access().convertData
-@Access().isAccess
 @Access().isEmployee
 @Access().isLeader
 def groups(request, person, id):
     """Страница составления-просмотра расписания группы"""
-    info = Groups().createStructure(id)
-    if(not info):    
-        return Extra().render(request, "error_access.html")    
+    info = Groups().createStructure(id)  
     content = {
         "data": info,
         "person": Extra().getPath(person, id.id) + "/",
         "back": Extra().getPath("work", person, id.id)}        
-    return Extra().render(request, "groups.html",  content)
+    return render(request, "groups.html",  content)
 
-@Access().convertData
 @Access().isAccess
+@Access().convertData
+@Access().isEmployee
 @Access().isLeader
 def setSchedule(request, person, id, grp, sbj):
     """Страница первичного составления расписания предмета"""
@@ -155,26 +167,24 @@ def setSchedule(request, person, id, grp, sbj):
         if(res == ""):
             res = back
         return HttpResponse(res);
-    info = Schedule().createSchedule(grp, sbj)
-    if(not info):    
-        return Extra().render(request, "error_access.html") 
+    info = Schedule().createSchedule(grp, sbj) 
     info["back"] = back
-    return Extra().render(request, "set_schedule.html", info)
+    return render(request, "set_schedule.html", info)
 
-@Access().convertData
 @Access().isAccess
+@Access().convertData
+@Access().isEmployee
 @Access().isLeader
 def getSchedule(request, person, id, grp, sbj):
     """Страница просмотра расписания предмета"""
     info = Schedule().createLessons(grp, sbj)
-    if(not info):    
-        return Extra().render(request, "error_access.html") 
     info["back"] = Extra().getPath("groups", person, id.id)   
     info["person"] = Extra().getPath(person, id.id, grp.id, sbj.id) + "/"
-    return Extra().render(request, "get_schedule.html", info)
+    return render(request, "get_schedule.html", info)
 
-@Access().convertData
 @Access().isAccess
+@Access().convertData
+@Access().isEmployee
 @Access().isLeader
 def editSchedule(request, person, id, grp, sbj, sch):
     """Страница редактирования даты-время-преподаватель урока"""
@@ -186,24 +196,25 @@ def editSchedule(request, person, id, grp, sbj, sch):
     
     info = Schedule().createLesson(sch) 
     info["back"] = back
-    return Extra().render(request, "edit_schedule.html", info)
+    return render(request, "edit_schedule.html", info)
 
-@Access().convertData
 @Access().isAccess
+@Access().convertData
 def calendar(request, person, id, dt):        
     """Страница личного календаря"""                      
     return getCalendar(request, person, id, dt, "my")
 
-@Access().convertData
 @Access().isAccess
+@Access().convertData
+@Access().isEmployee
 @Access().isLeader
 def calendarDepartment(request, person, id, dt):           
     """Страница календаря отдела"""                      
     return getCalendar(request, person, id, dt, "dep")   
 
-
-@Access().convertData
 @Access().isAccess
+@Access().convertData
+@Access().isEmployee
 @Access().isDIR
 def calendarAll(request, person, id, dt):            
     """Страница календаря всех"""                      
@@ -214,89 +225,130 @@ def getCalendar(request, person, id, dt, ev):
     """Функция отображения календаря"""
     info = Calendar().getMonthData(dt)
     if(not info):
-        return Extra().render(request, "error_access.html") 
+        return render(request, "error_access.html") 
     info["events"] = Persons().getEvent(id, person, info["range"], ev)
     info["back"] = Extra().getPath("work", person, id.id)
     content = Calendar().getContent(info)
-    return Extra().render(request, "calendar.html", content)
+    return render(request, "calendar.html", content)
     
     
-    
+@Access().isAccess    
 @Access().convertData
-@Access().isAccess
+@Access().isEmployee
 @Access().isLeaderOrDIR
 def progress(request, person, id):
     """Страница курс-предмет факультета""" 
-    info = Groups().createStructure(id)
-    if(not info):    
-        return Extra().render(request, "error_access.html")   
+    info = Groups().createStructure(id)  
     content = {
         "data": info,
         "person": Extra().getPath(person, id.id) + "/",
         "back": Extra().getPath("work", person, id.id)}        
-    return Extra().render(request, "progress_groups.html", content)
+    return render(request, "progress_groups.html", content)
     return getProgress(request, person, id, False)
 
 
-
+@Access().isAccess 
 @Access().convertData
-@Access().isAccess   
+@Access().isEmployee  
 @Access().isLeaderOrDIR                              
 def marksGroup(request, person, id, grp):
     """Страница средних оценок студентов группы"""
     info = Groups().getMarksGroup(grp)    
     info["person"] = Extra().getPath("marksgroupstudent", person, id.id, grp.id) + "/"
     info["back"] = Extra().getPath("progress", person, id.id)
-    return Extra().render(request, "get_marks.html", info)
+    return render(request, "get_marks.html", info)
     
 
-
-@Access().convertData
 @Access().isAccess
+@Access().convertData
+@Access().isEmployee
 @Access().isLeaderOrDIR
 def marksSubject(request, person, id, grp, sbj):   
     """Страница средних оценок по предмету студентов группы"""
     info = Groups().getMarksGroup(grp, sbj)
     info["person"] = Extra().getPath("markssubjectstudent", person, id.id, grp.id, sbj.id) + "/"
     info["back"] = Extra().getPath("progress", person, id.id)
-    return Extra().render(request, "get_marks.html", info) 
-    
-@Access().convertData
-@Access().isAccess   
+    return render(request, "get_marks.html", info) 
+
+@Access().isAccess     
+@Access().convertData 
+@Access().isEmployee
 @Access().isLeaderOrDIR
 def marksGroupStudent(request, person, id, grp, std):               
     """Страница всех оценок студента группы"""
     info = Groups().getMarksStudent(std)
     info["back"] = Extra().getPath("marksgroup", person, id.id, grp.id)
     info["person"] = Extra().getPath("info", person, id.id, grp.id, std.id)
-    return Extra().render(request, "get_student_marks.html", info)
+    return render(request, "get_student_marks.html", info)
 
+@Access().isAccess 
 @Access().convertData
-@Access().isAccess   
+@Access().isEmployee  
 @Access().isLeaderOrDIR
 def marksSubjectStudent(request, person, id, grp, sbj, std):                 
     """Страница всех оценок по предмету студента группы"""
     info = Groups().getMarksStudent(std, sbj)
     info["back"] = Extra().getPath("markssubject", person, id.id, grp.id, sbj.id)
     info["person"] = Extra().getPath("info", person, id.id, grp.id, sbj.id, std.id)
-    return Extra().render(request, "get_student_marks.html",  info)
+    return render(request, "get_student_marks.html",  info)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+@Access().isAccess
+@Access().convertData
+@Access().isEmployee  
 def marks(request, person, id):                                 #TODO
     """Страница предмет-группы для преподавателя"""
-    return Extra().render(request, "error_access.html") 
+    info = Schedule().createProfessorSubjects(id)
+    content = {
+        "data": info,
+        "back": Extra().getPath("work", person, id.id),
+        "person": Extra().getPath(person, id.id) + "/"  }
+    return render(request, "professor_groups.html", content) 
+
+@Access().isAccess
+@Access().convertData
+@Access().isEmployee
+def setMarks(request, person, id, grp, sbj):
+    """Страница просмотра расписания предмета"""
+    info = Schedule().createLessons(grp, sbj, False) 
+    info["id"] = id.id
+    info["back"] = Extra().getPath("marks", person, id.id)   
+    info["person"] = Extra().getPath(person, id.id, grp.id, sbj.id) + "/"
+    return render(request, "set_marks.html", info)
+
+
+@Access().isAccess
+@Access().convertData
+@Access().isEmployee
+def editMarks(request, person, id, grp, sbj, sch):
+    """Страница просмотра расписания предмета"""
+    if(request.method.upper() == "POST"):           #TODO
+        data = json.load(request)
+        res = Schedule().setMarks(grp, sch, data)
+        if(res == ""):
+            res = Extra().getPath("editmarks", person, id.id, grp.id, sbj.id, sch.id)
+        return HttpResponse(res);
+    info = Schedule().createMarks(sch) 
+    info["back"] = Extra().getPath("setmarks", person, id.id, grp.id, sbj.id)   
+    info["person"] = Extra().getPath(person, id.id, grp.id, sbj.id, sch.id) + "/"
+    return render(request, "edit_marks.html", info)
+
+
+@Access().isAccess 
+@Access().convertData
+def coworkers(request, person, id):
+    if(person == "employees"):
+        content = Departments().createDepartment(id.department)  
+        path = "coworkers.html"
+    else:
+        content = Groups().createGroup(id.group) 
+        path = "classmate.html"
+    content["person"] = Extra().getPath(person, id.id) + "/"
+    content["back"] = Extra().getPath("work", person, id.id)
+    return render(request, path, content)
+
+
+
+
 
 
 

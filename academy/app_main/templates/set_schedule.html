@@ -1,4 +1,4 @@
-{% extends "main.html" %}
+`{% extends "main.html" %}
 {% load static %}
 {% block caption %}
 	Назначить расписание
@@ -35,7 +35,7 @@
 			<tr>
 				{% for w in daysofweek%}
 				<td class='calendar_days'>
-					<select id="times" class="my_input verysmall">
+					<select id="times" class="my_input small">
 						<option value='{{"tm_"|add:w.1|add:"_"}}' selected>-----</option>
 						{%for key, el in lessontimes.items %}
 							<option value='{{"tm_"|add:w.1|add:"_"|add:key}}'>{{el}}</option>
