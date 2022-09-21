@@ -336,6 +336,7 @@ def editMarks(request, person, id, grp, sbj, sch):
 @Access().isAccess 
 @Access().convertData
 def coworkers(request, person, id):
+    """Страница коллег по отделу/группе"""
     if(person == "employees"):
         content = Departments().createDepartment(id.department)  
         path = "coworkers.html"
@@ -350,8 +351,20 @@ def coworkers(request, person, id):
 
 
 
+@Access().isAdministrator
+def administrator(request):
+    """Страница администратора"""
+    return render(request, "administrator.html")
 
-
+@Access().isAdministrator
+def loginas(request, person, abc):
+    """Страница выбора работника/студента администратором"""
+    content = Generate().createStructure(person, abc)
+    if(not content):
+        return render(request, "error_access.html")
+    Extra().paint(content)    
+        
+    return render(request, "loginas.html", content)
 
 
 @Access().isAdministrator
@@ -361,17 +374,22 @@ def generate(request):
     res += Generate().generateStudents()
     res += Generate().generateEmployees()
     res += Generate().generateMarks()
+    res += "<a href='/administrator'>Назад</a>"
     return HttpResponse(res)
 
 @Access().isAdministrator
 def serialize(request):          
-    """Сохранение данных БД"""                                   
-    return HttpResponse(Generate().serialize())
+    """Сохранение данных БД""" 
+    res = Generate().serialize()
+    res += "<a href='/administrator'>Назад</a>"
+    return HttpResponse(res)
 
 @Access().isAdministrator                                  
 def loaddata(request):   
-    """Загрузка данных БД"""                       
-    return HttpResponse(Generate().loaddata())
+    """Загрузка данных БД""" 
+    res = Generate().loaddata()
+    res += "<a href='/administrator'>Назад</a>"    
+    return HttpResponse(res)
     
 
 

@@ -51,9 +51,12 @@ urlpatterns = [
     
     path("coworkers/<str:person>/<int:id>", views.coworkers),
     
+    
+    path("administrator/", views.administrator),
     path("serialize/", views.serialize),
     path("generate/", views.generate),
-    path("loaddata/", views.loaddata),    
+    path("loaddata/", views.loaddata), 
+    path("loginas/<str:person>/<int:abc>", views.loginas)
     
 
 ]

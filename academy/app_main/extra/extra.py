@@ -124,7 +124,6 @@ class Extra:
     def render(self, *args):
         res = self.getSession(args[0])
         if(res): 
-            Extra().paint(res)
             res["id"] = str(res["id"])
             if(len(args) == 2):
                 return render(*args, {"title_person": res})

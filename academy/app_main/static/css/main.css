@@ -181,6 +181,15 @@ th, td {
 	padding:				0.2rem;
 }
 
+.abc {
+	width:				100%;
+	height:				30rem;
+	display:			flex;
+	margin-bottom:		2rem;
+	flex-direction: 	column;
+	justify-content: 	space-between;
+}
+
 .row_div {
 	width:				100%;
 	display:			flex;
@@ -375,4 +384,6 @@ select:invalid {
 	display:				flex;
 	justify-content: 		center
 }
+
+
 

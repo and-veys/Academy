@@ -16,7 +16,6 @@ class Departments():
         return Extra().getDataObject(Students, id)
     
     def control(self, kwargs):
-        Extra().paint(kwargs)
         if(kwargs["person"] == "employees"):
             return (kwargs["id"].department.id == kwargs["cwk"].department.id)
         return (kwargs["id"].group.id == kwargs["cwk"].group.id)

@@ -126,7 +126,6 @@ class Bot():
                 return "{} у вас нет занятий".format(str_dt)            
             row = row[str(dt.day)]
             res = "Ваше расписание на {}:".format(str_dt.lower())
-            Extra().paint(row)
             if(sb[0] == "employees"):
                 row = list(map(lambda s: [s[0], s[2], s[1]], row))
             else:

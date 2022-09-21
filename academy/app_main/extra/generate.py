@@ -106,7 +106,6 @@ class Generate():
         self.__phone = {"EX": "+7", "COUNT": 10, "CHARS": list(map(str, range(10)))}
         self.__email = ["yandex.ru", "gmail.com", "mail.ru", "rambler.ru"]
         self.__login = {"COUNT": 32, "CHARS": string.ascii_letters + string.digits}
-        
         self.__translit = {
                     "А": "a",
                     "Б": "b",
@@ -162,6 +161,8 @@ class Generate():
             Marks,
 
         ]
+        self.__ABC = list(self.__translit.keys())
+
 
     def generateStudents(self):
         """Генерация студентов"""
@@ -286,10 +287,29 @@ class Generate():
                     Marks.objects.create(**data)                   
         return "Оценки: добавлено {} {} в {} {} <br />".format(
                             kol, Extra().getStringAmountMarks(kol),
-                            les, Extra().getStringAmount(les, ["уроке", "уроках", "уроках"]))        
+                            les, Extra().getStringAmount(les, ["уроке", "уроках", "уроках"]))              
         
+    def createStructure(self, person, abc):
+        ar = list(map(lambda s: [s, self.__ABC.index(s)], self.__ABC))
+        db = {"employees": Employees, "students": Students}
+        try:
+            ch = ar[abc][1]
+            db = db[person]
+        except:
+            return None
+        res = []
+        k=11;
+        while(ar):
+            res.append(ar[0:k])
+            ar = ar[k:]
+        data = dict(map(lambda s: (s.id, s.getPersonalInfo()), db.objects.all().order_by('lastname', 'firstname', "patronymic")))
         
-        
-        
+        return {
+            "abc": res,
+            "current": person,
+            "currentABC": ch,
+            "type": {"employees": "Сотрудники", "students": "Студенты"},
+            "data": data
+        }        
             
             

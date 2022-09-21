@@ -56,11 +56,11 @@ class Access():
 
     def isAdministrator(self, fun):
         """Доступ только администратору"""
-        def wrapper(request):
+        def wrapper(request, **kwargs):
             session = Extra().getSession(request)
             if(session):
                 if(session["id"] == -1):
-                    return fun(request)
+                    return fun(request, **kwargs)
             return Extra().render(request, "error_access.html") 
         return wrapper
 
