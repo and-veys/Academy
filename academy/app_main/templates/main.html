@@ -33,7 +33,8 @@
 				{% block caption %}
 				{% endblock caption %}
 			</div>
-			<div id="center">		
+			<div id="center">	
+				{% csrf_token %}
 				{% block main %}
 				{% endblock main %}
 			</div>
