@@ -201,8 +201,6 @@ body {
 	flex: 					1 1 10rem;
 	overflow-y:				auto;
 	width:					100%;
-
-	
 }
 .list_first {
 	font-size:				1.5rem;
@@ -357,23 +355,9 @@ select:invalid {
 .bg_red {
 	background-color:		red;
 }
+
+
+
 /*------------------------------------------------------------------------------*/
-
-
-/*
-
-.abc {
-	width:				100%;
-	height:				30rem;
-	display:			flex;
-	margin-bottom:		2rem;
-	flex-direction: 	column;
-	justify-content: 	space-between;
-}
-
-
-*/
-/*------------------------------------------------------------------------------*/
-
 
 

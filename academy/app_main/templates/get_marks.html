@@ -21,7 +21,7 @@
 					<th class="cell"><nobr>Средняя оценка</nobr></th>
 				</tr>				
 				{% for el in data %}
-					<tr class="rows">
+					<tr id="{{el.0}}" class="rows">
 						<td class="cell">{{forloop.counter}}</td>
 						<td id='n{{forloop.counter0|stringformat:"i"}}' class="cell"><nobr>
 							<a class="a_text" href='{{person|add:el.0}}'> {{el.1}} </a>

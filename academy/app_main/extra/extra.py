@@ -131,7 +131,10 @@ class Extra:
                 args[2]["title_person"] = res       
                 
         return render(*args) 
-    
+        
+    def setAnchor(self, bk, *an):
+        return "{}#{}".format(bk, "_".join(map(str, an)))
+        
     def query_debugger(self, func):               #TODO  удалить и импорты
         @functools.wraps(func)
         def inner_func(*args, **kwargs):

@@ -7,12 +7,12 @@
 	<div class="list_div">	
 		<ul class="list_second">
 		{% for key, el in data.items %}				
-				<li> 					
+				<li id="{{key}}"> 					
 				<i><a class="a_text" href='{{"/marksgroup"|add:person|add:key}}'> Группа "{{el.0}}", курс "{{ el.1}}" </a></i>				
 				</li>
 				<ul class="list_third">
 					{% for k, e in el.2.items %}
-						<li>
+						<li id='{{key|add:"_"|add:k}}'>
 							<a class="a_text" href='{{"/markssubject"|add:person|add:key|add:"/"|add:k}}'>
 								{{e.0}}								
 							</a>

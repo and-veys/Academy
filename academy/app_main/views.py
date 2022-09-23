@@ -69,7 +69,8 @@ def info(request, **kwargs):
         id = kwargs["cwk"]
         back = [Extra().getPath("coworkers", kwargs["person"], kwargs["id"].id), "Назад"]        
     else:
-        return render(request, "error_access.html")   
+        return render(request, "error_access.html") 
+        
     return personalInformation(request, per, id, False, back)
 
 @Access().isAccess
@@ -84,10 +85,11 @@ def personalInformation(request, person, id, full, back):
     if(request.method.upper() == "POST"): 
         data = json.load(request)
         return HttpResponse(Persons().loadPhoto(data, id, person)) 
-    content = Persons().createStructure(id, person)     
-    content["back"] = back    
-    content["full"] = full 
+    content = Persons().createStructure(id, person) 
     if(content["OK"]):
+        back[0] = Extra().setAnchor(back[0], content["id"])
+        content["back"] = back    
+        content["full"] = full 
         return render(request, "info_persons.html", content)
     else:
         return render(request, "error_access.html")
@@ -161,6 +163,8 @@ def groups(request, person, id):
 def setSchedule(request, person, id, grp, sbj):
     """Страница первичного составления расписания предмета"""
     back = Extra().getPath("groups", person, id.id)
+    back = Extra().setAnchor(back, grp.id, sbj.id) 
+    
     if(request.method.upper() == "POST"):
         data = json.load(request)
         res = Schedule().setSchedule(data, grp, sbj)
@@ -178,7 +182,8 @@ def setSchedule(request, person, id, grp, sbj):
 def getSchedule(request, person, id, grp, sbj):
     """Страница просмотра расписания предмета"""
     info = Schedule().createLessons(grp, sbj)
-    info["back"] = Extra().getPath("groups", person, id.id)   
+    back = Extra().getPath("groups", person, id.id)     
+    info["back"] = Extra().setAnchor(back, grp.id, sbj.id) 
     info["person"] = Extra().getPath(person, id.id, grp.id, sbj.id) + "/"
     return render(request, "get_schedule.html", info)
 
@@ -189,6 +194,7 @@ def getSchedule(request, person, id, grp, sbj):
 def editSchedule(request, person, id, grp, sbj, sch):
     """Страница редактирования даты-время-преподаватель урока"""
     back = Extra().getPath("getschedule", person, id.id, grp.id, sbj.id)
+    back = Extra().setAnchor(back, sch.id)
     if(request.method.upper() == "POST"):
         data = json.load(request)
         Schedule().setEditSchedule(data, sch)       
@@ -254,8 +260,9 @@ def progress(request, person, id):
 def marksGroup(request, person, id, grp):
     """Страница средних оценок студентов группы"""
     info = Groups().getMarksGroup(grp)    
+    back = Extra().getPath("progress", person, id.id)
     info["person"] = Extra().getPath("marksgroupstudent", person, id.id, grp.id) + "/"
-    info["back"] = Extra().getPath("progress", person, id.id)
+    info["back"] = Extra().setAnchor(back, grp.id)
     return render(request, "get_marks.html", info)
     
 
@@ -266,8 +273,9 @@ def marksGroup(request, person, id, grp):
 def marksSubject(request, person, id, grp, sbj):   
     """Страница средних оценок по предмету студентов группы"""
     info = Groups().getMarksGroup(grp, sbj)
+    back = Extra().getPath("progress", person, id.id)
     info["person"] = Extra().getPath("markssubjectstudent", person, id.id, grp.id, sbj.id) + "/"
-    info["back"] = Extra().getPath("progress", person, id.id)
+    info["back"] = Extra().setAnchor(back, grp.id, sbj.id)
     return render(request, "get_marks.html", info) 
 
 @Access().isAccess     
@@ -277,7 +285,9 @@ def marksSubject(request, person, id, grp, sbj):
 def marksGroupStudent(request, person, id, grp, std):               
     """Страница всех оценок студента группы"""
     info = Groups().getMarksStudent(std)
-    info["back"] = Extra().getPath("marksgroup", person, id.id, grp.id)
+    back = Extra().getPath("marksgroup", person, id.id, grp.id)
+    
+    info["back"] = Extra().setAnchor(back, std.id)
     info["person"] = Extra().getPath("info", person, id.id, grp.id, std.id)
     return render(request, "get_student_marks.html", info)
 
@@ -288,7 +298,8 @@ def marksGroupStudent(request, person, id, grp, std):
 def marksSubjectStudent(request, person, id, grp, sbj, std):                 
     """Страница всех оценок по предмету студента группы"""
     info = Groups().getMarksStudent(std, sbj)
-    info["back"] = Extra().getPath("markssubject", person, id.id, grp.id, sbj.id)
+    back = Extra().getPath("markssubject", person, id.id, grp.id, sbj.id)
+    info["back"] = Extra().setAnchor(back, std.id)
     info["person"] = Extra().getPath("info", person, id.id, grp.id, sbj.id, std.id)
     return render(request, "get_student_marks.html",  info)
 
@@ -310,8 +321,9 @@ def marks(request, person, id):                                 #TODO
 def setMarks(request, person, id, grp, sbj):
     """Страница просмотра расписания предмета"""
     info = Schedule().createLessons(grp, sbj, False) 
+    back = Extra().getPath("marks", person, id.id) 
     info["id"] = id.id
-    info["back"] = Extra().getPath("marks", person, id.id)   
+    info["back"] = Extra().setAnchor(back, grp.id, sbj.id)
     info["person"] = Extra().getPath(person, id.id, grp.id, sbj.id) + "/"
     return render(request, "set_marks.html", info)
 
@@ -328,7 +340,8 @@ def editMarks(request, person, id, grp, sbj, sch):
             res = Extra().getPath("editmarks", person, id.id, grp.id, sbj.id, sch.id)
         return HttpResponse(res);
     info = Schedule().createMarks(sch) 
-    info["back"] = Extra().getPath("setmarks", person, id.id, grp.id, sbj.id)   
+    back = Extra().getPath("setmarks", person, id.id, grp.id, sbj.id)  
+    info["back"] = Extra().setAnchor(back, sch.id) 
     info["person"] = Extra().getPath(person, id.id, grp.id, sbj.id, sch.id) + "/"
     return render(request, "edit_marks.html", info)
 

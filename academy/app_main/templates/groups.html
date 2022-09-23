@@ -10,7 +10,7 @@
 				<li><i> Группа "{{el.0}}", курс "{{ el.1}}"</i></li>
 				<ul class="list_third">
 					{% for k, e in el.2.items %}
-						<li>
+						<li id='{{key|add:"_"|add:k}}'>
 							{% if e.1%}										
 								<a class="a_text error_message" href='{{"/setschedule"|add:person|add:key|add:"/"|add:k}}'>
 									{{e.0}} (нет расписания)
@@ -28,7 +28,7 @@
 					{% endfor %}
 				</ul>
 						
-		{% endfor%}
+		{% endfor%}		
 		</ul>
 	</div>	
 	<div class="back">

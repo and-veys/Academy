@@ -13,7 +13,7 @@
 					</li>
 					<ul class="list_third">
 						{% for k, e in el.1.items %}
-							<li>
+							<li id='{{k|add:"_"|add:key}}'>
 								<a class="a_text" href='{{"/setmarks"|add:person|add:k|add:"/"|add:key}}'>
 									Группа "{{e.0}}", курс "{{e.1}}"								
 								</a>
