@@ -3,48 +3,55 @@
 	Войти как ...
 {% endblock caption %}
 {% block main %}
-	<div class="start_main">
-		<div class="abc">
-			{% for el in abc %}
-				<div class="row_div">
-				{% for ch in el %}
-					<input type="button" id="{{ch.1}}" value = "{{ch.0}}"
-						{% if ch.1 == currentABC %}
-							class="my_a circle bg_red"
-						{% else %}
-							class="my_a circle"
-						{% endif %}
-					/>
-				{% endfor%}
-				</div>				
-			{% endfor %}
-			<div class="row_div">
-				{% for key, el in type.items %}
-					<input type="button" id="{{key}}" value="{{el}}"
-						{% if key == current %}
-							class="my_a three_in_row small bg_red" 
-						{% else %}
-							class="my_a three_in_row small" 
-						{% endif %}
-					 />
-				{% endfor%}
-				<a class="my_a three_in_row small" href="/administrator"> Назад </a>
-			</div>
-		</div>
-		<div class="table center">
-			<table>
-				<tr>
-					<td class="calendar_date"><nobr>Фамилия Имя Отчество</nobr></td>
-					<td class="calendar_date"><nobr>Отдел / Группа</nobr></td>
-				</tr>	
-				{% for key, el in data.items %}
-					<tr>
-						<td class="row_table"><a class="li_name">{{el.lastname}}<br/><nobr>{{el.firstname}} {{el.patronymic}}</npbr></a></td>
-						<td class="row_table">{{el.1}}</td>
-					</tr>
-				{% endfor %}
-			</table>
-		</div>	
-		
+	{% for el in abc %}
+		<div class="back">
+		{% for ch in el %}
+			<input type="button" id="{{ch.1}}" value = "{{ch.0}}" onclick="click_abc(event)"
+				{% if ch.1 == currentABC %}
+					class="a_button abc bg_red"
+				{% else %}
+					class="a_button abc"
+				{% endif %}
+			/>
+		{% endfor%}
+		</div>				
+	{% endfor %}
+	<div class="back">
+		{% for key, el in type.items %}
+			<input type="button" id="{{key}}" value="{{el}}" onclick="click_abc(event)"
+				{% if key == current %}
+					class="a_button three_in_row small bg_red" 
+				{% else %}
+					class="a_button three_in_row small" 
+				{% endif %}
+			 />
+		{% endfor%}
+		<a class="a_button three_in_row small" href="/administrator"> Назад </a>		
 	</div>
+	</br>
+	<div class="table">
+		<table>
+			<tr>
+				<th class="cell"><nobr>Фамилия Имя Отчество</nobr></th>
+				<th class="cell"><nobr>Отдел / Группа</nobr></th>
+			</tr>	
+			{% for key, el in data.items %}
+				<tr>
+					<td class="cell"><a id="{{key}}" class="a_text" onclick="click_go_person(event)">
+						{{el.lastname}}<br/><nobr>{{el.firstname}}
+						{% if el.patronymic %}
+							{{el.patronymic}}
+							{% endif %}
+						</nobr></a></td>					
+					<td class="cell"><nobr>
+						{% if el.department %}
+							{{el.department}} <br> <i>{{el.status|lower}}</i>
+ 						{% else %}
+							Группа "{{el.group}}"
+						{% endif %}
+					</nobr></td>
+				</tr>
+			{% endfor %}
+		</table>
+	</div>	
 {% endblock main %}

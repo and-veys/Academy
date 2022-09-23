@@ -39,7 +39,7 @@ class Schedule():
             "begin": Extra().getStringData(g.started),
             "end": Extra().getStringData(g.endStudy()),
             "amount": s.amount_lessons,
-            "professors": dict(map(lambda s: (str(s.id), s.getShotName()), emp)),
+            "professors": dict(map(lambda s: (str(s.id), s.getShortName()), emp)),
             "daysofweek": list(map(lambda s: [s.shortName, str(s.index)], NamesWeekDays.objects.all())),
             "lessontimes": dict(map(lambda s: (str(s.id), Extra().getStringTimeShort(s.time)), LessonTimes.objects.all()))
             }
@@ -122,7 +122,7 @@ class Schedule():
                 temp = nm[str(temp.mark.id)]
             except:
                 temp = ""
-            res[str(el.id)] = [el.getShotName(), temp]    
+            res[str(el.id)] = [el.getShortName(), temp]    
      
         return {
             "data": res,

@@ -4,26 +4,26 @@
 	Студенты и предметы
 {% endblock caption %}
 {% block main %}
-	<div class="start_main">
-		{% csrf_token %}
-		<div class="list">			
-			{% for key, el in data.items %}
-				<ul>
-					<li> 					
-					<i><a class="li_name" href='{{"/marksgroup"|add:person|add:key}}'> Группа "{{el.0}}", курс "{{ el.1}}" </a></i>				
-					</li>
-					<ul class="list_name">
-						{% for k, e in el.2.items %}
-							<li>
-								<a class="li_name" href='{{"/markssubject"|add:person|add:key|add:"/"|add:k}}'>
-									{{e.0}}								
-								</a>
-							</li>							
- 						{% endfor %}
-					</ul>
-				</ul>			
-			{% endfor%}
-		</div>		
-		<a class="my_a" href='{{back}}'> Назад </a>
+	<div class="list_div">	
+		<ul class="list_second">
+		{% for key, el in data.items %}				
+				<li> 					
+				<i><a class="a_text" href='{{"/marksgroup"|add:person|add:key}}'> Группа "{{el.0}}", курс "{{ el.1}}" </a></i>				
+				</li>
+				<ul class="list_third">
+					{% for k, e in el.2.items %}
+						<li>
+							<a class="a_text" href='{{"/markssubject"|add:person|add:key|add:"/"|add:k}}'>
+								{{e.0}}								
+							</a>
+						</li>							
+					{% endfor %}
+				</ul>
+						
+		{% endfor%}
+		</ul>
+	</div>	
+	<div class="back">
+		<a class="a_button" href='{{back}}'> Назад </a>
 	</div>
 {% endblock main %}

@@ -3,16 +3,13 @@
 	Вход на сайт
 {% endblock caption %}
 {% block main %}
-	<div class="start_main">
-		{% csrf_token %}
-		<input id="reg_login" type="text" class="my_input" 
-					placeholder="ЛОГИН" onkeydown="key_down_text(event)" />	
-		<input id="reg_password" type="password" class="my_input" 
-					placeholder="ПАРОЛЬ" onkeydown="key_down_text(event)" />
-		<input type="button" class="my_a" value="Войти" onclick="click_registration(event)" />	
-		{% if title_person %}
-			<input id="login" type="button" class="my_a" value="Войти как ..." onclick="click_registration(event)" />	
-		{% endif %}	
-		<a class="my_a" href="/"> На главную страницу </a>
-	</div>
+	<input id="reg_login" type="text" class="input_text" 
+				placeholder="ЛОГИН" onkeydown="key_down_text(event)" />	
+	<input id="reg_password" type="password" class="input_text" 
+				placeholder="ПАРОЛЬ" onkeydown="key_down_text(event)" />
+	<input type="button" class="a_button" value="Войти" onclick="click_registration(event)" />	
+	{% if title_person %}
+		<input id="login" type="button" class="a_button" value="Войти как ..." onclick="click_registration(event)" />	
+	{% endif %}	
+	<a class="a_button" href="/"> На главную страницу </a>
 {% endblock main %}

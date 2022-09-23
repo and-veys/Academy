@@ -1,65 +1,62 @@
-`{% extends "main.html" %}
-{% load static %}
+{% extends "main.html" %}
 {% block caption %}
 	Назначить расписание
 {% endblock caption %}
 {% block main %}
-	<div class="start_main">
-		{% csrf_token %}	
-		<table>
-			<tr>
-				<td>Группа:</td>
-				<td class="bold" colspan="3">{{group}}</td>
-			</tr>
-			<tr>
-				<td>Сроки обучения:</td>				
-				<td class="bold" id = "begin">{{begin}}</td>
-				<td class="bold">...</td>
-				<td class="bold" id = "end">{{end}}</td>
-			</tr>
-			<tr>
-				<td>Предмет:</td>
-				<td class="bold" colspan="3">{{subject}}</td>
-			</tr>
-			<tr>
-				<td>Количество занятий:</td>
-				<td class="bold" id="amount" colspan="3">{{amount}}</td>
-			</tr>
-		</table>
-		<table>
-			<tr>
-				{% for w in daysofweek%}
-					<td class='calendar_days'> {{w.0}}</td>					
-				{% endfor %}
-			</tr>	
-			<tr>
-				{% for w in daysofweek%}
-				<td class='calendar_days'>
-					<select id="times" class="my_input small">
-						<option value='{{"tm_"|add:w.1|add:"_"}}' selected>-----</option>
-						{%for key, el in lessontimes.items %}
-							<option value='{{"tm_"|add:w.1|add:"_"|add:key}}'>{{el}}</option>
-						{%endfor%}
-					</select> 
-				</td>					
-				{% endfor %}
-			</tr>
-		</table>
+	<table>
+		<tr>
+			<td>Группа:</td>
+			<td colspan="3"><b>{{group}}</b></td>
+		</tr>
+		<tr>
+			<td>Сроки обучения:</td>				
+			<td id = "begin"><b>{{begin}}</b></td>
+			<td ><b>...</b></td>
+			<td id = "end"><b>{{end}}</b></td>
+		</tr>
+		<tr>
+			<td>Предмет:</td>
+			<td colspan="3"><b>{{subject}}</b></td>
+		</tr>
+		<tr>
+			<td>Количество занятий:</td>
+			<td id="amount" colspan="3"><b>{{amount}}</b></td>
+		</tr>
+	</table>
 		
-		<input id="reg_date" type="text" class="my_input small" 
-					placeholder="ДАТА ПЕРВОГО ЗАНЯТИЯ" onkeydown="key_down_text(event)" />					
-					
-		<select id="professor" required class="my_input small">
-			<option value="" disabled selected hidden>ПРЕПОДАВАТЕЛЬ</option>
-			{%for key, el in professors.items %}
-				<option value="{{'prf_'|add:key}}">{{el}}</option>
-			{%endfor%}
-		</select> 
-		
-		
-		<div class="row_div">
-			<input type="button" class="my_a small two_in_row" value = "OK" onclick="click_schedule()">
-			<a class="my_a small two_in_row" href='{{back}}'> Назад </a>
-		</div>
+	<table>
+		<tr>
+			{% for w in daysofweek%}
+				<td class='cell'><b>{{w.0}}</b></td>					
+			{% endfor %}
+		</tr>	
+		<tr>
+			{% for w in daysofweek%}
+			<td class='cell'>
+				<select id="times" class="input_text time">
+					<option value='{{"tm_"|add:w.1|add:"_"}}' selected>-----</option>
+					{%for key, el in lessontimes.items %}
+						<option value='{{"tm_"|add:w.1|add:"_"|add:key}}'>{{el}}</option>
+					{%endfor%}
+				</select> 
+			</td>					
+			{% endfor %}
+		</tr>
+	</table>
+	
+	<input id="reg_date" type="text" class="input_text small" 
+				placeholder="ДАТА ПЕРВОГО ЗАНЯТИЯ" onkeydown="key_down_text(event)" />					
+				
+	<select id="professor" required class="input_text small">
+		<option value="" disabled selected hidden>ПРЕПОДАВАТЕЛЬ</option>
+		{%for key, el in professors.items %}
+			<option value="{{'prf_'|add:key}}">{{el}}</option>
+		{%endfor%}
+	</select> 
+	
+	
+	<div class="back">
+		<input type="button" class="a_button small two_in_row" value = "OK" onclick="click_schedule()">
+		<a class="a_button small two_in_row" href='{{back}}'> Назад </a>
 	</div>
 {% endblock main %}

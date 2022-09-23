@@ -165,7 +165,7 @@ class Person(models.Model):
     
     class Meta:        
         abstract = True       
-    def getShotName(self):
+    def getShortName(self):
         pt = (self.patronymic[0:1] + "." if self.patronymic else "")
         return "{} {}.{}".format(self.lastname, self.firstname[0:1], pt)
     def getFullName(self):
@@ -184,7 +184,7 @@ class Person(models.Model):
             "gender": self.gender.index,
             "id": str(self.id),
             "name": self.getFullName(),
-            "fio": self.getShotName(),
+            "fio": self.getShortName(),
             "OK": self.activ
         }
     def getStringActiv(self):            
@@ -206,7 +206,7 @@ class Students(Person):
         indexes = [models.Index(fields=['login'])]
         db_table = "amv_students"
     def __str__(self):
-        return "{} (группа {}){} - id={}".format(self.getShotName(), str(self.group),  self.getStringActiv(), self.id)
+        return "{} (группа {}){} - id={}".format(self.getShortName(), str(self.group),  self.getStringActiv(), self.id)
     
     def getType(self):
         return "students"
@@ -243,7 +243,7 @@ class Employees(Person):
         
     def __str__(self):           
         return "{} ({}) - {}: {}{} - id={}".format(
-            self.getShotName(), 
+            self.getShortName(), 
             str(self.department), 
             str(self.status), 
             self.getStatusAlias(), 
@@ -320,11 +320,11 @@ class Schedule(models.Model):
                 Extra().getStringTimeShort(self.lesson_time.time),
                 self.group.name,
                 self.subject.name,
-                self.professor.getShotName())
+                self.professor.getShortName())
         
     def getActivProfessor(self):
         pr = self.isActivProfessor()
-        return (pr.getShotName() if pr else "" )
+        return (pr.getShortName() if pr else "" )
     
     def isActivProfessor(self):      
         if(self.professor != None and self.professor.activ == False and self.lesson_date >= date.today()):

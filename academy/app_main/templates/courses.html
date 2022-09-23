@@ -4,26 +4,24 @@
 	Курсы и предметы обучения
 {% endblock caption %}
 {% block main %}
-	<div class="start_main">
-		{% csrf_token %}
-		<div class="list">			
-			{% for key, el in data.items %}
-				<ul>
-					<li><b>{{key}}</b></li>
-						<ul class="list_name">
-							{% for k, e in el.items %}
-								<li><i>Курс "{{k}}"</i></li>
-								<ul>
-									{% for k1, e1 in e.items %}
-										<li> {{e1}} </li>
-									{% endfor %}
-								</ul>
+	<div class="list_div">	
+		<ul class="list_first">	
+		{% for key, el in data.items %}
+			<li><b>{{key}}</b></li>
+				<ul class="list_second">
+					{% for k, e in el.items %}
+						<li><i>Курс "{{k}}"</i></li>
+						<ul class="list_third">
+							{% for k1, e1 in e.items %}
+								<li> {{e1}} </li>
 							{% endfor %}
 						</ul>
-					</ul>
-				</ul>			
-			{% endfor%}
-		</div>	
-		<a class="my_a" href="/"> На главную страницу </a>
+					{% endfor %}
+				</ul>					
+		{% endfor%}
+		</ul>
+	</div>
+	<div class="back">
+		<a class="a_button" href="/"> На главную страницу </a>
 	</div>
 {% endblock main %}

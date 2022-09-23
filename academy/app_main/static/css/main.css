@@ -1,13 +1,13 @@
 *{
 padding: 			0; 
 margin: 			0;
-box-sizing:			border-box;
+box-sizing:			border-box; 
 }
+
 html {
 	min-height:				700px;
 	min-width:				700px;
-	font-size:				15px;
-	
+	font-size:				15px;	
 	font-family:			"Arial", sans-serif;
 	color:					black;
 	--main-color:			rgb(200,255,255);
@@ -27,31 +27,28 @@ html {
 	--calendar-weekend:		red;
 	--calendar-event:		lightgreen;
 }
+body {
+	min-height:				700px;
+	min-width:				700px;
+	
+}
 #main {
 	height:					100vh;
 	width:					var(--main-width);
 	margin-left:			calc((100vw - var(--main-width))/2.0);
 	display:				flex;
 	flex-direction: 		column;		
-	border-left:			0.4rem solid var(--main-color);
-	border-right:			0.4rem solid var(--main-color);	
+	background-color:		var(--main-color)
 }
 
-#top, #center, #bottom {
-	padding:				0.5rem;	
-}
-
-.academy {
-	text-decoration: 		none;	
-	color:					var(--main-text-color);
-	
+#top, #center, #bottom, #caption {
+	margin-left:				0.5rem;
+	margin-right:				0.5rem;		
 }
 
 #top, #bottom {
-	background-color:		var(--main-color);
 	color:					var(--main-text-color);
 }
-
 #top {	
 	flex: 				0 0 4rem;
 	font-size:			2rem;
@@ -59,6 +56,11 @@ html {
 	display:			flex;
 	align-items: 		center;
 	justify-content: 	space-between;
+}
+#bottom  {
+	flex: 				0 0 2rem;
+	display:			flex;
+	align-items: 		center;
 }
 #caption, #center {
 	background-color:	var(--main-bg-color);
@@ -74,146 +76,152 @@ html {
 	text-align:			center;
 }
 #center {	
-	flex:				1 1 auto;
-	overflow-y:			auto;
-}
-#bottom  {
-	flex: 				0 0 2rem;
-	display:			flex;
-	align-items: 		center;
+	flex:					1 1 auto;
+	display:				flex;
+	flex-direction: 		column;	
+	justify-content: 		space-evenly;
+    align-items: 			center;
+	padding:				1rem;
 }
 #logo {
 	height:					3rem;
 	display: 				block;		
 }
-.start_main {
-	height:					100%;
-	display:				flex;
-	flex-direction: 		column;	
-	justify-content: 		space-evenly;
-    align-items: 			center;	
-	font-size:				1.2rem;
-	padding:				0.5rem;
+.a_main {
+	text-decoration: 		none;	
+	color:					var(--main-text-color);	
 }
-
-
-
-.my_a, .my_input, .my_div {
-	width:					90%;
+.a_button, .input_text  {
+	width:					100%;
 	height:					4rem;
 	border-radius:			2rem;
 	font-size:				2rem;
 	display:				flex;
 	align-items: 			center;
-    justify-content: 		center;	
-	text-decoration: 		none;	
-	text-align:				center;
+    justify-content: 		center;
 }
-.my_a:hover { 
+
+.a_button {
+	border:					0;
+	text-decoration: 		none;
+	background-color:		var(--elem-color);	
+	color:					var(--input-bg-color);	
+}
+.a_button:hover { 
 	background-color:		var(--hover-color);
 	cursor: 				pointer;
 }
-.my_input:hover {
-	cursor: 				pointer;
-}
-.my_a, .my_div {
-	background-color:		var(--elem-color);	
-	color:					var(--input-bg-color);
-	border:					0;
-
-}
-.my_input {
-	background-color:		var(--input-bg-color);	
-	border:					0.2rem solid var(--elem-color);
-	outline: 				none;	
-			
-}
-
-.my_input::-moz-placeholder {
-	color:					var(--holder-color);
-}
-.my_input::-webkit-input-placeholder {
-	color:					var(--holder-color);
-}
-
-.list {
-	font-size:				1.5rem;
-	overflow-y:				auto;
-	margin-bottom:			2rem;
-	width:					100%;	
-	height:					90%;
-}
-
-.table {
-	font-size:				1.5rem;
-	overflow-y:				auto;
-	margin-bottom:			2rem;
-	width:					100%;	
-	//height:					70%;
-}
-
-.list_name {
-	font-size:				1.2rem;
-	padding-bottom:			1.5rem;
-
-}
-
-ul {
-	margin-left:			3rem;
-}
-
-li {
-	margin-bottom:			0.7rem;
-}
-
-.li_name {
+.a_text {
 	text-decoration: 		none;
 	color:					var(--a-bg-color);
 }
-
-.li_name:hover { 
+.a_text:hover { 
 	color:					blue;
 	cursor: 				pointer;
 }
 
-th, td {
+.circle, .abc {
 	font-size:				1.5rem;
-	padding:				0.2rem;
+	text-align:				center;	
+	border-radius:			50%;				
+	background-color:		var(--elem-color);	
+	color:					var(--input-bg-color);
 }
-
+.circle {
+	height:					2rem;
+	width:					2rem;
+}
 .abc {
-	width:				100%;
-	height:				30rem;
-	display:			flex;
-	margin-bottom:		2rem;
-	flex-direction: 	column;
-	justify-content: 	space-between;
+	height:					3rem;
+	width:					3rem;
 }
 
-.row_div {
-	width:				100%;
-	display:			flex;
-	flex-direction:		row;
-	font-size:			2rem;
-    align-items: 		center;
-	justify-content: 	space-evenly;
+
+
+
+.input_text {	
+	text-align:				center;
+	background-color:		var(--input-bg-color);	
+	border:					0.2rem solid var(--elem-color);
+	outline: 				none;	
 	
 }
-
-.info_div {
-	width:				90%;
-	font-size:			1.5rem;
-    align-items: 		left;
+.input_text:hover {
+	cursor: 				pointer;
+}
+.input_text::-moz-placeholder {
+	color:					var(--holder-color);
+}
+.input_text::-webkit-input-placeholder {
+	color:					var(--holder-color);
 }
 
+/*------------------------------------------------------------------------------*/
+
+.div_row, .back {
+	flex: 					0 0 auto;
+	width:					100%;
+	display:				flex;
+	flex-direction:			row;
+	align-items: 			center;
+	justify-content: 		space-evenly
+}
+.back {
+	margin-top:				1rem;
+	justify-content: 		space-between
+}
 
 .three_in_row {
-	width:				30%;
-}
-.two_in_row {
-	width:				45%;
+	width:				32%;
 }
 
+.two_in_row {
+	width:				48%;
+}
+
+.small {
+	height:					3rem;
+	font-size:				1.5rem;	
+}
+
+.time {
+	height:					2rem;
+	width:					4rem;
+	font-size:				1rem;	
+}
+
+.mark {
+	height:					2rem;
+	width:					12rem;
+	font-size:				1rem;	
+}
+
+/*------------------------------------------------------------------------------*/
+.list_div {
+	flex: 					1 1 10rem;
+	overflow-y:				auto;
+	width:					100%;
+
+	
+}
+.list_first {
+	font-size:				1.5rem;
+}
+.list_second {
+	font-size:				1.2rem;
+
+}
+.list_third {
+	font-size:				1.2rem;
+}
+ul {
+	margin-left:			3rem;
+}
+li {
+	margin-bottom:			0.7rem;
+}
+
+/*------------------------------------------------------------------------------*/
 #photo {
 	width:				12rem;
 	height:				12rem;
@@ -222,58 +230,45 @@ th, td {
 	margin-bottom:		0.5rem;
 	object-fit:			cover;
 }
-
-
-.div_center {
-	display:			flex;
-	flex-direction:		column;
-	margin-right:		2rem;
-	align-items: 		center;
-}
-
-.small {
-	height:					3rem;
-	font-size:				1.5rem;	
-}
-
-.marks {
-	height:					2rem;
-	font-size:				1.2rem;
-	width:					15rem;
-}
-
-.circle {
-	height:					2.4rem;
-	width:					2.4rem;
-	border-radius:			50%;
-	background-color:		var(--elem-color);	
-	color:					var(--input-bg-color);				
-	font-size:				1.5rem;
-	font-weight:			bold;
-	padding:				0;
-}
 #file {
 	position:				fixed;
 	top:					-100rem;
 	opacity:				0; 
 }
 
+/*------------------------------------------------------------------------------*/
 
-
-
-
-.calendar_head {
-	width:				100%;
-	display:			flex;
-	flex-direction:		row;
-	justify-content: 	space-between;
-    align-items: 		center;
-	font-size:			1.5rem;
-	padding:			0.5rem;
-	border:				none;
-	
-	
+table {
+	font-size:				1.2rem;
 }
+
+th, td {
+	padding:				0.3rem;
+}
+
+.big {
+	font-size:				2rem;
+}
+
+.table {
+	flex: 					1 1 10rem;
+	overflow-y:				auto;
+	width:					100%;	
+	display:				flex;
+	justify-content: 		center;
+	align-items: 			flex-start;
+}
+
+.cell {
+	height:				3rem;
+	border:				0.2rem solid var(--calendar-border);
+	text-align:			center;
+}
+
+
+/*------------------------------------------------------------------------------*/
+
+
 .arrow {	
 	width:				1rem;
 	height:				2rem;
@@ -298,72 +293,54 @@ th, td {
 	cursor: 			pointer;
 }
 
-.calendar_num, .calendar_date, .calendar_days, .row_table {
-	width:				5rem;
-	font-weight:		bold;
-	font-size:			1.2rem;
-	padding:			0.5rem;
-	border:				0.1rem solid var(--calendar-border);
-	text-align:			center;
+.calendar_head {
+	height:				2rem;
+	width:				2rem;
+	color:				var(--calendar-num);
+	
+	
 }
 
-.calendar_num {
-	color:				var(--calendar-num);	
-}
-
-.calendar_info {
-	font-size:			1rem;
-
-}
-
-.calendar_date, .calendar_days {	
+.calendar_date {	
 	color:				var(--calendar-color);	
+	height:				3.2rem;
+	width:				4rem;
 }
-
-.row_table {
-	font-weight:		normal;
-}
-
-.calendar_weekend {
-	color:				var(--calendar-weekend);
-}
-.calendar_today {
-	padding:			0.3rem;
-	border:				0.3rem solid var(--calendar-today);
-}
-
 
 .calendar_date:hover {
 	cursor: 			pointer;
 }
-
-
+.calendar_weekend {
+	color:				var(--calendar-weekend);
+}
+.calendar_today {
+	border:				0.4rem solid var(--calendar-today);
+}
 
 .calendar_events {
 	background-color:	var(--calendar-event);
 }
 
-#calender_info {
-	width:				100%;
-	height:				5rem;
-	overflow-y:			auto;
-	text-align:			left;
+.calendar_info {
 	font-size:			1rem;
-	font-weight:		normal;
+	padding:			0;
+	padding-left:		0.5rem;
 	color:				var(--calendar-color);
+
 }
 
-.between {
-	justify-content: 	space-between;
+#calender_info {
+	flex: 				1 1 2rem;
+	width:				70%;
+	margin:				1rem;
+	overflow-y:			auto;
+	text-align:			center;
+	font-size:			1rem;
+	color:				var(--calendar-border);
 }
 
-.error_message, .text_red {
-	color:					red;
-}
 
-.bg_red {
-	background-color:		red;
-}
+/*------------------------------------------------------------------------------*/
 
 select {
 	-moz-appearance: 		none;
@@ -374,16 +351,29 @@ select:invalid {
 	color:					var(--holder-color);
 }
 
-.bold {
-	font-weight:			bold;
+.error_message {
+	color:					red;
 }
-.normal {
-	font-weight:			normal;
+.bg_red {
+	background-color:		red;
 }
-.center {
-	display:				flex;
-	justify-content: 		center
+/*------------------------------------------------------------------------------*/
+
+
+/*
+
+.abc {
+	width:				100%;
+	height:				30rem;
+	display:			flex;
+	margin-bottom:		2rem;
+	flex-direction: 	column;
+	justify-content: 	space-between;
 }
+
+
+*/
+/*------------------------------------------------------------------------------*/
 
 
 

@@ -26,7 +26,7 @@ def bot(request):
     return HttpResponse(resp)
 
 def pageNotFound(request, exception):
-    return render(request, "error_404.html")
+    return render(request, "error_access.html", {"ERR": 404})
 
 
 def main(request):                                  

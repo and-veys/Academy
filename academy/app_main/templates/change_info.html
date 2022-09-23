@@ -3,27 +3,24 @@
 	{{caption}}
 {% endblock caption %}
 {% block main %}
-	<div class="start_main">
-		{% csrf_token %}
-		<b class="row_div">{{fio}}</b>
-		{% if info %}	
-			<input id="reg_phone" type="text" class="my_input" value="{{phoneJS}}" 
-						placeholder="ТЕЛЕФОН" onkeydown="key_down_text(event)" />
-			<input id="reg_e_mail" type="text" class="my_input" value="{{e_mail}}"
-						placeholder="ЭЛ. ПОЧТА" />
-		{% endif %}
-		{% if password %}
-			<input id="reg_login" type="text" class="my_input" 
-						placeholder="НОВЫЙ ЛОГИН" onkeydown="key_down_text(event)" />	
-			<input id="reg_password" type="password" class="my_input" 
-						placeholder="НОВЫЙ ПАРОЛЬ" onkeydown="key_down_text(event)" />
-			<input id="reg_password_2" type="password" class="my_input" 
-					placeholder="ПОВТОР ПАРОЛЯ" onkeydown="key_down_text(event)" />	
-		{% endif %}	
-		<div class="row_div">			
-			<input type="button" class="my_a two_in_row" value="OK" onclick="click_change_info(event)" />	
-			<a class="my_a two_in_row" href={{back}}> Назад </a>
-		</div>
+	<div class="big"><b>{{fio}}</b></div>
+	{% if info %}	
+		<input id="reg_phone" type="text" class="input_text" value="{{phoneJS}}" 
+					placeholder="ТЕЛЕФОН" onkeydown="key_down_text(event)" />
+		<input id="reg_e_mail" type="text" class="input_text" value="{{e_mail}}"
+					placeholder="ЭЛ. ПОЧТА" />
+	{% endif %}
+	{% if password %}
+		<input id="reg_login" type="text" class="input_text" 
+					placeholder="НОВЫЙ ЛОГИН" onkeydown="key_down_text(event)" />	
+		<input id="reg_password" type="password" class="input_text" 
+					placeholder="НОВЫЙ ПАРОЛЬ" onkeydown="key_down_text(event)" />
+		<input id="reg_password_2" type="password" class="input_text" 
+				placeholder="ПОВТОР ПАРОЛЯ" onkeydown="key_down_text(event)" />	
+	{% endif %}	
+	<div class="back">			
+		<input type="button" class="a_button two_in_row" value="OK" onclick="click_change_info(event)" />	
+		<a class="a_button two_in_row" href={{back}}> Назад </a>
 	</div>
 {% endblock main %}
 

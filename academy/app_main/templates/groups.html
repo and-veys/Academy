@@ -4,34 +4,34 @@
 	Группы и предметы
 {% endblock caption %}
 {% block main %}
-	<div class="start_main">
-		{% csrf_token %}
-		<div class="list">			
-			{% for key, el in data.items %}
-				<ul>
-					<li><i> Группа "{{el.0}}", курс "{{ el.1}}"</i></li>
-					<ul class="list_name">
-						{% for k, e in el.2.items %}
-							<li>
-								{% if e.1%}										
-									<a class="li_name text_red" href='{{"/setschedule"|add:person|add:key|add:"/"|add:k}}'>
-										{{e.0}} (нет расписания)
-									</a>
-								{% elif e.2 %}
-									<a class="li_name text_red" href='{{"/getschedule"|add:person|add:key|add:"/"|add:k}}'>
-									{{e.0}}	(нет преподавателя)									
-									</a>							
-								{% else %}									
-									<a class="li_name" href='{{"/getschedule"|add:person|add:key|add:"/"|add:k}}'>
-									{{e.0}}										
-									</a>
-								{% endif %}
-							</li>
- 						{% endfor %}
-					</ul>
-				</ul>			
-			{% endfor%}
-		</div>		
-		<a class="my_a" href='{{back}}'> Назад </a>
+	<div class="list_div">	
+		<ul class="list_second">
+		{% for key, el in data.items %}			
+				<li><i> Группа "{{el.0}}", курс "{{ el.1}}"</i></li>
+				<ul class="list_third">
+					{% for k, e in el.2.items %}
+						<li>
+							{% if e.1%}										
+								<a class="a_text error_message" href='{{"/setschedule"|add:person|add:key|add:"/"|add:k}}'>
+									{{e.0}} (нет расписания)
+								</a>
+							{% elif e.2 %}
+								<a class="a_text error_message" href='{{"/getschedule"|add:person|add:key|add:"/"|add:k}}'>
+								{{e.0}}	(нет преподавателя)									
+								</a>							
+							{% else %}									
+								<a class="a_text" href='{{"/getschedule"|add:person|add:key|add:"/"|add:k}}'>
+								{{e.0}}										
+								</a>
+							{% endif %}
+						</li>
+					{% endfor %}
+				</ul>
+						
+		{% endfor%}
+		</ul>
+	</div>	
+	<div class="back">
+		<a class="a_button" href='{{back}}'> Назад </a>
 	</div>
 {% endblock main %}

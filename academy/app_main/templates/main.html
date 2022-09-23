@@ -21,9 +21,11 @@
 				<img id="logo" src={% static "pic/logo.png" %} />
 				<div>
 					{% if title_person and title_person.id != "-1"%}						
-						<a class="academy" href='{{"/work/"|add:title_person.tp|add:"/"|add:title_person.id}}'>
+						<a class="a_main" href='{{"/work/"|add:title_person.tp|add:"/"|add:title_person.id}}'>
+					{% elif title_person.id == "-1" %}
+						<a class="a_main" href="/administrator">
 					{% else %}
-						<a class="academy" href='/'>
+						<a class="a_main" href='/'>
 					{% endif %}
 					Академия "Солнышко"</a>
 				</div>
@@ -39,7 +41,7 @@
 				{% endblock main %}
 			</div>
 			<div id="bottom">
-			<a class="academy" href="/"> Обновлено {% now "d.m.Y" %} в {% now "H:i:s" %} </a>
+			<a class="a_main" href="/"> Обновлено {% now "d.m.Y" %} в {% now "H:i:s" %} </a>
 			</div>
 		</div>
 	</body>

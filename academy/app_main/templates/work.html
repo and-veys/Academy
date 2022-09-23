@@ -3,13 +3,12 @@
 	Рабочая страница "{{status}}"
 {% endblock caption %}
 {% block main %}
-	<div class="start_main">
-		{% csrf_token %}
-		{% block work %}
+	{% block work %}
+		<b class="small">
 			Страница находится на стадии разработки
-		{% endblock work %}
-		<a class="my_a" href='{{"/personal/"|add:persons|add:"/"|add:id}}'> Личный кабинет </a>
-	</div>
+		</b>
+	{% endblock work %}
+	<a class="a_button" href='{{"/personal/"|add:persons|add:"/"|add:id}}'> Личный кабинет </a>
 {% endblock main %}
 
 

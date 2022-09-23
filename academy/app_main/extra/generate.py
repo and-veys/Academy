@@ -291,9 +291,10 @@ class Generate():
         
     def createStructure(self, person, abc):
         ar = list(map(lambda s: [s, self.__ABC.index(s)], self.__ABC))
+        
         db = {"employees": Employees, "students": Students}
         try:
-            ch = ar[abc][1]
+            ch = ar[abc]
             db = db[person]
         except:
             return None
@@ -302,12 +303,14 @@ class Generate():
         while(ar):
             res.append(ar[0:k])
             ar = ar[k:]
-        data = dict(map(lambda s: (s.id, s.getPersonalInfo()), db.objects.all().order_by('lastname', 'firstname', "patronymic")))
+        
+        data = db.objects.filter(Q(lastname__startswith=ch[0])).order_by('lastname', 'firstname', "patronymic")
+        data = dict(map(lambda s: (s.id, s.getPersonalInfo()), data))
         
         return {
             "abc": res,
             "current": person,
-            "currentABC": ch,
+            "currentABC": ch[1],
             "type": {"employees": "Сотрудники", "students": "Студенты"},
             "data": data
         }        

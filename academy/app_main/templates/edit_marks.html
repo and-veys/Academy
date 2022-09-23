@@ -5,25 +5,23 @@
 	предмет "{{subject}}"
 {% endblock caption %}
 {% block main %}
-	<div class="start_main">
-		{% csrf_token %}
-		<div class="table center">
+		<div class="table">
 			<table>
-				<tr><td colspan="3" class="calendar_days">{{date}} в {{time}}</td></tr>
+				<tr><th colspan="3" class="cell">{{date}} в {{time}}</th></tr>
 				<tr>
-					<td class="calendar_days"></td>
-					<td class="calendar_days">Студент</td>
-					<td class="calendar_days"><nobr>Оценка</nobr></td>
+					<th class="cell"></th>
+					<th class="cell">Студент</th>
+					<th class="cell"><nobr>Оценка</nobr></th>
 				</tr>				
 				{% for key, el in data.items %}
-					<tr class="rows">
-						<td class="row_table">{{forloop.counter}}</td>
-						<td class="row_table"><a class="li_name" href='{{"/info"|add:person|add:key}}'><nobr>{{el.0}}</nobr></a></td>
-						<td class="row_table">
+					<tr>
+						<td class="cell">{{forloop.counter}}</td>
+						<td class="cell"><a class="a_text" href='{{"/info"|add:person|add:key}}'><nobr>{{el.0}}</nobr></a></td>
+						<td class="cell">
 							{%if el.1 %}
 								{{el.1}}
 							{% else %}								
-								<select id='{{key}}' class="my_input marks">
+								<select id='{{key}}' class="input_text mark">
 									<option value="" selected>нет оценки</option>
 									{%for k, m in marks.items %}
 										<option value="{{k}}">{{m}}</option>
@@ -35,9 +33,8 @@
 				{% endfor%}			
 			</table>
 		</div>
-		<div class="row_div">
-			<input type="button" class="my_a two_in_row small" value='OK' onclick="click_edit_marks()"/>
-			<a class="my_a two_in_row small" href='{{back}}'> Назад </a>
+		<div class="back">
+			<input type="button" class="a_button two_in_row small" value='OK' onclick="click_edit_marks()"/>
+			<a class="a_button two_in_row small" href='{{back}}'> Назад </a>
 		</div>
-	</div>
 {% endblock main %}

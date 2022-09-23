@@ -251,7 +251,7 @@ function click_calendar(event) {
 	info = JSON.parse(event.target.dataset.info)
 	str = info["day"];
 	if(info["weekend"] != "")
-		str = "<span class='text_red'>" + str + ". " + info["weekend"] + "</span>";	
+		str = "<span class='calendar_weekend'>" + str + ". " + info["weekend"] + "</span>";	
 	try {
 		str += "<br /><table>";
 		for(el of info["events"]) {
@@ -265,8 +265,23 @@ function click_calendar(event) {
 	catch(err) {}
 	document.getElementById("calender_info").innerHTML = str;
 }	
-
-
+//---------------------------------------------------
+function click_go_person(event) {
+	a = document.location.pathname.split("/");
+	a[1] = "work";
+	a[3] = event.target.id;
+	window.location.href = a.join("/");
+	
+}
+function click_abc(event) {
+	el = event.target.id;
+	a = document.location.pathname.split("/");
+	if(isNaN(el)) 
+		a[2] = el;
+	else
+		a[3] = el;
+	window.location.href = a.join("/");
+}
 //---------------------------------------------------
 function getCookie(cook) {		//получить логин из cookie
 	dt = document.cookie.split(";");

@@ -48,7 +48,7 @@ class Calendar():
                                     Extra().getStringData(date(dt["year"], dt["month"], el)),
                                     dt["daysofweek"][len(r)][0]),
                         "weekend": ""}                    
-                    cl = ["calendar_date"]
+                    cl = ["cell", "calendar_date"]
                     if(ind in dt["weekends"]):
                         cl.append("calendar_weekend")
                         temp["weekend"] = dt["weekends"][ind]                        

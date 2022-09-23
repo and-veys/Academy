@@ -35,7 +35,7 @@ class Departments():
                 pers = temp.filter(status=q.id)
                 if(len(pers)):                
                     pl[pers[0].getStatusAlias(True)] = dict(
-                                map(lambda s: [str(s.id), s.getShotName()], pers)) 
+                                map(lambda s: [str(s.id), s.getShortName()], pers)) 
             res[el.name] = pl
         return res
     

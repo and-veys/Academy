@@ -9,34 +9,33 @@
 	{% endif %}
 {% endblock caption %}
 {% block main %}
-	<div class="start_main">
-		{% csrf_token %}
-		<div class="table center">
+
+		<div class="table">
 			<table>
 				<tr>
 					{% if subject %}
-						<td colspan=2 class="calendar_days"><nobr>Средняя оценка по предмету</nobr> <br />"{{subject}}"</td>
+						<th colspan=2 class="cell"><nobr>Средняя оценка по предмету</nobr> <br />"{{subject}}"</th>
 					{% else %}
-						<td colspan=3 class="calendar_days"><nobr>Средняя оценка </nobr><br /> <nobr>по всем предметам</nobr></td>
+						<th colspan=3 class="cell"><nobr>Средняя оценка </nobr><br /> <nobr>по всем предметам</nobr></th>
 					{% endif %}
-					<td class="calendar_days">{{total}}</td>
+					<td class="cell">{{total}}</td>
 				</tr>
 				<tr>
-					<td class="calendar_days"></td>
-					<td class="calendar_days">Дата</td>
+					<th class="cell"></th>
+					<th class="cell">Дата</th>
 					{% if subject == "" %}
-						<td class="calendar_days"><nobr>Предмет</nobr></td>
+						<th class="cell"><nobr>Предмет</nobr></th>
 					{% endif %}
-					<td class="calendar_days"><nobr>Оценка</nobr></td>
+					<th class="cell"><nobr>Оценка</nobr></th>
 				</tr>				
 				{% for el in data %}
 					<tr>
-						<td class="row_table">{{forloop.counter}}</td>
-						<td class="row_table">{{el.0}}</td>
+						<td class="cell">{{forloop.counter}}</td>
+						<td class="cell">{{el.0}}</td>
 						{% if subject == "" %}
-							<td class="row_table"><nobr>{{el.1}}</nobr></td>
+							<td class="cell"><nobr>{{el.1}}</nobr></td>
 						{% endif %}
-						<td class="row_table">{{el.2}}</td>
+						<td class="cell">{{el.2}}</td>
 					</tr>
 				{% endfor%}			
 			</table>
@@ -44,9 +43,8 @@
 		
 			
 		</div>
-		<div class="row_div">
-			<a class="my_a two_in_row small" href='{{person}}'> Студент </a>
-			<a class="my_a two_in_row small" href='{{back}}'> Назад </a>
+		<div class="back">
+			<a class="a_button two_in_row small" href='{{person}}'> Студент </a>
+			<a class="a_button two_in_row small" href='{{back}}'> Назад </a>
 		</div>
-	</div>
 {% endblock main %}

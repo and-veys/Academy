@@ -90,7 +90,7 @@ class Persons():
         if(row):
             return {
                 "login": data["login"], 
-                "session": {"id": row["row"].id, "tp": row["tp"], "name": row["row"].getShotName()},
+                "session": {"id": row["row"].id, "tp": row["tp"], "name": row["row"].getShortName()},
                 "age": Extra().getRestDay(),
                 "path": "/personal/{}/{}".format(row["tp"], row["row"].id),
                 "OK": True

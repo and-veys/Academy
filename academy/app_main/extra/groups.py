@@ -56,7 +56,7 @@ class Groups():
         return res            
 
     def getMarksGroup(self, grp, sbj=None):                       
-        data = dict(map(lambda s: (str(s.id), [s.getShotName(), 0]), Students.objects.filter(group=grp))) 
+        data = dict(map(lambda s: (str(s.id), [s.getShortName(), 0]), Students.objects.filter(group=grp))) 
         if(sbj):
             marks = Marks.objects.filter(lesson__group=grp, lesson__subject=sbj) 
         else:
@@ -103,7 +103,7 @@ class Groups():
         rows = Students.objects.filter(group=grp).order_by('lastname')
         return {
             "caption": 'Группа "{}"'.format(grp.name),
-            "data": dict(map(lambda s: (str(s.id), s.getShotName()), rows))    
+            "data": dict(map(lambda s: (str(s.id), s.getFullName()), rows))    
         }
         
         

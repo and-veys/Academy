@@ -15,9 +15,6 @@ urlpatterns = [
     path("info/<str:person>/<int:id>/<int:grp>/<int:sbj>/<int:sch>/<int:std>", views.info),
     path("info/<str:person>/<int:id>/<int:cwk>", views.info),
 
-
-
-    
     path("courses/", views.courses),
     path("registration/", views.registration),
     
@@ -50,7 +47,6 @@ urlpatterns = [
     path("editmarks/<str:person>/<int:id>/<int:grp>/<int:sbj>/<int:sch>", views.editMarks),
     
     path("coworkers/<str:person>/<int:id>", views.coworkers),
-    
     
     path("administrator/", views.administrator),
     path("serialize/", views.serialize),
