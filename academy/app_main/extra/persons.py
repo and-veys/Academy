@@ -16,7 +16,10 @@ class Persons():
     
     def getData(self, id, person):  
         try:
-            return Extra().getDataObject(self.__person[person], id)
+            el = Extra().getDataObject(self.__person[person], id)
+            if(el and el.activ):
+                return el
+            return None
         except:
             return None
 

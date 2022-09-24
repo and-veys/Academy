@@ -8,22 +8,22 @@
 			<th colspan="5">
 				<div class="back">
 					<div class="arrow">
-						<div id="monLeft" class="arrow_left" onclick="click_arrow(event)"></div>
+						<div id="monLeft" class="arrow_left" onclick="click_arrow(this)"></div>
 					</div>
 					{{ month.1 }}
 					<div class="arrow">
-						<div id="monRight" class="arrow_right" onclick="click_arrow(event)"></div>
+						<div id="monRight" class="arrow_right" onclick="click_arrow(this)"></div>
 					</div>	
 				</div>
 			</th>				
 			<th colspan="3">
 				<div class="back" >
 					<div class="arrow">
-						<div id="yeaLeft" class="arrow_left" onclick="click_arrow(event)"></div>
+						<div id="yeaLeft" class="arrow_left" onclick="click_arrow(this)"></div>
 					</div>
 					{{ year }}
 					<div class="arrow">
-						<div id="yeaRight" class="arrow_right" onclick="click_arrow(event)"></div>
+						<div id="yeaRight" class="arrow_right" onclick="click_arrow(this)"></div>
 					</div>	
 				</div>
 			</th>
@@ -40,7 +40,7 @@
 					{% if d.0 == "0" %}
 						<th class="cell calendar_date"></th>
 					{% else %}
-						<th class="{{d.1}}" id='{{"day"|add:d.0}}' data-info="{{d.2}}" onclick="click_calendar(event)"> 
+						<th class="{{d.1}}" id='{{"day"|add:d.0}}' data-info="{{d.2}}" onclick="click_calendar(this)"> 
 							{{ d.0 }} 
 						</th>							
 					{% endif %}

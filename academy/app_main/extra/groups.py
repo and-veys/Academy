@@ -1,4 +1,4 @@
-from ..models import Groups as db, Course_Subject, Schedule, Subjects, Employees, NamesWeekDays, LessonTimes
+from ..models import Groups as db, Course_Subject, Schedule, Subjects, NamesWeekDays, LessonTimes
 from ..models import Marks, Students
 from .extra import Extra
 from datetime import date
@@ -56,7 +56,7 @@ class Groups():
         return res            
 
     def getMarksGroup(self, grp, sbj=None):                       
-        data = dict(map(lambda s: (str(s.id), [s.getShortName(), 0]), Students.objects.filter(group=grp))) 
+        data = dict(map(lambda s: (str(s.id), [s.getShortName(), 0]), Students.objects.filter(group=grp, activ=True))) 
         if(sbj):
             marks = Marks.objects.filter(lesson__group=grp, lesson__subject=sbj) 
         else:
@@ -100,7 +100,7 @@ class Groups():
                 "subject": (sbj.name if sbj else "")}
     
     def createGroup(self, grp):
-        rows = Students.objects.filter(group=grp).order_by('lastname')
+        rows = Students.objects.filter(group=grp, activ=True).order_by('lastname')
         return {
             "caption": 'Группа "{}"'.format(grp.name),
             "data": dict(map(lambda s: (str(s.id), s.getFullName()), rows))    

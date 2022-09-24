@@ -6,7 +6,7 @@
 	{% for el in abc %}
 		<div class="back">
 		{% for ch in el %}
-			<input type="button" id="{{ch.1}}" value = "{{ch.0}}" onclick="click_abc(event)"
+			<input type="button" id="{{ch.1}}" value = "{{ch.0}}" onclick="click_abc(this)"
 				{% if ch.1 == currentABC %}
 					class="a_button abc bg_red"
 				{% else %}
@@ -18,7 +18,7 @@
 	{% endfor %}
 	<div class="back">
 		{% for key, el in type.items %}
-			<input type="button" id="{{key}}" value="{{el}}" onclick="click_abc(event)"
+			<input type="button" id="{{key}}" value="{{el}}" onclick="click_abc(this)"
 				{% if key == current %}
 					class="a_button three_in_row small bg_red" 
 				{% else %}
@@ -37,7 +37,7 @@
 			</tr>	
 			{% for key, el in data.items %}
 				<tr>
-					<td class="cell"><a id="{{key}}" class="a_text" onclick="click_go_person(event)">
+					<td class="cell"><a id="{{key}}" class="a_text" onclick="click_go_person(this)">
 						{{el.lastname}}<br/><nobr>{{el.firstname}}
 						{% if el.patronymic %}
 							{{el.patronymic}}

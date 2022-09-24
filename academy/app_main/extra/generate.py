@@ -278,7 +278,7 @@ class Generate():
         for el in rows:
             if(len(Marks.objects.filter(lesson=el))):
                 continue
-            st = Students.objects.filter(group=el.group)
+            st = Students.objects.filter(group=el.group, activ=True)
             les += 1
             for w in st:                
                 if(random.randint(0, 1)==0):
@@ -304,7 +304,7 @@ class Generate():
             res.append(ar[0:k])
             ar = ar[k:]
         
-        data = db.objects.filter(Q(lastname__startswith=ch[0])).order_by('lastname', 'firstname', "patronymic")
+        data = db.objects.filter(Q(lastname__startswith=ch[0]) & Q(activ=True)).order_by('lastname', 'firstname', "patronymic")
         data = dict(map(lambda s: (s.id, s.getPersonalInfo()), data))
         
         return {

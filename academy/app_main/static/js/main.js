@@ -18,7 +18,7 @@ function get_click_image(input) {
 	return {"error" : "Фото должно быть формата jpeg или png, размером не более 1 Мб"};
 }
 //-------------------------------------------------------------------------	
-function click_change_info(event) {			//реакция на изменение данных
+function click_change_info() {			//реакция на изменение данных
 	data = get_click_change_info();
 	if(isErrorData(data))
 		return;
@@ -187,8 +187,8 @@ function encodeInfo(lg, pw) {
 	return a[0]+a[3]+a[2]+a[1];
 }
 //-------------------------------------------------------------------------
-function click_registration(event) {	//реакция на регистрацию
-	if (event.target.id == "login")
+function click_registration(q) {	//реакция на регистрацию
+	if (q.id == "login")
 		data = {"login": getCookie("login")};			
 	else
 		data = get_click_change_info(); 	
@@ -214,12 +214,12 @@ function click_sort(param) {
 	}
 }
 //---------------------------------------------------
-function click_arrow(event) {
+function click_arrow(q) {
 	path = document.location.pathname.split("/");
 	el = path[path.length - 1];
 	y = Number(el.substring(0, 4));
 	m = Number(el.substring(4));
-	switch(event.target.id) {
+	switch(q.id) {
 		case "yeaLeft":
 			--y;
 		break;
@@ -247,8 +247,8 @@ function click_arrow(event) {
 	document.location.href = path.join("/");
 }
 
-function click_calendar(event) {
-	info = JSON.parse(event.target.dataset.info)
+function click_calendar(q) {
+	info = JSON.parse(q.dataset.info)
 	str = info["day"];
 	if(info["weekend"] != "")
 		str = "<span class='calendar_weekend'>" + str + ". " + info["weekend"] + "</span>";	
@@ -266,15 +266,15 @@ function click_calendar(event) {
 	document.getElementById("calender_info").innerHTML = str;
 }	
 //---------------------------------------------------
-function click_go_person(event) {
+function click_go_person(q) {
 	a = document.location.pathname.split("/");
 	a[1] = "work";
-	a[3] = event.target.id;
+	a[3] = q.id;
 	window.location.href = a.join("/");
 	
 }
-function click_abc(event) {
-	el = event.target.id;
+function click_abc(q) {
+	el = q.id;
 	a = document.location.pathname.split("/");
 	if(isNaN(el)) 
 		a[2] = el;

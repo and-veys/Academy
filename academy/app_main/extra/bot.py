@@ -1,4 +1,4 @@
-from ..models import SunBot, Employees, Students
+from ..models import SunBot
 from .extra import Extra
 from .persons import Persons
 from datetime import date, timedelta
@@ -55,18 +55,20 @@ class Bot():
             return "Аргументы команды: 'логин' и 'пароль' через пробел."
         login = self.__encodeInfo(*data["args"])
         res = {"bot_id": data["id"], "employees": None, "students": None}
-        row = Persons().getPersonFromLogin(login)
+        row = Persons().getPersonFromLogin(login)        
+        if(row["row"].activ == False):
+            return "Вам отказано в доступе"  
         if(row):
             res[row["tp"]] = row["row"]
         else:
             return "Ошибочные логин и пароль."
-        sb = self.__getRow(data)
+        sb = self.__getRow(data)      
         if(sb):
             sb.bot_id = res["bot_id"]
             sb.employees = res["employees"]
             sb.students = res["students"]
         else:
-            sb = SunBot(**res)         
+            sb = SunBot(**res)   
         try:
             sb.save()
         except:

@@ -112,7 +112,7 @@ class Schedule():
     
     
     def createMarks(self, sch):
-        rows = Students.objects.filter(group=sch.group)
+        rows = Students.objects.filter(group=sch.group, activ=True)
         mm = Marks.objects.filter(lesson=sch)
         nm = dict(map(lambda s: (str(s.id), s.name), NamesMarks.objects.all()))
         res = {}
@@ -133,11 +133,10 @@ class Schedule():
             "marks": nm
         
         }
-        
-    @Extra().query_debugger     
+            
     def setMarks(self, grp, sch, data):
         mm = dict(map(lambda s: (s.id, s), NamesMarks.objects.all()))
-        std = Students.objects.filter(group=grp)
+        std = Students.objects.filter(group=grp, activ=True)
         for el in data:
             Marks.objects.create(lesson=sch, student=std.get(id=el[0]), mark=mm[el[1]])
         return ""

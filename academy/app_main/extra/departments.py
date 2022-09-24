@@ -1,5 +1,4 @@
 from ..models import Departments as db, Employees, Status_Employees, Students
-from django.db.models import Q
 from .extra import Extra
 
 
@@ -9,11 +8,14 @@ class Departments():
         if(cls.__inst == None): 
             cls.__inst = super().__new__(cls)
         return cls.__inst 
-    def getData(self, id, person): 
-       
+    def getData(self, id, person):        
         if(person == "employees"):
-             return Extra().getDataObject(Employees, id)
-        return Extra().getDataObject(Students, id)
+            el = Extra().getDataObject(Employees, id)
+        else:
+            el = Extra().getDataObject(Students, id)
+        if(el and el.activ):
+            return el
+        return  None 
     
     def control(self, kwargs):
         if(kwargs["person"] == "employees"):
@@ -29,7 +31,7 @@ class Departments():
             rows = db.objects.all().order_by("status__sort_weight", "name")
         stat = Status_Employees.objects.all().order_by("sort_weight")   
         for el in rows:
-            temp = Employees.objects.filter(Q(department=el.id) & Q(activ=True))
+            temp = Employees.objects.filter(department=el, activ=True)
             pl = {}
             for q in stat:
                 pers = temp.filter(status=q.id)
