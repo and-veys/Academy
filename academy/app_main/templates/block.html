@@ -1,0 +1,12 @@
+{% extends "info_persons.html" %}
+{% block buttons %}
+	<div class="div_row">
+		<input type="button" class="a_button small three_in_row" onClick="click_block(0)"
+		{% if activ %}
+			value="Заблокировать"
+		{% else %}
+			value="Разблокировать"	
+		{% endif %}
+		/>
+	</div>	
+{% endblock buttons %}	

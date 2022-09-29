@@ -1,2 +1,7 @@
 {% extends "work.html" %}
 
+{% block work %}
+	<a class="a_button" href='{{"/applications/"|add:persons|add:"/"|add:id|add:"/student"}}'> Заявки на учебу</a>
+	<a class="a_button" href='{{"/applications/"|add:persons|add:"/"|add:id|add:"/employee"}}'> Заявки на работу </a>
+	<a class="a_button" href='{{"/activ/"|add:persons|add:"/"|add:id|add:"/employees/0"}}'> Заблокировать / Разблокировать </a>
+{% endblock work %}

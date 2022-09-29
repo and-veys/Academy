@@ -1,12 +1,12 @@
 {% extends "main.html" %}
 {% block caption %}
-	Войти как ...
+	{{caption}}
 {% endblock caption %}
 {% block main %}
 	{% for el in abc %}
 		<div class="back">
 		{% for ch in el %}
-			<input type="button" id="{{ch.1}}" value = "{{ch.0}}" onclick="click_abc(this)"
+			<input type="button" id="S_{{ch.1}}" value = "{{ch.0}}" onclick="click_abc(this)"
 				{% if ch.1 == currentABC %}
 					class="a_button abc bg_red"
 				{% else %}
@@ -18,7 +18,7 @@
 	{% endfor %}
 	<div class="back">
 		{% for key, el in type.items %}
-			<input type="button" id="{{key}}" value="{{el}}" onclick="click_abc(this)"
+			<input type="button" id="S_{{key}}" value="{{el}}" onclick="click_abc(this)"
 				{% if key == current %}
 					class="a_button three_in_row small bg_red" 
 				{% else %}
@@ -26,7 +26,7 @@
 				{% endif %}
 			 />
 		{% endfor%}
-		<a class="a_button three_in_row small" href="/administrator"> Назад </a>		
+		<a class="a_button three_in_row small" href="{{back}}"> Назад </a>		
 	</div>
 	</br>
 	<div class="table">
@@ -37,19 +37,33 @@
 			</tr>	
 			{% for key, el in data.items %}
 				<tr>
-					<td class="cell"><a id="{{key}}" class="a_text" onclick="click_go_person(this)">
+					<td class="cell">
+						{% if el.OK %}
+							<a id='{{key}}' class="a_text" onclick="click_go_person(this)">
+						{% else %}
+							<a id="{{key}}" class="a_text error_message" onclick="click_go_person(this)">
+						{% endif %}
+					
+					
 						{{el.lastname}}<br/><nobr>{{el.firstname}}
 						{% if el.patronymic %}
 							{{el.patronymic}}
 							{% endif %}
-						</nobr></a></td>					
-					<td class="cell"><nobr>
+						</nobr></a>
+					</td>					
+					{% if el.OK %}
+						<td class="cell">
+					{% else %}
+						<td class="cell error_message">
+					{% endif %}
+					<nobr>
 						{% if el.department %}
 							{{el.department}} <br> <i>{{el.status|lower}}</i>
  						{% else %}
 							Группа "{{el.group}}"
 						{% endif %}
-					</nobr></td>
+					</nobr>
+					</td>
 				</tr>
 			{% endfor %}
 		</table>

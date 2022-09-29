@@ -1,0 +1,19 @@
+{% extends "main.html" %}
+{% load static %}
+{% block caption %}
+	{{caption}}
+{% endblock caption %}
+{% block main %}
+	<div class="list_div">	
+		<ul class="list_third">
+			{% for el in data %}										
+				{% if el %}
+					<li> {{el}} </li>	
+				{% endif %}	
+			{% endfor %}
+		</ul>
+	</div>	
+	<div class="back">
+		<a class="a_button" href="/administrator"> Назад </a>
+	</div>
+{% endblock main %}

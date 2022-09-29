@@ -259,10 +259,35 @@ class Employees(Person):
         res["persons"] = self.getType()
         res["html"] = "work_employees_{}_{}.html".format(self.department.status.index, self.status.index)
         return res
-      
+ 
+
+class ApplicationBot(Person):
+    person = models.CharField('Студент/Сотрудник', max_length = 10)
+    action = models.IntegerField('Действие', default=0) #0-зарегистрировано, 1-заблокировано, 2-отказ, 3-принять
+    bot_id = models.PositiveBigIntegerField('ID чата', unique=True)
+    department = models.ForeignKey(Departments, null=True, on_delete=models.CASCADE, verbose_name="Отдел")
+    group = models.ForeignKey(Groups, null=True, on_delete=models.CASCADE, verbose_name="Группа") 
+    class Meta: 
+        ordering = ['lastname', 'firstname', 'patronymic']  
+        verbose_name = "Заявка"                     
+        verbose_name_plural = "Заявки"
+        db_table = "amv_applicationbot"   
+    
+    def getMessage(self):
+        temp = self.getFullName() + ",\n"
+        if(self.action == 1):
+            return temp + "<b>Вас заблокировали!</b>"
+        if(self.action == 2):
+            return temp + "<b>Вам отказали.</b>"
+        if(self.person == "employee"):
+            return temp + 'Вас приняли в отдел:\n<b>{}</b>'.format(self.department.name)    
+        return temp + 'Вас зачислили в группу:\n<b>{}</b>'.format(self.group.name)    
+    
+
+ 
 class SunBot(models.Model):
     """Таблица зарегистрированных чатов"""
-    bot_id = models.IntegerField('ID чата', unique=True)
+    bot_id = models.PositiveBigIntegerField('ID чата', unique=True)
     employees = models.ForeignKey(Employees, null=True, on_delete=models.CASCADE, verbose_name="Сотрудник")
     students = models.ForeignKey(Students, null=True, on_delete=models.CASCADE, verbose_name="Студент")     
     class Meta: 
@@ -278,6 +303,7 @@ class SunBot(models.Model):
 
 class LessonTimes(models.Model):  
     """Таблица времени начала уроков"""
+    name = models.CharField('Наменование', max_length = 36)
     time = models.TimeField("Время урока", unique=True)
     class Meta:
         ordering = ['time']  
@@ -285,7 +311,7 @@ class LessonTimes(models.Model):
         verbose_name_plural = "Время начала уроков" 
         db_table = "amv_times_lesson"
     def __str__(self):
-        return "{}: {}".format(str(self.id), str(self.time))
+        return "{}: {} - {}".format(str(self.id), str(self.time), self.name)
 
 class Schedule(models.Model):
     """Расписание предметов"""
@@ -331,21 +357,6 @@ class Schedule(models.Model):
             return None;
         return self.professor   
         
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-
 class NamesInfo(models.Model):
     """Общий класс-родитель для стандартных наименований"""
     index = models.IntegerField('Индекс', unique=True)
@@ -402,8 +413,6 @@ class NamesMarks(NamesInfo):
         verbose_name = "Оценка"                     
         verbose_name_plural = "Оценки" 
         db_table = "amv_names_mark"
-
-
 
 class Marks(models.Model):
     """Таблица оценок студентов"""

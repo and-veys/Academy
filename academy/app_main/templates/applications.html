@@ -1,0 +1,19 @@
+{% extends "main.html" %}
+{% load static %}
+{% block caption %}
+	{{caption}}
+{% endblock caption %}
+{% block main %}
+	<div class="list_div">	
+		<ul class="list_third">
+			{% for k1, e1 in data.items %}										
+				<li id='{{k1}}'> 
+					<a class="a_text" href={{"/applications"|add:person|add:k1}}>{{e1}}</a>
+				</li>									
+			{% endfor %}
+		</ul>
+	</div>	
+	<div class="back">
+		<a class="a_button" href={{back}}> Назад </a>
+	</div>
+{% endblock main %}

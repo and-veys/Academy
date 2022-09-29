@@ -4,7 +4,7 @@
 	{% if department %}
 		{{department}}
 	{% else %}	
-		Группа "{{group}}", <br /> курс "{{course}}",  	
+		Группа "{{group}}", <br /> курс "{{course}}"  	
 	{% endif %}
 {% endblock caption %}
 {% block main %}
@@ -14,14 +14,16 @@
 		{% else %}
 			<img id="photo" src='{% static "pic/pic_"|add:gender|add:".png" %}' />	
 		{% endif %}
-		<table class="big">
-			<tr><th>
-			{% if status %}
-				{{status}}
-			{% else %}
-				Группа "{{group}}"
-			{% endif %}
-			</th></tr>
+		<table class="big">				
+				<tr><th>
+				{% block caption2 %}
+					{% if status %}
+						{{status}}
+					{% else %}
+						Группа "{{group}}"
+					{% endif %}
+				{% endblock caption2 %}
+				</th></tr>				
 			<tr><td>
 				{{lastname}}<br/>
 				{{firstname}}
@@ -47,14 +49,16 @@
 			<td>{{e_mail}}</td>
 		</tr>
 	</table>
-	{% if full %}
-		<div class="div_row">
-			<label for="file" class="a_button small three_in_row"> Фото </label>
-			<a class="a_button small three_in_row" href="{{'/changepassword/'|add:persons|add:'/'|add:id}}"> Идентификация </a>
-			<a class="a_button small three_in_row" href="{{'/changeinfo/'|add:persons|add:'/'|add:id}}"> Личное </a>
-			<input id="file" type="file" onchange="click_image(this)" accept=".jpg,.jpeg,.png" />
-		</div>		
-	{% endif %}	
+	{% block buttons %}
+		{% if full %}
+			<div class="div_row">
+				<label for="file" class="a_button small three_in_row"> Фото </label>
+				<a class="a_button small three_in_row" href="{{'/changepassword/'|add:persons|add:'/'|add:id}}"> Идентификация </a>
+				<a class="a_button small three_in_row" href="{{'/changeinfo/'|add:persons|add:'/'|add:id}}"> Личное </a>
+				<input id="file" type="file" onchange="click_image(this)" accept=".jpg,.jpeg,.png" />
+			</div>		
+		{% endif %}	
+	{% endblock buttons %}	
 	<div class="back">
 		<a class="a_button" href={{back.0}}> {{back.1}} </a>			
 	</div>

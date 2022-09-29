@@ -1,22 +1,36 @@
-from ..models import Employees, Students, Schedule
+from ..models import Employees, Students, Schedule, Genders
 from .extra import Extra
 from django.conf import settings
 from django.db.models import Q
-from datetime import timedelta
+from datetime import timedelta, date
+import re
 
 class Persons():
     __inst = None 
     def __new__(cls):
         if(cls.__inst == None): 
             cls.__inst = super().__new__(cls)
-            cls.__inst.__init()
         return cls.__inst 
-    def __init(self):
-        self.__person = {"employees": Employees, "students": Students}
+
+    
+    
+    
+    
+    def getDataAll(self, id, person): 
+        temp = {"employees": Employees, "students": Students}
+        try:
+            el = Extra().getDataObject(temp[person], id)
+        except:
+            return None
+        return el
+        
+     
+    
     
     def getData(self, id, person):  
+        temp = {"employees": Employees, "students": Students}
         try:
-            el = Extra().getDataObject(self.__person[person], id)
+            el = Extra().getDataObject(temp[person], id)
             if(el and el.activ):
                 return el
             return None
@@ -27,7 +41,7 @@ class Persons():
         return ((kwargs["id"].getType() == kwargs["person"]) and kwargs["id"].activ)     
     
     
-    
+
     
     def createStructure(self, id, tp):         
         if(type(id) == type(1)):
@@ -77,7 +91,8 @@ class Persons():
         return "/personal/{}/{}".format(tp, id.id)  
     
     def getPersonFromLogin(self, login):
-        for k, cl in self.__person.items():       
+        temp = {"employees": Employees, "students": Students}
+        for k, cl in temp.items():       
             try:
                 row = cl.objects.get(login=login)
                 return {"row": row, "tp": k}
@@ -140,12 +155,63 @@ class Persons():
                 res[str(dtMin.day)] = temp
             dtMin += dt
         return res  
+    
+    def __getName(self, nm):
+        if(re.match("^[А-ЯЁа-яё-]+$", nm)):        
+            temp = list(map(lambda s: s[0].upper() + s[1:].lower(), nm.split("-")))
+            temp = "-".join(temp)
+            return temp           
+        return ""
+    
+    def controlData(self, dt):
+        ln = len(dt)
+        if(ln != 7 and ln != 6):
+            return None
+        data = {}
+        temp = self.__getName(dt[0])
+        if(temp == ""):
+            return None        
+        data["lastname"] = temp
+        temp = self.__getName(dt[1])
+        if(temp == ""):
+            return None
+        data["firstname"] = temp       
+        if(ln == 7):
+            ln = 0
+            temp = self.__getName(dt[2])
+            if(temp == ""):
+                return None            
+            data["patronymic"] = temp
+        else:
+            ln = 1
+        try:
+            temp = Extra().getDate(dt[3-ln])                
+        except:
+            return None
+        if(temp.year < 1950 or temp > date.today()):
+            return None        
+        data["birthday"] = temp
+        if(not re.match("^[MЖМ]$", dt[4-ln])):
+            return None
+        if(dt[4-ln] == "Ж"):
+            data["gender"] = Genders.objects.get(index="F")
+        else:
+            data["gender"] = Genders.objects.get(index="M")
+        temp = dt[5-ln].split("-")  
+        temp = "".join(temp)
+        if(not re.match("^\+[0-9]{11}$", temp)):
+            return None
+        data["phone"] = temp
+        if(not re.match("^[0-9A-Za-z\._\-]+@[0-9A-Za-z\._\-]+\.[0-9A-Za-z\._\-]+$", dt[6-ln])):
+            return None       
+        data["e_mail"] = dt[6-ln]
+        return data
+          
+    def setBlock(self, id):
+        id.activ = (not id.activ)
+        id.save()
         
 
-        
-        
-        
-        
         
         
         

@@ -25,36 +25,68 @@ function click_change_info() {			//реакция на изменение дан
 	sendPOST(data);
 }
 function get_click_change_info() {
-	login = document.getElementById("reg_login");
-	pass = document.getElementById("reg_password");
-	pass2 = document.getElementById("reg_password_2");
-	phone = document.getElementById("reg_phone");
-	e_mail = document.getElementById("reg_e_mail");
-	if(login) {		
-		login = login.value;
-		pass = pass.value;
-		if(login.length < 8 || pass.length < 8 || login.length > 64 || pass.length > 64)
-			return {"error": "Логин и пароль должны быть от 8-и до 64 символов."};
-		if(pass2 && pass != pass2.value)
-			return {"error": "Новые варианты паролей не совпадают."};	
-		if(validation("reg_login", login) && validation("reg_password", pass))		
-			return {"login": encodeInfo(login, pass)};
+	
+	
+	
+	
+	login = validation("reg_login");
+	pass = validation("reg_password");
+	pass2 = validation("reg_password_2");
+	phone = validation("reg_phone");
+	e_mail = validation("reg_e_mail");
+	
+	
+	
+	
+	if(login != undefined) {
+		if(login == "")
+			return {"error": "Некорректный логин или его длина (8...20 символов)."};
+		if(pass == "")
+			return {"error": "Некорректный пароль или его длина (8...20 символов)."};	
+		if(pass2 != undefined) {
+			if(pass != pass2)
+				return {"error": "Новые варианты паролей не совпадают."};	
+		}
+		return {"login": encodeInfo(login, pass)};			
 	}
-	if(phone) {
-		phone = phone.value.split("-").join("");
-		e_mail = e_mail.value;
-		temp = phone.split("+")
-		if(phone.length < 12 || phone[0] != '+' || temp.length != 2) 	
-			return {"error": "Ошибочный телефон. Допустимый формат: '+X-XXX-XXX-XX-XX'."};		
-		temp = e_mail.split('@')
-		if(e_mail.split(' ').length != 1 || temp.length != 2 || temp[1].split('.').length == 1)
-			return {"error": "Явно ошибочная электронная почта."};
-		if(validation("reg_phone", phone))	
-			return {"phone": phone, "e_mail": e_mail};
+	if(phone != undefined) {
+		phone = phone.split("-").join("");
+		if(phone.length < 12)
+			return {"error": "Ошибочный телефон. Допустимый формат: '+X-XXX-XXX-XX-XX'."};	
+		if(e_mail == "")
+			return {"error": "Явно ошибочная электронная почта."};		
+		return {"phone": phone, "e_mail": e_mail};	
 	}
 	return {"error": "Ошибка валидации введенного текста."}
 
 }
+
+function validation(id){
+	el = document.getElementById(id);
+	if(! el)
+		return undefined;
+	mask = {
+		"reg_login": "^[A-Za-z0-9]{8,20}$",
+		"reg_password": "^[A-Za-z0-9]{8,20}$",
+		"reg_password_2": "^[A-Za-z0-9]{8,20}$",
+		"reg_phone": "^[+][0-9\-]{11,}$",
+		"reg_e_mail": "^[0-9A-Za-z\._\-]+@[0-9A-Za-z._-]+[.][0-9A-Za-z._-]+$",
+		"reg_date": "^[0-9]{1,2}.[0-9]{1,2}.[0-9]{4}$"
+	};
+	str = el.value;
+	console.log(str, mask[id], new RegExp(mask[id]));
+	
+	try {
+		if(str.match(new RegExp(mask[id])))
+			return str;
+	}
+	catch(err) {
+		
+	}
+	return "";
+}
+
+
 //-------------------------------------------------------------------------	
 function click_schedule() {		//реакция на установку расписания
 	data = get_click_schedule();
@@ -72,7 +104,7 @@ function click_edit_schedule() { //реакция на установку изм
 
 
 function get_click_schedule() {
-	dt = getDate(document.getElementById("reg_date").value);
+	dt = getDate(validation("reg_date"));
 	bg = getDate(document.getElementById("begin").innerHTML);
 	ed = getDate(document.getElementById("end").innerHTML);
 	if(!dt)
@@ -117,7 +149,7 @@ function get_click_schedule() {
 
 
 function get_click_edit_schedule() {
-	dt = getDate(document.getElementById("reg_date").value);
+	dt = getDate(validation("reg_date"));
 	if(!dt)
 		return {"error": "Ошибка ввода данных. Формат даты: ДД.ММ.ГГГГ"};
 	tm = document.getElementById("times").value;
@@ -156,31 +188,24 @@ function getDate(str) {
 function isNavigationKey(k) {
 	return (k == 8 || k == 46 || k == 37 || k == 39) 
 }
-
-function validation(id, str){
-	if(str == undefined)
-		return false;
-	mask = {
-		"reg_login": "[A-Za-z0-9]",
-		"reg_password": "[A-Za-z0-9]",
-		"reg_password_2": "[A-Za-z0-9]",
-		"reg_phone": "[0-9\-\+]",
-		"reg_date": "[0-9.]"
-	}
-	mask = mask[id];
-	if(mask) {
-		temp = "^" + mask + "{" + str.length + "}$"
-		try {
-			return str.match(new RegExp(temp));
-		}
-		catch(err) {}
-	}
-	return true;	
-}	
+	
 function key_down_text(event) {
 	if(isNavigationKey(event.keyCode)) 
-		return; 
-	event.returnValue = validation(event.target.id, event.key)	
+		return; 	
+	mask = {
+		"reg_login": "^[0-9A-Za-z]$",
+		"reg_password": "^[0-9A-Za-z]$",
+		"reg_password_2": "^[0-9A-Za-z]$",
+		"reg_phone": "^[0-9\-\+]$",
+		"reg_e_mail": "^[0-9A-Za-z.@_-]$",
+		"reg_date": "^[0-9.]$"
+	};
+	try {
+		event.returnValue = event.key.match(new RegExp(mask[event.target.id]));
+	}
+	catch(err) {
+		event.returnValue = false;
+	}
 }
 function encodeInfo(lg, pw) {
 	a = [lg.substring(0, 5), lg.substring(5), pw.substring(0, 3), pw.substring(3)];	
@@ -268,20 +293,44 @@ function click_calendar(q) {
 //---------------------------------------------------
 function click_go_person(q) {
 	a = document.location.pathname.split("/");
-	a[1] = "work";
-	a[3] = q.id;
-	window.location.href = a.join("/");
+	if(a[1] == "loginas") 
+		a[1] = "work";
+	else 
+		a[a.length] = a[a.length-1];
 	
+	a[a.length - 1] = q.id;
+	window.location.href = a.join("/");	
 }
 function click_abc(q) {
-	el = q.id;
+	
+	el =q.id.split("_")[1];
 	a = document.location.pathname.split("/");
-	if(isNaN(el)) 
-		a[2] = el;
+	if(isNaN(Number(el))) 
+		a[a.length - 2] = el;
 	else
-		a[3] = el;
+		a[a.length - 1] = el;
 	window.location.href = a.join("/");
 }
+//---------------------------------------------------
+
+function click_block(q) {
+	data = get_click_block(q);
+	if(isErrorData(data))
+		return;
+	sendPOST(data);
+}
+function get_click_block(q) {
+	res = {"action": q};
+	if(q == 2){
+		el = document.getElementById("choice");
+		if(el.value == "")
+			return {"error": "Укажите место вакансии"};
+			res["id"]=Number(el.value);	
+	}	
+	return res; 
+}
+
+
 //---------------------------------------------------
 function getCookie(cook) {		//получить логин из cookie
 	dt = document.cookie.split(";");

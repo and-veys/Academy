@@ -24,7 +24,8 @@ from ..models import    Genders, \
                         NamesMonths, \
                         WeekEnds, \
                         NamesMarks, \
-                        Marks
+                        Marks, \
+                        ApplicationBot
 
 
 class Generate():
@@ -105,7 +106,7 @@ class Generate():
         self.__year = [1970, 2000]
         self.__phone = {"EX": "+7", "COUNT": 10, "CHARS": list(map(str, range(10)))}
         self.__email = ["yandex.ru", "gmail.com", "mail.ru", "rambler.ru"]
-        self.__login = {"COUNT": 32, "CHARS": string.ascii_letters + string.digits}
+        self.__login = {"COUNT": 16, "CHARS": string.ascii_letters + string.digits}
         self.__translit = {
                     "А": "a",
                     "Б": "b",
@@ -159,6 +160,7 @@ class Generate():
             WeekEnds, 
             NamesMarks,
             Marks,
+            ApplicationBot
 
         ]
         self.__ABC = list(self.__translit.keys())
@@ -205,6 +207,20 @@ class Generate():
             return 1
         except:
             return 0
+        
+    
+    
+    def encodeInfo(self, lg, pw):
+        a = [lg[:5], lg[5:], pw[:3], pw[3:]]
+        return a[0]+a[3]+a[2]+a[1]
+    
+    def generatePassword(self, kol):
+        res = ["", ""]
+        for q in range(len(res)):
+            for n in range(kol):
+                res[q] += random.choice(self.__login["CHARS"])
+        return res   
+    
     
     def __getPersonInfo(self):
         gn = random.choice(self.__gender)
@@ -223,11 +239,12 @@ class Generate():
             res["phone"] += random.choice(self.__phone["CHARS"])
         em = list(map(lambda s: self.__translit[s.upper()], res["lastname"]))
         res["e_mail"] = "{}@{}".format("".join(em), random.choice(self.__email))
-        res["login"] = ""
-        for n in range(self.__login["COUNT"]):
-            res["login"] += random.choice(self.__login["CHARS"])
-        return res   
         
+        temp = self.generatePassword(self.__login["COUNT"])       
+        res["login"] = self.encodeInfo(*temp)
+        return res   
+    
+
                 
     def serialize(self):
         res = ""
@@ -288,8 +305,8 @@ class Generate():
         return "Оценки: добавлено {} {} в {} {} <br />".format(
                             kol, Extra().getStringAmountMarks(kol),
                             les, Extra().getStringAmount(les, ["уроке", "уроках", "уроках"]))              
-        
-    def createStructure(self, person, abc):
+   
+    def createStructure(self, person, abc, full=False):
         ar = list(map(lambda s: [s, self.__ABC.index(s)], self.__ABC))
         
         db = {"employees": Employees, "students": Students}
@@ -304,9 +321,12 @@ class Generate():
             res.append(ar[0:k])
             ar = ar[k:]
         
-        data = db.objects.filter(Q(lastname__startswith=ch[0]) & Q(activ=True)).order_by('lastname', 'firstname', "patronymic")
-        data = dict(map(lambda s: (s.id, s.getPersonalInfo()), data))
+        if(full):
+            data = db.objects.filter(Q(lastname__startswith=ch[0])).order_by('lastname', 'firstname', "patronymic")
+        else:
+            data = db.objects.filter(Q(lastname__startswith=ch[0]) & Q(activ=True)).order_by('lastname', 'firstname', "patronymic")
         
+        data = dict(map(lambda s: (s.id, s.getPersonalInfo()), data))
         return {
             "abc": res,
             "current": person,

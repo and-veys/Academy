@@ -1,4 +1,4 @@
-from datetime import datetime 
+from datetime import datetime, date
 from django.shortcuts import render
 
 import functools
@@ -134,7 +134,7 @@ class Extra:
         
     def setAnchor(self, bk, *an):
         return "{}#{}".format(bk, "_".join(map(str, an)))
-        
+     
     def query_debugger(self, func):               #TODO  удалить и импорты
         @functools.wraps(func)
         def inner_func(*args, **kwargs):
@@ -149,5 +149,10 @@ class Extra:
             print(f"Finished in : {(end - start):.2f}s")
             return result
         return inner_func   
-        
+    
+    def getDate(self, dt):
+        self.paint(dt)
+        q = list(map(int, dt.split(".")))
+        q.reverse()
+        return date(*q)   
         

@@ -3,6 +3,8 @@
 import telebot
 from secrets import TOKEN
 import requests
+import time
+import threading
 
 print("Telebot 't.me/py_amv_bot' is running.\nQuit the telebot with CTRL-BREAK.")
 bot = telebot.TeleBot(TOKEN)
@@ -22,7 +24,9 @@ COMMANDS = [
         'now',
         'tomorrow',
         'today',
-        'date'
+        'date',
+        'employee',
+        'student'
 ]
 
 @bot.message_handler(commands=COMMANDS)
@@ -42,7 +46,22 @@ def bot_function(msg):
 @bot.message_handler(content_types=CONTENT_TYPES)
 def bot_not_support(msg):
     bot.send_message(msg.chat.id, "Данный запрос не поддерживается", parse_mode="html")
-    
+   
+
+def check_application():
+    mn = threading.main_thread()     
+    while(mn.is_alive()):                           
+
+        resp = requests.get("http://127.0.0.1:8000/bot", {"command": "/check", "id": 0})
+        if(resp.status_code == 200):
+            a = eval(resp.text)
+            for key, el in a.items():
+                bot.send_message(int(key), el, parse_mode="html")
+        time.sleep(10)
+
+th = threading.Thread(target=check_application)           
+th.start()
+   
 bot.infinity_polling()     
 
 

@@ -8,7 +8,7 @@
 		<input id="reg_phone" type="text" class="input_text" value="{{phoneJS}}" 
 					placeholder="ТЕЛЕФОН" onkeydown="key_down_text(event)" />
 		<input id="reg_e_mail" type="text" class="input_text" value="{{e_mail}}"
-					placeholder="ЭЛ. ПОЧТА" />
+					placeholder="ЭЛ. ПОЧТА" onkeydown="key_down_text(event)"/>
 	{% endif %}
 	{% if password %}
 		<input id="reg_login" type="text" class="input_text" 

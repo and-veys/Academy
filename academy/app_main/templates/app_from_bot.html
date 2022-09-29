@@ -1,0 +1,19 @@
+{% extends "info_persons.html" %}
+{% block caption %}
+	{{caption}}	
+{% endblock caption %}
+{% block caption2 %}
+{% endblock caption2 %}
+{% block buttons %}
+	<select id="choice" required class="input_text small">
+		<option value="" disabled selected hidden>{{dataApp.1}}</option>
+		{%for key, el in dataApp.0.items %}
+			<option value="{{key}}">{{el}}</option>
+		{%endfor%}
+	</select>
+	<div class="div_row">			
+		<input type="button" class="a_button small three_in_row" value="Заблокировать" onClick="click_block(0)" />
+		<input type="button" class="a_button small three_in_row" value="Отказать" onClick="click_block(1)" />
+		<input type="button" class="a_button small three_in_row" value="Принять" onClick="click_block(2)" >	
+	</div>	
+{% endblock buttons %}	

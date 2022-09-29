@@ -10,6 +10,7 @@ from .extra.subjects import Subjects
 from .extra.students import Students
 from .extra.schedule import Schedule
 from .extra.access import Access
+from .extra.applications import Applications
 from .extra.bot import Bot
 import json
 from datetime import date
@@ -362,8 +363,80 @@ def coworkers(request, person, id):
 
 
 
+@Access().isAccess 
+@Access().convertData
+@Access().isEmployee
+@Access().isDIR
+@Access().isLeader
+def activ(request, person, id, per, abc):
+    content = Generate().createStructure(per, abc, True)
+    if(not content):
+        return render(request, "error_access.html") 
+    content["back"] = Extra().getPath("work", person, id.id)
+    content["caption"] = "Заблокировать / Разблокировать"
 
+        
+    return render(request, "loginas.html", content)
 
+@Access().isAccess 
+@Access().convertData
+@Access().isEmployee
+@Access().isDIR
+@Access().isLeader
+def block(request, person, id, per, abc, bl): 
+    info = Persons().getDataAll(bl, per)
+    if(not info):
+        return render(request, "error_access.html")
+    back = [Extra().getPath("activ", person, id.id, per, abc), "Назад"] 
+    back[0] = Extra().setAnchor(back[0], bl) 
+    if(request.method.upper() == "POST"):  
+        Persons().setBlock(info)
+        return HttpResponse(back[0]) 
+    content = info.getPersonalInfo()
+    content["back"] = back 
+    content["activ"] = content["OK"]
+    return render(request, "block.html", content)
+    
+
+@Access().isAccess 
+@Access().convertData
+@Access().isEmployee
+@Access().isDIR
+@Access().isLeader
+def applications(request, person, id, per):
+    info = Applications().createCtructure(per)
+    content = {
+        "data": info,
+        "back": Extra().getPath("work", person, id.id),
+        "person": Extra().getPath(person, id.id, per) + "/",
+        "caption": "Заявки на {}".format(("работу" if per=="employee" else "учебу"))
+    }
+    return render(request, "applications.html", content)
+
+@Access().isAccess 
+@Access().convertData
+@Access().isEmployee
+@Access().isDIR
+@Access().isLeader   
+def appFromBot(request, person, id, per, bl):
+    info = Applications().getDataAll(bl, per)
+    if(not info):
+        return render(request, "error_access.html")
+    back = [Extra().getPath("applications", person, id.id, per), "Назад"] 
+    back[0] = Extra().setAnchor(back[0], bl) 
+    if(request.method.upper() == "POST"):  
+        data = json.load(request)
+        if(Applications().setBlock(info, data)):
+            return HttpResponse(back[0]) 
+        return render(request, "error_access.html")        
+    content = info.getInfo()
+    content["back"] = back 
+    content["caption"] = "Заявка на {}".format(("работу" if per=="employee" else "учебу"))
+    content["dataApp"] = Applications().getDepartmentGroup(info)
+    if(content["dataApp"]):
+        return render(request, "app_from_bot.html", content)
+    return render(request, "error_access.html") 
+    
 @Access().isAdministrator
 def administrator(request):
     """Страница администратора"""
@@ -374,9 +447,9 @@ def loginas(request, person, abc):
     """Страница выбора работника/студента администратором"""
     content = Generate().createStructure(person, abc)
     if(not content):
-        return render(request, "error_access.html")
-    Extra().paint(content)    
-        
+        return render(request, "error_access.html")  
+    content["back"] = "/administrator"
+    content["caption"] = "Войти как ..."
     return render(request, "loginas.html", content)
 
 
@@ -393,16 +466,21 @@ def generate(request):
 @Access().isAdministrator
 def serialize(request):          
     """Сохранение данных БД""" 
-    res = Generate().serialize()
-    res += "<a href='/administrator'>Назад</a>"
-    return HttpResponse(res)
+    content = {
+        "data": Generate().serialize().split("<br />"),
+        "caption": "Результат сохранения данных"
+    }
+    return render(request, "save_load.html", content)
+
 
 @Access().isAdministrator                                  
 def loaddata(request):   
     """Загрузка данных БД""" 
-    res = Generate().loaddata()
-    res += "<a href='/administrator'>Назад</a>"    
-    return HttpResponse(res)
+    content = {
+        "data": Generate().loaddata().split("<br />"),
+        "caption": "Результат загрузки данных"
+    }
+    return render(request, "save_load.html", content)
     
 
 

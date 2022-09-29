@@ -48,6 +48,12 @@ urlpatterns = [
     
     path("coworkers/<str:person>/<int:id>", views.coworkers),
     
+    path("activ/<str:person>/<int:id>/<str:per>/<int:abc>", views.activ),
+    path("activ/<str:person>/<int:id>/<str:per>/<int:abc>/<int:bl>", views.block),
+    path("applications/<str:person>/<int:id>/<str:per>", views.applications),
+    path("applications/<str:person>/<int:id>/<str:per>/<int:bl>", views.appFromBot),
+
+    
     path("administrator/", views.administrator),
     path("serialize/", views.serialize),
     path("generate/", views.generate),

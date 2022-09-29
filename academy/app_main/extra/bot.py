@@ -1,7 +1,11 @@
-from ..models import SunBot
+from ..models import SunBot, ApplicationBot, Employees, Students, Status_Employees
 from .extra import Extra
 from .persons import Persons
+from .generate import Generate
 from datetime import date, timedelta
+import json
+
+
 
 class Bot():
     __inst = None 
@@ -12,8 +16,7 @@ class Bot():
         return cls.__inst 
     
     def __init(self):
-        self.__activity = {
-                
+        self.__activity = {                
                 "start": [self.__start, "Приветствие"],
                 "registration": [self.__registration, "Регистрация"],
                 "delete": [self.__delete, "Выход из регистрации"],                
@@ -21,14 +24,21 @@ class Bot():
                 "today": [self.__today, "Расписание на сегодня"],
                 "tomorrow": [self.__tomorrow, "Расписание на завтра"],
                 "date": [self.__date, "Расписание на дату"],
-                "help": [self.__help, "Справка"]
+                "employee": [self.__application, "Заявка на работу"],
+                "student": [self.__application, "Заявка на учебу"],
+                "help": [self.__help, "Справка"],
+                "check": [self.__check, ""]
         }     
     def message(self, dt):         
         data = self.__split(dt) 
         data = self.__activity[data["command"]][0](data)
         if(data):
             return data
-        return "Зарегистрируйтесь, пожалуйста.\nКоманда /registration 'логин' 'пароль'"  
+        return "{}\n{}\n{}".format(
+                    "Зарегистрируйтесь, пожалуйста, -\nкоманда /registration.",
+                    "Или подайте заявку на учебу - \nкоманда /student.",
+                    "Или работу - \nкоманда /employee;",
+                    )
         
     def __getRow(self, data):
         try:
@@ -36,8 +46,10 @@ class Bot():
         except:
             return None
         
-    def __split(self, dt):
-        temp = list(map(lambda s: s.strip(), dt["command"].split(" ")))    
+    def __split(self, dt):        
+        temp = list(map(lambda s: s.strip(), dt["command"].split("\n")))
+        temp = " ".join(temp)
+        temp = list(map(lambda s: s.strip(), temp.split(" ")))    
         return {
             "command": temp[0][1:],
             "args": temp[1:],
@@ -50,14 +62,26 @@ class Bot():
             return "Здравствуйте,\n{}.\nПомощь по боту - команда /help.".format(row.getPerson()[1].getFullName())
         return ""
         
+    def __getPromp(self, *args):
+        res = []
+        
+        for el in args:
+            if(type(el).__name__ == 'str'):
+                res.append("<b>{}</b>".format(el))
+            else:
+                res.append("<b>{}</b> <i>({})</i>".format(*el))
+    
+    
+        return "Аргументы команды через пробел или enter:\n" + "\n".join(res)
+        
     def __registration(self, data):       #/registration Andrey 123456
         if(len(data["args"]) != 2):
-            return "Аргументы команды: 'логин' и 'пароль' через пробел."
-        login = self.__encodeInfo(*data["args"])
+            return self.__getPromp("Логин", "Пароль")
+        login = Generate().encodeInfo(*data["args"])
         res = {"bot_id": data["id"], "employees": None, "students": None}
         row = Persons().getPersonFromLogin(login)        
         if(row["row"].activ == False):
-            return "Вам отказано в доступе"  
+            return "Вам отказано в доступе."  
         if(row):
             res[row["tp"]] = row["row"]
         else:
@@ -92,12 +116,11 @@ class Bot():
     def __help(self, data):
         res = "Доступные команды бота:"
         for k, el in self.__activity.items():
-            res += "\n/{} - {}".format(k, el[1])
+            if(el[1]):
+                res += "\n/{} - {}".format(k, el[1])
         return res
     
-    def __encodeInfo(self, lg, pw):
-        a = [lg[:5], lg[5:], pw[:3], pw[3:]]
-        return a[0]+a[3]+a[2]+a[1]
+
         
     def __today(self, data):
         return self.__getSchedule(data, date.today(), "Сегодня")
@@ -111,7 +134,7 @@ class Bot():
         dt = None
         if(len(data["args"]) == 1):
             try:
-                dt = self.__getDate(data["args"][0])
+                dt = Extra().getDate(data["args"][0])
             except:
                 pass
         if(dt == None):
@@ -137,8 +160,72 @@ class Bot():
             return res
         return ""
     
-    def __getDate(self, dt):
-        q = list(map(int, dt.split(".")))
-        q.reverse()
-        return date(*q)
+
+        
+        
+    def __application(self, dt):
+        data = Persons().controlData(dt["args"])
+        if(not data):
+            err = [
+            ["Фамилия", "кириллицей"],
+            ["Имя", "кирилицей"],
+            ["Отчество", "кирилицей, необязательно"],
+            ["Дата рождения", "в формате ДД.ММ.ГГГГ"],
+            ["Пол", "М или Ж"],            
+            ["Телефон", "в формате +X-XXX-XXX-XX-XX"],
+            "Эл. почта"]
+            return self.__getPromp(*err)             
+        data["person"] = dt["command"]
+        temp = Generate().generatePassword(8)       
+        data["login"] = Generate().encodeInfo(*temp)
+        data["bot_id"] = int(dt["id"])  
+        try:
+            temp = ApplicationBot.objects.get(bot_id=data["bot_id"])                
+            if(temp.activ):
+                return "Вы уже зарегистрировались.\nЖдите ответа." 
+            return "Вы заблокированы."
+        except:
+            pass     
+        try:
+            ApplicationBot.objects.create(**data)
+        except:
+            Extra().paint(data)
+            return "Ошибка записи в базу данных сервера."     
+        return "Ваша заявка зарегистрирована.\nЖдите ответа."
+      
+    def __check(self, dt):
+        rows = ApplicationBot.objects.filter(activ=True, action__gt=0) 
+        keys = ["_state", "department_id", "group_id", "action", "person", "bot_id"]
+        res = {}
+        for el in rows:
+            res[el.bot_id] = el.getMessage() 
+            if(el.action == 1):
+                el.activ = False
+                el.save()
+            else:
+                if(el.action == 3):
+                    temp = el.__dict__.copy()
+                    for q in keys:
+                        del temp[q]
+                    if(el.person == "employee"):
+                        db = Employees
+                        temp["department"] = el.department
+                        temp["status"]= Status_Employees.objects.get(index="employee")
+                    else:
+                        db = Students
+                        temp["group"] = el.group
+                    psw = []
+                    while(True):
+                        psw = Generate().generatePassword(8)                     
+                        temp["login"] = Generate().encodeInfo(*psw)
+                        try:
+                            db.objects.get(login=temp["login"])
+                        except:
+                            break         
+                    db.objects.create(**temp)
+                    res[el.bot_id] += "\nВаш логин: <b>{}</b>\nВаш пароль: <b>{}</b>".format(*psw)
+                el.delete()
+        return json.dumps(res)    
+        
+        
         
