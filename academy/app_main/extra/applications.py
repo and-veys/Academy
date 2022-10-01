@@ -46,7 +46,6 @@ class Applications():
                 temp = temp[id.person].objects.get(id=data["id"]) 
             except:
                 return False
-            Extra().paint("-------------------------------",temp)
             if(id.person == "employee"):
                 id.department = temp   
                 id.status = Status_Employees.objects.get(id=data["id_extra"])

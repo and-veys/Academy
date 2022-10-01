@@ -135,7 +135,8 @@ class Extra:
     def setAnchor(self, bk, *an):
         return "{}#{}".format(bk, "_".join(map(str, an)))
      
-    def query_debugger(self, func):               #TODO  удалить и импорты
+    def query_debugger(self, func):    
+        """Функция расчета времени и обращений к базе данных. С просторов интернета"""
         @functools.wraps(func)
         def inner_func(*args, **kwargs):
             reset_queries()            
@@ -151,7 +152,6 @@ class Extra:
         return inner_func   
     
     def getDate(self, dt):
-        self.paint(dt)
         q = list(map(int, dt.split(".")))
         q.reverse()
         return date(*q)   

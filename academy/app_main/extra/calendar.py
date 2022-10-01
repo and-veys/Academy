@@ -57,7 +57,7 @@ class Calendar():
                         temp["day"] = "Сегодня " + temp["day"]; 
                     if(ind in dt["events"]):
                         cl.append("calendar_events") 
-                        temp["events"] = dt["events"][ind]           #TODO   
+                        temp["events"] = dt["events"][ind]            
                     temp = json.dumps(temp)  
                     cl = " ".join(cl)
                 r.append([str(el), cl, temp])

@@ -67,8 +67,6 @@ function validation(id){
 		"reg_date": "^[0-9]{1,2}.[0-9]{1,2}.[0-9]{4}$"
 	};
 	str = el.value;
-	console.log(str, mask[id], new RegExp(mask[id]));
-	
 	try {
 		if(str.match(new RegExp(mask[id])))
 			return str;

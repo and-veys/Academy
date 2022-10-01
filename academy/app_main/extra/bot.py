@@ -20,7 +20,7 @@ class Bot():
                 "start": [self.__start, "Приветствие"],
                 "registration": [self.__registration, "Регистрация"],
                 "delete": [self.__delete, "Выход из регистрации"],                
-                "now": [self.__now, "Дата и время"],               #TODO сделать
+                "now": [self.__now, "Дата и время"],           
                 "today": [self.__today, "Расписание на сегодня"],
                 "tomorrow": [self.__tomorrow, "Расписание на завтра"],
                 "date": [self.__date, "Расписание на дату"],
@@ -107,7 +107,7 @@ class Bot():
             return "Ваша регистрация отменена."
         return ""
     
-    def __now(self, data):          #TODO
+    def __now(self, data):          
         sb = self.__getRow(data)
         if(sb):
             return "Сегодня: {}\nСейчас: {}.".format(Extra().getStringData(), Extra().getStringTime())
@@ -189,7 +189,6 @@ class Bot():
         try:
             ApplicationBot.objects.create(**data)
         except:
-            Extra().paint(data)
             return "Ошибка записи в базу данных сервера."     
         return "Ваша заявка зарегистрирована.\nЖдите ответа."
       

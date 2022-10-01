@@ -76,7 +76,7 @@ class Persons():
             
     def loadInfo(self, data, id, tp): 
         row = id
-        if("login" in data):            #TODO
+        if("login" in data):            
             if(self.isAdministrator(data["login"]) or self.getPersonFromLogin(data["login"])):
                 return "\nСовпадение логина и пароля в базе данных."            
             row.login = data["login"]        
@@ -131,7 +131,7 @@ class Persons():
     def getWork(self, id, tp):
         return id.getPersonalInfo()
 
-    def getEvent(self, id, tp, rg, ev):             #TODO Test         
+    def getEvent(self, id, tp, rg, ev):                  
         dtMin, dtMax = rg
         temp = "{}_{}".format(ev, tp)  
         if(temp == "my_employees"):

@@ -175,7 +175,7 @@ class Generate():
         count = 0
         for i in range(100):
             pers = self.__getPersonInfo()
-            pers["group"] = random.choice(gr)           #TODO TEST
+            pers["group"] = random.choice(gr)          
             try:
                 Students.objects.create(**pers)
                 count += 1

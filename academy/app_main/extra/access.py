@@ -84,7 +84,7 @@ class Access():
     def isDIR(self, fun):
         """Доступ только руководству"""
         def wrapper(request, **kwargs):
-            if(kwargs["id"].department.status.index == "DIR"):            #TODO     
+            if(kwargs["id"].department.status.index == "DIR"):                
                 return fun(request, **kwargs)
             return Extra().render(request, "error_access.html") 
         return wrapper

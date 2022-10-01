@@ -138,7 +138,7 @@ def changeInfo (request, person, id, add):
 
 @Access().isAccess
 @Access().convertData
-def work(request, person, id):                      #TODO           #"work/"
+def work(request, person, id):                      
     """Рабочая страница работников и студентов"""
     info = Persons().getWork(id, person)   
     info["today"] = date.today().strftime("%Y%m")
@@ -307,7 +307,7 @@ def marksSubjectStudent(request, person, id, grp, sbj, std):
 @Access().isAccess
 @Access().convertData
 @Access().isEmployee  
-def marks(request, person, id):                                 #TODO
+def marks(request, person, id):                                 
     """Страница предмет-группы для преподавателя"""
     info = Schedule().createProfessorSubjects(id)
     content = {
@@ -334,7 +334,7 @@ def setMarks(request, person, id, grp, sbj):
 @Access().isEmployee
 def editMarks(request, person, id, grp, sbj, sch):
     """Страница просмотра расписания предмета"""
-    if(request.method.upper() == "POST"):           #TODO
+    if(request.method.upper() == "POST"):           
         data = json.load(request)
         res = Schedule().setMarks(grp, sch, data)
         if(res == ""):
