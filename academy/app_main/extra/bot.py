@@ -195,7 +195,7 @@ class Bot():
       
     def __check(self, dt):
         rows = ApplicationBot.objects.filter(activ=True, action__gt=0) 
-        keys = ["_state", "department_id", "group_id", "action", "person", "bot_id"]
+        keys = ["_state", "department_id", "group_id", "action", "person", "bot_id", "status_id"]
         res = {}
         for el in rows:
             res[el.bot_id] = el.getMessage() 
@@ -210,7 +210,7 @@ class Bot():
                     if(el.person == "employee"):
                         db = Employees
                         temp["department"] = el.department
-                        temp["status"]= Status_Employees.objects.get(index="employee")
+                        temp["status"]= el.status
                     else:
                         db = Students
                         temp["group"] = el.group

@@ -433,6 +433,7 @@ def appFromBot(request, person, id, per, bl):
     content["back"] = back 
     content["caption"] = "Заявка на {}".format(("работу" if per=="employee" else "учебу"))
     content["dataApp"] = Applications().getDepartmentGroup(info)
+    content["extraApp"] = Applications().getStatus(info)
     if(content["dataApp"]):
         return render(request, "app_from_bot.html", content)
     return render(request, "error_access.html") 

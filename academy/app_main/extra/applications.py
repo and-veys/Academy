@@ -1,4 +1,4 @@
-from ..models import ApplicationBot as db, Groups, Departments
+from ..models import ApplicationBot as db, Groups, Departments, Status_Employees
 from .extra import Extra
 
 class Applications():
@@ -29,6 +29,13 @@ class Applications():
             return None
         rows = temp[0].objects.all()            
         return [dict(map(lambda s: (str(s.id), s.name), rows)), temp[1]]
+    
+    def getStatus(self, per):
+        if(per.person == "student"):
+            return None
+        rows = Status_Employees.objects.all()
+        return [dict(map(lambda s: (str(s.id), s.name), rows)), "ДОЛЖНОСТЬ"]
+
  
     def setBlock(self, id, data):      
         act = data["action"] + 1
@@ -41,7 +48,8 @@ class Applications():
                 return False
             Extra().paint("-------------------------------",temp)
             if(id.person == "employee"):
-                id.department = temp               
+                id.department = temp   
+                id.status = Status_Employees.objects.get(id=data["id_extra"])
             else:
                 id.group = temp
         id.save()

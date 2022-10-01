@@ -11,6 +11,15 @@
 			<option value="{{key}}">{{el}}</option>
 		{%endfor%}
 	</select>
+	{% if extraApp %}
+		<select id="choice_extra" required class="input_text small">
+			<option value="" disabled selected hidden>{{extraApp.1}}</option>
+			{%for key, el in extraApp.0.items %}
+				<option value="{{key}}">{{el}}</option>
+			{%endfor%}
+		</select>		
+	{% endif %}
+	
 	<div class="div_row">			
 		<input type="button" class="a_button small three_in_row" value="Заблокировать" onClick="click_block(0)" />
 		<input type="button" class="a_button small three_in_row" value="Отказать" onClick="click_block(1)" />

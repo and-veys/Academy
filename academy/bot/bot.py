@@ -50,14 +50,13 @@ def bot_not_support(msg):
 
 def check_application():
     mn = threading.main_thread()     
-    while(mn.is_alive()):                           
-
+    while(mn.is_alive()):
+        time.sleep(5)
         resp = requests.get("http://127.0.0.1:8000/bot", {"command": "/check", "id": 0})
         if(resp.status_code == 200):
             a = eval(resp.text)
             for key, el in a.items():
                 bot.send_message(int(key), el, parse_mode="html")
-        time.sleep(10)
 
 th = threading.Thread(target=check_application)           
 th.start()

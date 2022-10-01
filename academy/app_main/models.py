@@ -267,6 +267,8 @@ class ApplicationBot(Person):
     bot_id = models.PositiveBigIntegerField('ID чата', unique=True)
     department = models.ForeignKey(Departments, null=True, on_delete=models.CASCADE, verbose_name="Отдел")
     group = models.ForeignKey(Groups, null=True, on_delete=models.CASCADE, verbose_name="Группа") 
+    status = models.ForeignKey(Status_Employees, null=True, on_delete=models.CASCADE, verbose_name="Должность")
+    
     class Meta: 
         ordering = ['lastname', 'firstname', 'patronymic']  
         verbose_name = "Заявка"                     
@@ -280,8 +282,12 @@ class ApplicationBot(Person):
         if(self.action == 2):
             return temp + "<b>Вам отказали.</b>"
         if(self.person == "employee"):
-            return temp + 'Вас приняли в отдел:\n<b>{}</b>'.format(self.department.name)    
-        return temp + 'Вас зачислили в группу:\n<b>{}</b>'.format(self.group.name)    
+            q = Status_Aliases.objects.get(status_department=self.department.status, status_employee=self.status)
+        
+        
+            return temp + 'Вас приняли в отдел:\n<b>{}</b>.\nНа должность:\n<b>"{}"</b>.'.format(self.department.name, q.name)   
+ 
+        return temp + 'Вас зачислили в группу:\n<b>{}</b>.'.format(self.group.name)    
     
 
  

@@ -25,18 +25,11 @@ function click_change_info() {			//реакция на изменение дан
 	sendPOST(data);
 }
 function get_click_change_info() {
-	
-	
-	
-	
 	login = validation("reg_login");
 	pass = validation("reg_password");
 	pass2 = validation("reg_password_2");
 	phone = validation("reg_phone");
 	e_mail = validation("reg_e_mail");
-	
-	
-	
 	
 	if(login != undefined) {
 		if(login == "")
@@ -322,10 +315,16 @@ function click_block(q) {
 function get_click_block(q) {
 	res = {"action": q};
 	if(q == 2){
-		el = document.getElementById("choice");
+		el = document.getElementById("choice");	
 		if(el.value == "")
 			return {"error": "Укажите место вакансии"};
-			res["id"]=Number(el.value);	
+		res["id"] = Number(el.value);	
+		el = document.getElementById("choice_extra");
+		if(el) {
+			if(el.value == "")
+				return {"error": "Укажите должность вакансии"};
+			res["id_extra"] = Number(el.value);
+		}			
 	}	
 	return res; 
 }
