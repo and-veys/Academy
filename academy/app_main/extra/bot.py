@@ -80,12 +80,13 @@ class Bot():
         login = Generate().encodeInfo(*data["args"])
         res = {"bot_id": data["id"], "employees": None, "students": None}
         row = Persons().getPersonFromLogin(login)        
-        if(row["row"].activ == False):
-            return "Вам отказано в доступе."  
+  
         if(row):
             res[row["tp"]] = row["row"]
         else:
             return "Ошибочные логин и пароль."
+        if(row["row"].activ == False):
+            return "Вам отказано в доступе."
         sb = self.__getRow(data)      
         if(sb):
             sb.bot_id = res["bot_id"]

@@ -96,10 +96,14 @@ function click_edit_schedule() { //реакция на установку изм
 
 function get_click_schedule() {
 	dt = getDate(validation("reg_date"));
-	bg = getDate(document.getElementById("begin").innerHTML);
-	ed = getDate(document.getElementById("end").innerHTML);
+	bg = getDate(document.getElementById("begin").dataset.extra);
+	ed = getDate(document.getElementById("end").dataset.extra);
 	if(!dt)
 		return {"error": "Ошибка ввода данных. Формат даты: ДД.ММ.ГГГГ"};
+	console.log(dt);
+	console.log(bg);
+	console.log(ed);
+	
 	if(dt < bg || dt > ed)
 		return {"error": "Ошибка ввода данных. Дата первого занятия вне срока обучения"};
 	sel = document.getElementsByTagName("select")
@@ -122,7 +126,7 @@ function get_click_schedule() {
 	
 	if(getLesson(dt, tm) == 0)
 		return {"error": "Ошибка ввода данных. Не выбрано время первого занятия"};
-	am = Number(document.getElementById("amount").innerHTML);	
+	am = Number(document.getElementById("amount").dataset.extra);	
 	les = [];
 	while(les.length != am) {
 		d = getLesson(dt, tm);
@@ -160,6 +164,7 @@ function getLesson(dt, tm) {
 }
 
 function getDate(str) {
+	console.log(str)
 	var dt = str.split(".")
 	if(dt.length != 3)
 		return null;
