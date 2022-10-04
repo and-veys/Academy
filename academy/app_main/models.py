@@ -304,9 +304,8 @@ class SunBot(models.Model):
         db_table = "amv_sunbot"      
         
     def getPerson(self):
-        return (("employees", self.employees) if self.students == None else ("students", self.students))        
-
-
+        return (("employees", self.employees) if self.students == None else ("students", self.students))  
+    
 class LessonTimes(models.Model):  
     """Таблица времени начала уроков"""
     name = models.CharField('Наменование', max_length = 36)

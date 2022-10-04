@@ -42,9 +42,13 @@ class Bot():
         
     def __getRow(self, data):
         try:
-            return SunBot.objects.get(bot_id=data["id"])
+            q = SunBot.objects.get(bot_id=data["id"])
         except:
             return None
+        if(q.getPerson()[1].activ):
+            return q
+        q.delete
+        return None
         
     def __split(self, dt):        
         temp = list(map(lambda s: s.strip(), dt["command"].split("\n")))
