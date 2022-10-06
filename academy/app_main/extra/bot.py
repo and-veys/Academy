@@ -153,7 +153,7 @@ class Bot():
             sb = row.getPerson()            
             row = Persons().getEvent(sb[1], sb[0], (dt, dt), "my")
             if(len(row) == 0):
-                return "{} у вас нет занятий".format(str_dt)            
+                return "{} у Вас нет занятий".format(str_dt)            
             row = row[str(dt.day)]
             res = "Ваше расписание на {}:".format(str_dt.lower())
             if(sb[0] == "employees"):

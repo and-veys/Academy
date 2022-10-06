@@ -21,9 +21,13 @@ admin.site.register(Subjects)
 admin.site.register(Course_Subject)
 admin.site.register(NamesWeekDays)
 admin.site.register(NamesMonths)
-admin.site.register(WeekEnds)
+#admin.site.register(WeekEnds)
 admin.site.register(LessonTimes)
 admin.site.register(NamesMarks)
 
+
+@admin.register(WeekEnds)
+class PersonalAdmin(admin.ModelAdmin):
+    list_display = ("date", "name", "delay")
 
 
